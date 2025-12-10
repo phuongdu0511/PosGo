@@ -1,0 +1,6 @@
+@PosGo.API_HostAddress = http://localhost:5210
+
+GET {{PosGo.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

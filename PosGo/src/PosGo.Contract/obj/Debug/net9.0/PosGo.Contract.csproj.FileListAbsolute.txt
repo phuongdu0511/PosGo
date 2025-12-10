@@ -1,0 +1,12 @@
+D:\Project\PosGo\PosGo\src\PosGo.Contract\bin\Debug\net9.0\PosGo.Contract.deps.json
+D:\Project\PosGo\PosGo\src\PosGo.Contract\bin\Debug\net9.0\PosGo.Contract.dll
+D:\Project\PosGo\PosGo\src\PosGo.Contract\bin\Debug\net9.0\PosGo.Contract.pdb
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.csproj.AssemblyReference.cache
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.AssemblyInfoInputs.cache
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.AssemblyInfo.cs
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.csproj.CoreCompileInputs.cache
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.dll
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\refint\PosGo.Contract.dll
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\PosGo.Contract.pdb
+D:\Project\PosGo\PosGo\src\PosGo.Contract\obj\Debug\net9.0\ref\PosGo.Contract.dll

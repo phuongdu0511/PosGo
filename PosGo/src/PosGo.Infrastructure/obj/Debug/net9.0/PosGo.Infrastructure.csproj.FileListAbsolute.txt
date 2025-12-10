@@ -1,0 +1,11 @@
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\bin\Debug\net9.0\PosGo.Infrastructure.deps.json
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\bin\Debug\net9.0\PosGo.Infrastructure.dll
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\bin\Debug\net9.0\PosGo.Infrastructure.pdb
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\PosGo.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\PosGo.Infrastructure.AssemblyInfoInputs.cache
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\PosGo.Infrastructure.AssemblyInfo.cs
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\PosGo.Infrastructure.csproj.CoreCompileInputs.cache
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\PosGo.Infrastructure.dll
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\refint\PosGo.Infrastructure.dll
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\PosGo.Infrastructure.pdb
+D:\Project\PosGo\PosGo\src\PosGo.Infrastructure\obj\Debug\net9.0\ref\PosGo.Infrastructure.dll
