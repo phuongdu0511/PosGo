@@ -8,6 +8,7 @@ D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Domain.GeneratedM
 D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Domain.AssemblyInfoInputs.cache
 D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Domain.AssemblyInfo.cs
 D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Domain.csproj.CoreCompileInputs.cache
+D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Domain.sourcelink.json
 D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Do.406436A8.Up2Date
 D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\PosGo.Domain.dll
 D:\Project\PosGo\PosGo\src\PosGo.Domain\obj\Debug\net9.0\refint\PosGo.Domain.dll

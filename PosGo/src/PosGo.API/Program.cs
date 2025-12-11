@@ -3,6 +3,7 @@ using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using PosGo.API.DependencyInjection.Extensions;
 using PosGo.API.Middleware;
 using PosGo.Application.DependencyInjection.Extensions;
+using PosGo.Infrastructure.DependencyInjection.Extensions;
 using PosGo.Persistence.DependencyInjection.Extensions;
 using PosGo.Persistence.DependencyInjection.Options;
 using Serilog;
@@ -21,26 +22,11 @@ builder.Logging
 
 builder.Host.UseSerilog();
 
-builder.Services.AddConfigureMediatR();
-builder.Services.AddConfigureAutoMapper();
-builder.Services.AddOpenApi();
-
-builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-
-// Configure Options and SQL
-builder.Services.AddInterceptorDbContext();
-
-builder.Services.ConfigureSqlServerRetryOptions(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
-builder.Services.AddSqlConfiguration();
-builder.Services.AddRepositoryBaseConfiguration();
-
-builder.Services.AddCarter();
-
 builder.Services
         .AddSwaggerGenNewtonsoftSupport()
         .AddFluentValidationRulesToSwagger()
         .AddEndpointsApiExplorer()
-        .AddSwagger();
+        .AddSwaggerAPI();
 
 builder.Services
     .AddApiVersioning(options => options.ReportApiVersions = true)
@@ -50,9 +36,36 @@ builder.Services
         options.SubstituteApiVersionInUrl = true;
     });
 
+builder.Services.AddJwtAuthenticationAPI(builder.Configuration);
+
+builder.Services.AddServicesInfrastructure();
+builder.Services.AddRedisInfrastructure(builder.Configuration);
+
+builder.Services.AddMediatRApplication();
+builder.Services.AddAutoMapperApplication();
+
+// Configure Options and SQL
+builder.Services.AddInterceptorPersistence();
+builder.Services.ConfigureSqlServerRetryOptionsPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+builder.Services.AddSqlServerPersistence();
+builder.Services.AddRepositoryPersistence();
+
+builder.Services.AddCarter();
+
+// Add Middleware
+builder.Services.AddOpenApi();
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+//app.UseHttpsRedirection();
+
+app.UseAuthentication(); 
+app.UseAuthorization();
+
+//app.MapControllers();
 
 // Add API Endpoint with carter module
 app.MapCarter();
@@ -64,13 +77,7 @@ if (app.Environment.IsDevelopment())
 }
 
 if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
-    app.ConfigureSwagger();
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthorization();
-
-//app.MapControllers();
+    app.UseSwaggerAPI();
 
 try
 {

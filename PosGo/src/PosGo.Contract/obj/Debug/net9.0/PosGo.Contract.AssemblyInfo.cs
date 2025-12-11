@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PosGo.Contract")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+520e58b74649cf978caac7781ebb25f984e6c858")]
 [assembly: System.Reflection.AssemblyProductAttribute("PosGo.Contract")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PosGo.Contract")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -8,7 +8,7 @@ namespace PosGo.Application.DependencyInjection.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddConfigureMediatR(this IServiceCollection services)
+    public static IServiceCollection AddMediatRApplication(this IServiceCollection services)
         => services.AddMediatR(cfg =>
         cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly))
         //.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationDefaultBehavior<,>))
@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         //.AddTransient(typeof(IPipelineBehavior<,>), typeof(TracingPipelineBehavior<,>))
         .AddValidatorsFromAssembly(Contract.AssemblyReference.Assembly, includeInternalTypes: true);
 
-    public static IServiceCollection AddConfigureAutoMapper(this IServiceCollection services)
+    public static IServiceCollection AddAutoMapperApplication(this IServiceCollection services)
         => services.AddAutoMapper(typeof(ServiceProfile));
 
 }

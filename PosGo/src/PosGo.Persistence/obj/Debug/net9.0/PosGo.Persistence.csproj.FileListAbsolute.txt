@@ -10,6 +10,7 @@ D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Persistence.
 D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Persistence.AssemblyInfoInputs.cache
 D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Persistence.AssemblyInfo.cs
 D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Persistence.csproj.CoreCompileInputs.cache
+D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Persistence.sourcelink.json
 D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Pe.FCE7160C.Up2Date
 D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\PosGo.Persistence.dll
 D:\Project\PosGo\PosGo\src\PosGo.Persistence\obj\Debug\net9.0\refint\PosGo.Persistence.dll
