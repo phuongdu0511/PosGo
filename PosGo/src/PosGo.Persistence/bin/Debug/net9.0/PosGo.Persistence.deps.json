@@ -22,6 +22,14 @@
           "PosGo.Persistence.dll": {}
         }
       },
+      "Ardalis.SmartEnum/8.2.0": {
+        "runtime": {
+          "lib/net8.0/Ardalis.SmartEnum.dll": {
+            "assemblyVersion": "8.2.0.0",
+            "fileVersion": "8.2.0.0"
+          }
+        }
+      },
       "Azure.Core/1.38.0": {
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
@@ -963,6 +971,7 @@
       },
       "PosGo.Contract/1.0.0": {
         "dependencies": {
+          "Ardalis.SmartEnum": "8.2.0",
           "FluentValidation": "12.1.1",
           "MediatR": "14.0.0",
           "Microsoft.EntityFrameworkCore": "9.0.11"
@@ -992,6 +1001,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Ardalis.SmartEnum/8.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-P1CLI2okpzHjOJnZMYLnzcyu1/fUJEYK1X4JSnal2TPmovrUTtXK6Sn78D2JgKUdwjSeWddnRveMj+BEZoksvg==",
+      "path": "ardalis.smartenum/8.2.0",
+      "hashPath": "ardalis.smartenum.8.2.0.nupkg.sha512"
     },
     "Azure.Core/1.38.0": {
       "type": "package",

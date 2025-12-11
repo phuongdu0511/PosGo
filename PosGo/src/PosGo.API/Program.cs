@@ -22,6 +22,11 @@ builder.Logging
 
 builder.Host.UseSerilog();
 
+builder
+    .Services
+    .AddControllers()
+    .AddApplicationPart(PosGo.Presentation.AssemblyReference.Assembly);
+
 builder.Services
         .AddSwaggerGenNewtonsoftSupport()
         .AddFluentValidationRulesToSwagger()
@@ -65,7 +70,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication(); 
 app.UseAuthorization();
 
-//app.MapControllers();
+app.MapControllers();
 
 // Add API Endpoint with carter module
 app.MapCarter();

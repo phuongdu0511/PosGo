@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using CommandV1 = PosGo.Contract.Services.V1.Product;
+using PosGo.Contract.Extensions;
 
 namespace PosGo.Presentation.APIs.Products;
 
 public class ProductApi : ApiEndpoint, ICarterModule
 {
-    private const string BaseUrl = "/api/v{version:apiVersion}/products";
+    private const string BaseUrl = "/api/minimal/v{version:apiVersion}/products";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -36,9 +37,18 @@ public class ProductApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> GetProductsV1(ISender sender)
+    public static async Task<IResult> GetProductsV1(ISender sender, string? serchTerm = null,
+        string? sortColumn = null,
+        string? sortOrder = null,
+        string? sortColumnAndOrder = null,
+        int pageIndex = 1,
+        int pageSize = 10)
     {
-        var result = await sender.Send(new CommandV1.Query.GetProductsQuery());
+        var result = await sender.Send(new CommandV1.Query.GetProductsQuery(serchTerm, sortColumn,
+            SortOrderExtension.ConvertStringToSortOrder(sortOrder),
+            SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder),
+            pageIndex,
+            pageSize));
         return Results.Ok(result);
     }
 

@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "0ST/dBHwaNo=",
+  "dgSpecHash": "xKaIumBRAqo=",
   "success": true,
   "projectFilePath": "D:\\Project\\PosGo\\PosGo\\src\\PosGo.Persistence\\PosGo.Persistence.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Duy\\.nuget\\packages\\ardalis.smartenum\\8.2.0\\ardalis.smartenum.8.2.0.nupkg.sha512",
     "C:\\Users\\Duy\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Duy\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
     "C:\\Users\\Duy\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",

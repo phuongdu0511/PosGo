@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "H9lgsscEhEI=",
+  "dgSpecHash": "lOLBg2G4BW8=",
   "success": true,
   "projectFilePath": "D:\\Project\\PosGo\\PosGo\\src\\PosGo.Infrastructure\\PosGo.Infrastructure.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Duy\\.nuget\\packages\\ardalis.smartenum\\8.2.0\\ardalis.smartenum.8.2.0.nupkg.sha512",
     "C:\\Users\\Duy\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\Duy\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",
     "C:\\Users\\Duy\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
