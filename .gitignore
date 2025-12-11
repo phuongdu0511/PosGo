@@ -1,7 +1,7 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+﻿# Visual Studio
+.vs/
+**/.vs/
 
-/PosGo/.vs
-/PosGo/src/PosGo.API/bin
-/PosGo/src/PosGo.API/obj
+# Build output tất cả project
+**/bin/
+**/obj/
