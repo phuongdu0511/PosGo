@@ -28,12 +28,12 @@ public sealed class UpdateAuditableEntitiesInterceptor
         {
             if (entityEntry.State == EntityState.Added)
             {
-                entityEntry.Property(a => a.CreatedOnUtc).CurrentValue = DateTime.UtcNow;
+                entityEntry.Property(a => a.CreatedAt).CurrentValue = DateTimeOffset.UtcNow;
             }
 
             if (entityEntry.State == EntityState.Modified)
             {
-                entityEntry.Property(a => a.ModifedOnUtc).CurrentValue = DateTime.UtcNow;
+                entityEntry.Property(a => a.UpdatedAt).CurrentValue = DateTimeOffset.UtcNow;
             }
         }
 

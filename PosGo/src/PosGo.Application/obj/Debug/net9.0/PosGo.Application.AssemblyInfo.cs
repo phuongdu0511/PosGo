@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PosGo.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+378291c4f7fb753f4bda907922ccccce83dc9d4e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8077e1fb9663377384f057a29b2d6f448045023")]
 [assembly: System.Reflection.AssemblyProductAttribute("PosGo.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PosGo.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

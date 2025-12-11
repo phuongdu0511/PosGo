@@ -1,16 +1,20 @@
-﻿using System.Xml.Linq;
-using PosGo.Domain.Abstractions.Aggregates;
+﻿using PosGo.Domain.Abstractions.Aggregates;
 using PosGo.Domain.Abstractions.Entities;
 
 namespace PosGo.Domain.Entities;
 
-public class Product : AggregateRoot<Guid>, IAuditableEntity
+public class Product : AggregateRoot<Guid>, IAuditableEntity, ISoftDeletableEntity
 {
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public string Description { get; private set; }
-    public DateTimeOffset CreatedOnUtc { get; set; }
-    public DateTimeOffset? ModifedOnUtc { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
+    public Guid? CreatedByUserId { get; set; }
+    public Guid? UpdatedByUserId { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
+    public Guid? DeletedByUserId { get; set; }
 
     public static Product CreateProduct(Guid id, string name, decimal price, string description)
     {

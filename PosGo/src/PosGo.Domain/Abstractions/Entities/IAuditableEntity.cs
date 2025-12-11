@@ -2,6 +2,9 @@
 
 public interface IAuditableEntity
 {
-    DateTimeOffset CreatedOnUtc { get; set; }
-    DateTimeOffset? ModifedOnUtc { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public Guid? CreatedByUserId { get; set; }
+
+    public DateTimeOffset? UpdatedAt { get; set; }
+    public Guid? UpdatedByUserId { get; set; }
 }
