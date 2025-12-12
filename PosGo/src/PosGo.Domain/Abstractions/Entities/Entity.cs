@@ -5,8 +5,17 @@ public abstract class Entity<T> : IEntity<T>
     public T Id { get; protected set; }
 }
 
-//public abstract class DomainEntity<T> : IEntity<T>
-//{
-//    public T Id { get; protected set; }
-//    public bool IsDeleted { get; protected set; }
-//}
+public abstract class AuditableEntity<T> : Entity<T>
+{
+    public DateTimeOffset CreatedAt { get; set; }
+    public Guid? CreatedByUserId { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
+    public Guid? UpdatedByUserId { get; set; }
+}
+
+public abstract class SoftDeletableEntity<T> : AuditableEntity<T>
+{
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
+    public Guid? DeletedByUserId { get; set; }
+}

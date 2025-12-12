@@ -5,3 +5,4 @@
 # Build output tất cả project
 **/bin/
 **/obj/
+**/logs/

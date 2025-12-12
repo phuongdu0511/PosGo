@@ -3,30 +3,24 @@ using PosGo.Domain.Abstractions.Entities;
 
 namespace PosGo.Domain.Entities;
 
-public class Product : AggregateRoot<Guid>, IAuditableEntity, ISoftDeletableEntity
+public class Product : SoftDeletableAggregateRoot<Guid>
 {
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public string Description { get; private set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset? UpdatedAt { get; set; }
-    public Guid? CreatedByUserId { get; set; }
-    public Guid? UpdatedByUserId { get; set; }
-    public bool IsDeleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
-    public Guid? DeletedByUserId { get; set; }
+    public string Sku { get; private set; }
 
-    public static Product CreateProduct(Guid id, string name, decimal price, string description)
+    public static Product CreateProduct(Guid id, string name, decimal price, string description, string sku)
     {
-        var product = new Product(id, name, price, description);
+        var product = new Product(id, name, price, description, sku);
 
         product.RaiseDomainEvent(new Contract.Services.V1.Product.DomainEvent.ProductCreated(Guid.NewGuid(), product.Id, 
-            product.Name, product.Price, product.Description));
+            product.Name, product.Price, product.Description, sku));
 
         return product;
     }
 
-    public Product(Guid id, string name, decimal price, string description)
+    public Product(Guid id, string name, decimal price, string description, string sku)
     {
         //if (!NameValidation(name))
         //    throw new ArgumentNullException();
@@ -34,6 +28,7 @@ public class Product : AggregateRoot<Guid>, IAuditableEntity, ISoftDeletableEnti
         Name = name;
         Price = price;
         Description = description;
+        Sku = sku;
     }
 
     public void Update(string name, decimal price, string description)

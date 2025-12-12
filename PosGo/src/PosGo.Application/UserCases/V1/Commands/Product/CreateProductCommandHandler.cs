@@ -16,7 +16,7 @@ public sealed class CreateProductCommandHandler : ICommandHandler<Command.Create
 
     public async Task<Result> Handle(Command.CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = Domain.Entities.Product.CreateProduct(Guid.NewGuid(), request.Name, request.Price, request.Description);
+        var product = Domain.Entities.Product.CreateProduct(Guid.NewGuid(), request.Name, request.Price, request.Description, request.sku);
 
         _productRepository.Add(product);
 

@@ -15,5 +15,7 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Name).HasMaxLength(200).IsRequired(true);
         builder.Property(x => x.Description)
             .HasMaxLength(250).IsRequired(true);
+        builder.Property(x => x.Sku)
+            .HasMaxLength(10).IsRequired(true);
     }
 }
