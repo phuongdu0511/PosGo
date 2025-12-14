@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using PosGo.Application.Behaviors;
 using PosGo.Application.Mapper;
+using PosGo.Domain.Entities;
 
 namespace PosGo.Application.DependencyInjection.Extensions;
 
@@ -20,5 +22,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAutoMapperApplication(this IServiceCollection services)
         => services.AddAutoMapper(typeof(ServiceProfile));
+
+    public static IServiceCollection AddPasswordHaserApplication(this IServiceCollection services)
+        => services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 }

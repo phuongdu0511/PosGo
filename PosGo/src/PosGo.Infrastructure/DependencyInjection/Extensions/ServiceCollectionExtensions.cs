@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PosGo.Application.Abstractions;
+using PosGo.Contract.Abstractions.Shared.CommonServices;
 using PosGo.Infrastructure.Authentication;
 using PosGo.Infrastructure.Caching;
+using PosGo.Infrastructure.Services;
 
 namespace PosGo.Infrastructure.DependencyInjection.Extensions;
 
@@ -10,7 +12,9 @@ public static class ServiceCollectionExtensions
 {
     public static void AddServicesInfrastructure(this IServiceCollection services)
         => services.AddTransient<IJwtTokenService, JwtTokenService>()
-            .AddTransient<ICacheService, CacheService>();
+            .AddTransient<ICacheService, CacheService>()
+            .AddHttpContextAccessor()
+            .AddSingleton<ICurrentUserService, CurrentUserService>();
 
     public static void AddRedisInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {

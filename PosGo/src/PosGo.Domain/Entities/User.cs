@@ -26,4 +26,19 @@ public class User : AuditableAggregateRoot<Guid>
 
     public virtual ICollection<Order> OrdersCreated { get; private set; }
     public virtual ICollection<Order> OrdersClosed { get; private set; }
+
+    public User(Guid id, string userName, string password, string fullName, string phone)
+    {
+        Id = id;
+        UserName = userName;
+        Password = password;
+        FullName = fullName;
+        Phone = phone;
+    }
+
+    public void UpdateProfile(string fullName, string phone)
+    {
+        FullName = fullName;
+        Phone = phone;
+    }
 }
