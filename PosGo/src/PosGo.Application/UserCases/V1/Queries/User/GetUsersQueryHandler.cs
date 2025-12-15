@@ -3,20 +3,19 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Enumerations;
-using PosGo.Contract.Services.V1.Account;
+using PosGo.Contract.Services.V1.User;
 using PosGo.Domain.Abstractions.Repositories;
-using PosGo.Domain.Exceptions;
 using PosGo.Persistence;
 
-namespace PosGo.Application.UserCases.V1.Queries.account;
+namespace PosGo.Application.UserCases.V1.Queries.User;
 
-public sealed class GetAccountsQueryHandler : IQueryHandler<Query.GetAccountsQuery, PagedResult<Response.AccountResponse>>
+public sealed class GetUsersQueryHandler : IQueryHandler<Query.GetUsersQuery, PagedResult<Response.UserResponse>>
 {
     private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
     private readonly IMapper _mapper;
     private readonly ApplicationDbContext _context;
 
-    public GetAccountsQueryHandler(IRepositoryBase<Domain.Entities.User, Guid> userRepository,
+    public GetUsersQueryHandler(IRepositoryBase<Domain.Entities.User, Guid> userRepository,
         IMapper mapper,
         ApplicationDbContext context)
     {
@@ -24,7 +23,7 @@ public sealed class GetAccountsQueryHandler : IQueryHandler<Query.GetAccountsQue
         _mapper = mapper;
         _context = context;
     }
-    public async Task<Result<PagedResult<Response.AccountResponse>>> Handle(Query.GetAccountsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<Response.UserResponse>>> Handle(Query.GetUsersQuery request, CancellationToken cancellationToken)
     {
         if (request.SortColumnAndOrder.Any()) // =>>  Raw Query when order by multi column
         {
@@ -35,59 +34,59 @@ public sealed class GetAccountsQueryHandler : IQueryHandler<Query.GetAccountsQue
                 ? PagedResult<Domain.Entities.User>.UpperPageSize : request.PageSize;
 
             // ============================================
-            var accountsQuery = string.IsNullOrWhiteSpace(request.SearchTerm)
+            var usersQuery = string.IsNullOrWhiteSpace(request.SearchTerm)
                 ? @$"SELECT * FROM {nameof(Domain.Entities.User)} ORDER BY "
                 : @$"SELECT * FROM {nameof(Domain.Entities.User)}
                         WHERE {nameof(Domain.Entities.User.FullName)} LIKE '%{request.SearchTerm}%'
                         ORDER BY ";
 
             foreach (var item in request.SortColumnAndOrder)
-                accountsQuery += item.Value == SortOrder.Descending
+                usersQuery += item.Value == SortOrder.Descending
                     ? $"{item.Key} DESC, "
                     : $"{item.Key} ASC, ";
 
-            accountsQuery = accountsQuery.Remove(accountsQuery.Length - 2);
+            usersQuery = usersQuery.Remove(usersQuery.Length - 2);
 
-            accountsQuery += $" OFFSET {(PageIndex - 1) * PageSize} ROWS FETCH NEXT {PageSize} ROWS ONLY";
+            usersQuery += $" OFFSET {(PageIndex - 1) * PageSize} ROWS FETCH NEXT {PageSize} ROWS ONLY";
 
-            var accounts = await _context.Users.FromSqlRaw(accountsQuery)
+            var users = await _context.Users.FromSqlRaw(usersQuery)
                 .ToListAsync(cancellationToken: cancellationToken);
 
             var totalCount = await _context.Users.CountAsync(cancellationToken);
 
-            var accountPagedResult = PagedResult<Domain.Entities.User>.Create(accounts,
+            var userPagedResult = PagedResult<Domain.Entities.User>.Create(users,
                 PageIndex,
                 PageSize,
                 totalCount);
 
-            var result = _mapper.Map<PagedResult<Response.AccountResponse>>(accountPagedResult);
+            var result = _mapper.Map<PagedResult<Response.UserResponse>>(userPagedResult);
 
             return Result.Success(result);
         }
         else // =>> Entity Framework
         {
-            var accountsQuery = string.IsNullOrWhiteSpace(request.SearchTerm)
+            var usersQuery = string.IsNullOrWhiteSpace(request.SearchTerm)
             ? _userRepository.FindAll()
             : _userRepository.FindAll(x => x.FullName.Contains(request.SearchTerm));
 
-            accountsQuery = request.SortOrder == SortOrder.Descending
-            ? accountsQuery.OrderByDescending(GetSortProperty(request))
-            : accountsQuery.OrderBy(GetSortProperty(request));
+            usersQuery = request.SortOrder == SortOrder.Descending
+            ? usersQuery.OrderByDescending(GetSortProperty(request))
+            : usersQuery.OrderBy(GetSortProperty(request));
 
-            var accounts = await PagedResult<Domain.Entities.User>.CreateAsync(accountsQuery,
+            var users = await PagedResult<Domain.Entities.User>.CreateAsync(usersQuery,
                 request.PageIndex,
                 request.PageSize);
 
-            var result = _mapper.Map<PagedResult<Response.AccountResponse>>(accounts);
+            var result = _mapper.Map<PagedResult<Response.UserResponse>>(users);
             return Result.Success(result);
         }
     }
 
-    private static Expression<Func<Domain.Entities.User, object>> GetSortProperty(Query.GetAccountsQuery request)
+    private static Expression<Func<Domain.Entities.User, object>> GetSortProperty(Query.GetUsersQuery request)
          => request.SortColumn?.ToLower() switch
          {
-             "fullName" => account => account.FullName,
-             _ => account => account.Id
+             "fullName" => user => user.FullName,
+             _ => user => user.Id
              //_ => product => product.CreatedDate // Default Sort Descending on CreatedDate column
          };
 }

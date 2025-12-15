@@ -7,7 +7,6 @@ using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Enumerations;
 using PosGo.Contract.Services.V1.Identity;
 using PosGo.Domain.Abstractions.Repositories;
-using PosGo.Domain.Entities;
 using PosGo.Persistence;
 
 namespace PosGo.Application.UserCases.V1.Queries.Identity;
@@ -18,13 +17,13 @@ public class GetLoginQueryHandler : IQueryHandler<Query.Login, Response.Authenti
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ICacheService _cacheService;
     private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
-    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IPasswordHasher<Domain.Entities.User> _passwordHasher;
 
     public GetLoginQueryHandler(
         ApplicationDbContext dbContext,
         IJwtTokenService jwtTokenService, ICacheService cacheService,
         IRepositoryBase<Domain.Entities.User, Guid> userRepository,
-        IPasswordHasher<User> passwordHasher)
+        IPasswordHasher<Domain.Entities.User> passwordHasher)
     {
         _dbContext = dbContext;
         _jwtTokenService = jwtTokenService;

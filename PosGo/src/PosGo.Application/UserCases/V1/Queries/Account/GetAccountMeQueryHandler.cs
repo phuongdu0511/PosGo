@@ -5,7 +5,7 @@ using PosGo.Contract.Services.V1.Account;
 using PosGo.Domain.Abstractions.Repositories;
 using PosGo.Domain.Exceptions;
 
-namespace PosGo.Application.UserCases.V1.Queries.account;
+namespace PosGo.Application.UserCases.V1.Queries.Account;
 
 public sealed class GetAccountMeQueryHandler : IQueryHandler<Query.GetAccountMe, Response.AccountResponse>
 {
@@ -32,7 +32,7 @@ public sealed class GetAccountMeQueryHandler : IQueryHandler<Query.GetAccountMe,
         var userId = _currentUserService.UserId.Value;
 
         var account = await _userRepository.FindByIdAsync(userId)
-            ?? throw new AccountException.AccountNotFoundException(userId);
+            ?? throw new CommonNotFoundException.CommonException(userId, "Account");
 
         var result = _mapper.Map<Response.AccountResponse>(account);
 
