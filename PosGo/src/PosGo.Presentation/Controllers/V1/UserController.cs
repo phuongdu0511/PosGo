@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PosGo.Contract.Abstractions.Shared;
+using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Extensions;
 using PosGo.Contract.Services.V1.User;
 using PosGo.Presentation.Abstractions;
@@ -58,7 +59,7 @@ public class UserController : ApiController
     }
 
     [HttpPost(Name = "CreateUser")]
-    //[Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = SystemConstants.Role.ADMIN)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -73,7 +74,7 @@ public class UserController : ApiController
         return Ok(result);
     }
 
-    [HttpPut("{userId}")]
+    [HttpPost("{userId}")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -91,7 +92,7 @@ public class UserController : ApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    //[Authorize(Roles = "SystemAdmin, Owner")]
+    [Authorize(Roles = SystemConstants.Role.ADMIN + "," + SystemConstants.Role.OWNER)]
     public async Task<IActionResult> Users(Guid userId, [FromBody] Command.ChangePasswordUserCommand request)
     {
         var changePasswordUserCommand = new Command.ChangePasswordUserCommand(userId, request.NewPassword, request.ConfirmNewPassword);
@@ -113,6 +114,23 @@ public class UserController : ApiController
     {
         var changePasswordUserCommand = new Command.ChangeStatusUserCommand(userId, request.status);
         var result = await Sender.Send(changePasswordUserCommand);
+
+        if (result.IsFailure)
+            return HandlerFailure(result);
+
+        return Ok();
+    }
+
+    [HttpPost("update-roles/{userId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [Authorize(Roles = SystemConstants.Role.ADMIN)]
+    public async Task<IActionResult> UpdateUserRoles(Guid userId, [FromBody] Command.UpdateUserRolesCommand request)
+    {
+        var command = new Command.UpdateUserRolesCommand(userId, request.RoleCodes);
+        var result = await Sender.Send(command);
 
         if (result.IsFailure)
             return HandlerFailure(result);

@@ -12,4 +12,5 @@ public static class Command
     public record ChangePasswordUserCommand(Guid Id, string NewPassword, string ConfirmNewPassword) : ICommand;
 
     public record ChangeStatusUserCommand(Guid Id, EUserStatus status) : ICommand;
+    public record UpdateUserRolesCommand(Guid Id, IReadOnlyList<string> RoleCodes) : ICommand;
 }

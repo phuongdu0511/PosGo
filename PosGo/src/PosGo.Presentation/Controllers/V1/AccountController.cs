@@ -31,7 +31,7 @@ public class AccountController : ApiController
         return Ok(result);
     }
 
-    [HttpPut("me")]
+    [HttpPost("me")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

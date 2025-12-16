@@ -76,4 +76,14 @@ public class User : AuditableAggregateRoot<Guid>
     {
         Status = status;
     }
+
+    public void SetSystemRoles(IEnumerable<Role> roles)
+    {
+        SystemRoles.Clear();
+
+        foreach (var role in roles)
+        {
+            SystemRoles.Add(UserSystemRole.Create(Id, role.Id));
+        }
+    }
 }

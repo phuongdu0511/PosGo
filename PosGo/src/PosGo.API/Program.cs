@@ -64,6 +64,8 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
+//await ApplicationDbContextSeed.SeedAsync(app.Services);
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 //app.UseHttpsRedirection();
