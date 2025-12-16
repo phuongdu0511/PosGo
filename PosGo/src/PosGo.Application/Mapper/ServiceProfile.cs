@@ -17,5 +17,8 @@ public class ServiceProfile : Profile
         CreateMap<User, Contract.Services.V1.User.Response.UserResponse>().ReverseMap();
         CreateMap<User, Contract.Services.V1.User.Response.UpdateUserResponse>().ReverseMap();
         CreateMap<PagedResult<User>, PagedResult<Contract.Services.V1.User.Response.UserResponse>>().ReverseMap();
+
+        CreateMap<Restaurant, Contract.Services.V1.Restaurant.Response.RestaurantResponse>().ReverseMap();
+        CreateMap<PagedResult<Restaurant>, PagedResult<Contract.Services.V1.Restaurant.Response.RestaurantResponse>>().ReverseMap();
     }
 }

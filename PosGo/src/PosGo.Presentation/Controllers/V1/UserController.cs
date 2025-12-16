@@ -109,7 +109,7 @@ public class UserController : ApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    //[Authorize(Roles = "SystemAdmin, Owner")]
+    [Authorize(Roles = SystemConstants.Role.ADMIN + "," + SystemConstants.Role.OWNER)]
     public async Task<IActionResult> ChangeStatus(Guid userId, [FromBody] Command.ChangeStatusUserCommand request)
     {
         var changePasswordUserCommand = new Command.ChangeStatusUserCommand(userId, request.status);

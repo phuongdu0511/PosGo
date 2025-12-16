@@ -6,5 +6,5 @@ namespace PosGo.Contract.Services.V1.Account;
 
 public static class Query
 {
-    public record GetAccountMe() : IQuery<AccountResponse>;
+    public record GetAccountMeQuery() : IQuery<AccountResponse>;
 }

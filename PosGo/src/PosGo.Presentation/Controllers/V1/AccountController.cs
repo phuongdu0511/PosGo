@@ -23,7 +23,7 @@ public class AccountController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Accounts()
     {
-        var result = await Sender.Send(new Query.GetAccountMe());
+        var result = await Sender.Send(new Query.GetAccountMeQuery());
 
         if (result.IsFailure)
             return HandlerFailure(result);

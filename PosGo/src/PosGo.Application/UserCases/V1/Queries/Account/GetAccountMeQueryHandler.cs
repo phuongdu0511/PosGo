@@ -7,7 +7,7 @@ using PosGo.Domain.Exceptions;
 
 namespace PosGo.Application.UserCases.V1.Queries.Account;
 
-public sealed class GetAccountMeQueryHandler : IQueryHandler<Query.GetAccountMe, Response.AccountResponse>
+public sealed class GetAccountMeQueryHandler : IQueryHandler<Query.GetAccountMeQuery, Response.AccountResponse>
 {
     private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
     private readonly IMapper _mapper;
@@ -21,7 +21,7 @@ public sealed class GetAccountMeQueryHandler : IQueryHandler<Query.GetAccountMe,
         _mapper = mapper;
         _currentUserService = currentUserService;
     }
-    public async Task<Result<Response.AccountResponse>> Handle(Query.GetAccountMe request, CancellationToken cancellationToken)
+    public async Task<Result<Response.AccountResponse>> Handle(Query.GetAccountMeQuery request, CancellationToken cancellationToken)
     {
         if (_currentUserService.UserId is null)
         {

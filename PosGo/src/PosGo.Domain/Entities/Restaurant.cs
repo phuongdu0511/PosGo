@@ -36,4 +36,87 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public virtual ICollection<OrderItem> OrderItems { get; private set; }
     public virtual ICollection<OrderItemAttribute> OrderItemAttributes { get; private set; }
     public virtual ICollection<RestaurantOpeningHour> OpeningHours { get; private set; }
+
+    public Restaurant(
+        Guid id,
+        string name,
+        string slug,
+        Guid defaultLanguageId,
+        string? address,
+        string? city,
+        string? country,
+        string? phone,
+        string? timeZone,
+        string? logoUrl,
+        string? description,
+        Guid? restaurantGroupId)
+    {
+        Id = id;
+        Name = name;
+        Slug = slug;
+        DefaultLanguageId = defaultLanguageId;
+        Address = address;
+        City = city;
+        Country = country;
+        Phone = phone;
+        TimeZone = timeZone;
+        LogoUrl = logoUrl;
+        Description = description;
+        RestaurantGroupId = restaurantGroupId;
+    }
+
+    public static Restaurant Create(
+        Guid id,
+        string name,
+        string slug,
+        Guid defaultLanguageId,
+        string? address,
+        string? city,
+        string? country,
+        string? phone,
+        string? timeZone,
+        string? logoUrl,
+        string? description,
+        Guid? restaurantGroupId)
+    {
+        return new Restaurant(
+            id,
+            name,
+            slug,
+            defaultLanguageId,
+            address,
+            city,
+            country,
+            phone,
+            timeZone,
+            logoUrl,
+            description,
+            restaurantGroupId);
+    }
+
+    public void Update(
+        string name,
+        string slug,
+        Guid defaultLanguageId,
+        string? address,
+        string? city,
+        string? country,
+        string? phone,
+        string? timeZone,
+        string? logoUrl,
+        string? description,
+        Guid? restaurantGroupId)
+    {
+        Name = name;
+        Slug = slug;
+        DefaultLanguageId = defaultLanguageId;
+        Address = address;
+        City = city;
+        Country = country;
+        Phone = phone;
+        TimeZone = timeZone;
+        LogoUrl = logoUrl;
+        Description = description;
+        RestaurantGroupId = restaurantGroupId;
+    }
 }
