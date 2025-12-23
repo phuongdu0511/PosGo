@@ -21,13 +21,15 @@ public class User : AuditableAggregateRoot<Guid>
     public virtual ICollection<User> CreatedUsers { get; private set; }
     public virtual ICollection<User> UpdatedUsers { get; private set; }
 
-    public virtual ICollection<UserSystemRole> SystemRoles { get; private set; }
     public virtual ICollection<RestaurantUser> RestaurantUsers { get; private set; }
     public virtual ICollection<RestaurantUser> RestaurantUsersCreated { get; private set; }
     public virtual ICollection<RestaurantUser> RestaurantUsersUpdated { get; private set; }
 
     public virtual ICollection<Order> OrdersCreated { get; private set; }
     public virtual ICollection<Order> OrdersClosed { get; private set; }
+
+    public virtual ICollection<RolePermission> GrantedRolePermissions { get; private set; }
+    public virtual ICollection<PermissionAssignment> AssignedPermissionAssignments { get; private set; }
 
     public User(Guid id, string userName, string password, string fullName, string phone, EUserStatus status)
     {
@@ -75,15 +77,5 @@ public class User : AuditableAggregateRoot<Guid>
     public void ChangeStatusUser(EUserStatus status)
     {
         Status = status;
-    }
-
-    public void SetSystemRoles(IEnumerable<Role> roles)
-    {
-        SystemRoles.Clear();
-
-        foreach (var role in roles)
-        {
-            SystemRoles.Add(UserSystemRole.Create(Id, role.Id));
-        }
     }
 }

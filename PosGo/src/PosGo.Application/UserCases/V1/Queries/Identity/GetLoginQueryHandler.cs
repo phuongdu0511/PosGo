@@ -51,12 +51,12 @@ public class GetLoginQueryHandler : IQueryHandler<Query.Login, Response.Authenti
             return Result.Failure<Response.Authenticated>(new Error("INVALID_CREDENTIALS", "User not found."));
         }
 
-        var roleCodes = await (
-                from usr in _dbContext.UserSystemRoles
-                join r in _dbContext.Roles on usr.RoleId equals r.Id
-                where usr.UserId == user.Id && r.Scope == SystemConstants.Scope.SYSTEM && r.IsActive
-                select r.Code
-            ).ToListAsync(cancellationToken);
+        //var roleCodes = await (
+        //        from usr in _dbContext.UserSystemRoles
+        //        join r in _dbContext.Roles on usr.RoleId equals r.Id
+        //        where usr.UserId == user.Id && r.Scope == SystemConstants.Scope.SYSTEM && r.IsActive
+        //        select r.Code
+        //    ).ToListAsync(cancellationToken);
 
         // Generate JWT Token
         var claims = new List<Claim>
@@ -65,10 +65,10 @@ public class GetLoginQueryHandler : IQueryHandler<Query.Login, Response.Authenti
             new Claim(ClaimTypes.Name, user.UserName),
         };
 
-        foreach (var rc in roleCodes)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, rc));
-        }
+        //foreach (var rc in roleCodes)
+        //{
+        //    claims.Add(new Claim(ClaimTypes.Role, rc));
+        //}
 
         var accessToken = _jwtTokenService.GenerateAccessToken(claims);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();

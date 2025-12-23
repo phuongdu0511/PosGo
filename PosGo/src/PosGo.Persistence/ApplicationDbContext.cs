@@ -23,7 +23,6 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<CodeItemTranslation> CodeItemTranslations { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<UserSystemRole> UserSystemRoles { get; set; }
     public DbSet<RestaurantUser> RestaurantUsers { get; set; }
     public DbSet<TableArea> TableAreas { get; set; }
     public DbSet<Table> Tables { get; set; }
@@ -47,4 +46,7 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<OrderItemAttribute> OrderItemAttributes { get; set; }
     public DbSet<RestaurantOpeningHour> RestaurantOpeningHours { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<PermissionAssignment> PermissionAssignments { get; set; }
 }

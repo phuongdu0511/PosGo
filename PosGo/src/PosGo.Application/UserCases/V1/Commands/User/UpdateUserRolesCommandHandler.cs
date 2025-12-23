@@ -39,51 +39,51 @@ public sealed class UpdateUserRolesCommandHandler : ICommandHandler<Command.Upda
 
         var user = await _userRepository.FindByIdAsync(request.Id) ?? throw new CommonNotFoundException.CommonException(request.Id, nameof(User));
 
-        var roleCodes = (request.RoleCodes ?? Array.Empty<string>())
-            .Select(rc => rc.Trim())
-            .Where(rc => !string.IsNullOrWhiteSpace(rc))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
+        //var roleCodes = (request.RoleCodes ?? Array.Empty<string>())
+        //    .Select(rc => rc.Trim())
+        //    .Where(rc => !string.IsNullOrWhiteSpace(rc))
+        //    .Distinct(StringComparer.OrdinalIgnoreCase)
+        //    .ToList();
 
-        var systemRoles = new List<Domain.Entities.Role>();
+        //var systemRoles = new List<Domain.Entities.Role>();
 
-        if (roleCodes.Count > 0)
-        {
-            systemRoles = await _roleRepository
-                .FindAll(r =>
-                    roleCodes.Contains(r.Code) &&
-                    r.Scope == SystemConstants.Scope.SYSTEM &&
-                    r.IsActive)
-                .ToListAsync(cancellationToken);
+        //if (roleCodes.Count > 0)
+        //{
+        //    systemRoles = await _roleRepository
+        //        .FindAll(r =>
+        //            roleCodes.Contains(r.Code) &&
+        //            r.Scope == SystemConstants.Scope.SYSTEM &&
+        //            r.IsActive)
+        //        .ToListAsync(cancellationToken);
 
-            // Nếu có code không tồn tại
-            if (systemRoles.Count != roleCodes.Count)
-            {
-                var foundCodes = systemRoles.Select(r => r.Code).ToHashSet(StringComparer.OrdinalIgnoreCase);
-                var missing = roleCodes.Where(rc => !foundCodes.Contains(rc)).ToList();
+        //    // Nếu có code không tồn tại
+        //    if (systemRoles.Count != roleCodes.Count)
+        //    {
+        //        var foundCodes = systemRoles.Select(r => r.Code).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        //        var missing = roleCodes.Where(rc => !foundCodes.Contains(rc)).ToList();
 
-                return Result.Failure<Response.UserResponse>(
-                    new Error("ROLE_NOT_FOUND",
-                        $"Các quyền không hợp lệ: {string.Join(", ", missing)}"));
-            }
-        }
+        //        return Result.Failure<Response.UserResponse>(
+        //            new Error("ROLE_NOT_FOUND",
+        //                $"Các quyền không hợp lệ: {string.Join(", ", missing)}"));
+        //    }
+        //}
 
-        // 5. Xoá toàn bộ system-roles hiện tại của user
-        var currentSystemRoles = await (
-            from usr in _dbContext.UserSystemRoles
-            join r in _dbContext.Roles on usr.RoleId equals r.Id
-            where usr.UserId == user.Id && r.Scope == SystemConstants.Scope.SYSTEM
-            select usr
-        ).ToListAsync(cancellationToken);
+        //// 5. Xoá toàn bộ system-roles hiện tại của user
+        //var currentSystemRoles = await (
+        //    from usr in _dbContext.UserSystemRoles
+        //    join r in _dbContext.Roles on usr.RoleId equals r.Id
+        //    where usr.UserId == user.Id && r.Scope == SystemConstants.Scope.SYSTEM
+        //    select usr
+        //).ToListAsync(cancellationToken);
 
-        _dbContext.UserSystemRoles.RemoveRange(currentSystemRoles);
+        //_dbContext.UserSystemRoles.RemoveRange(currentSystemRoles);
 
-        // 6. Thêm lại theo danh sách mới
-        foreach (var role in systemRoles)
-        {
-            var newRole = new UserSystemRole(user.Id, role.Id);
-            _dbContext.UserSystemRoles.Add(newRole);
-        }
+        //// 6. Thêm lại theo danh sách mới
+        //foreach (var role in systemRoles)
+        //{
+        //    var newRole = new UserSystemRole(user.Id, role.Id);
+        //    _dbContext.UserSystemRoles.Add(newRole);
+        //}
 
         return Result.Success();
     }
