@@ -18,4 +18,43 @@ public class RestaurantUser : AuditableEntity<Guid>
     public virtual Role Role { get; private set; } = null!;
     public virtual User? CreatedByUser { get; private set; }
     public virtual User? UpdatedByUser { get; private set; }
+    public RestaurantUser(
+        Guid id,
+        Guid restaurantId,
+        Guid userId,
+        Guid roleId,
+        ERestaurantUserStatus status)
+    {
+        Id = id;
+        RestaurantId = restaurantId;
+        UserId = userId;
+        RoleId = roleId;
+        Status = status;
+    }
+
+    public static RestaurantUser Create(
+        Guid restaurantId,
+        Guid userId,
+        Guid roleId)
+        => new(
+            id: Guid.NewGuid(),
+            restaurantId: restaurantId,
+            userId: userId,
+            roleId: roleId,
+            status: ERestaurantUserStatus.Active);
+
+    public void ChangeRole(Guid roleId)
+    {
+        RoleId = roleId;
+    }
+
+    public void Activate()
+    {
+        Status = ERestaurantUserStatus.Active;
+    }
+
+    public void Deactivate()
+    {
+        Status = ERestaurantUserStatus.Blocked;
+    }
 }
