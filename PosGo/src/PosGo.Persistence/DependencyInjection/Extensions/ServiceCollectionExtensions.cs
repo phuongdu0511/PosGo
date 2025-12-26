@@ -7,6 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PosGo.Persistence.Interceptors;
+using Microsoft.AspNetCore.Identity;
+using PosGo.Domain.Entities;
+using Microsoft.AspNetCore.Http;
+using PosGo.Persistence.ErrorDescriber;
 
 namespace PosGo.Persistence.DependencyInjection.Extensions;
 
@@ -21,8 +25,6 @@ public static class ServiceCollectionExtensions
 
             var configuration = provider.GetRequiredService<IConfiguration>();
             var options = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
-
-            #region ============== SQL-SERVER-STRATEGY-1 ==============
 
             builder
             .EnableDetailedErrors(true)
@@ -39,27 +41,45 @@ public static class ServiceCollectionExtensions
                                     errorNumbersToAdd: options.CurrentValue.ErrorNumbersToAdd))
                             .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name))
             .AddInterceptors(auditableInterceptor);
+        });
 
-            #endregion ============== SQL-SERVER-STRATEGY-1 ==============
+        services.AddIdentityCore<User>()
+            .AddRoles<Role>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
-            #region ============== SQL-SERVER-STRATEGY-2 ==============
+        services.Configure<IdentityOptions>(options =>
+        {
+            /*
+             *   Property             |                    Description
+             * RequireDigit           |  Requires a number between 0-9 in the password.
+             * RequiredLength         |  The minimum length of the password.
+             * RequireLowercase       |  Requires a lowercase character in the password.
+             * RequireUppercase       |  Requires an uppercase character in the password.
+             * RequireNonAlphanumeric |  Requires a non-alphanumeric character in the password.
+             * RequiredUniqueChars    |  (Only applies to ASP.NET Core 2.0 or later.) Requires the number of distinct characters in the password.
+             */
 
-            //builder 
-            //.EnableDetailedErrors(true)
-            //.EnableSensitiveDataLogging(true)
-            //.UseLazyLoadingProxies(true) // => If UseLazyLoadingProxies, all of the navigation fields should be VIRTUAL
-            //.UseSqlServer(
-            //    connectionString: configuration.GetConnectionString("ConnectionStrings"),
-            //        sqlServerOptionsAction: optionsBuilder
-            //            => optionsBuilder
-            //            .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.GetName().Name));
+            // Default Password settings.
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
 
-            #endregion ============== SQL-SERVER-STRATEGY-2 ==============
+            //options.Password.RequireDigit = passwordValidatorOptions.CurrentValue.RequireDigitLength >= 1 ? true : false;
+            //options.Password.RequireLowercase = passwordValidatorOptions.CurrentValue.RequireLowercaseLength >= 1 ? true : false;
+            //options.Password.RequireNonAlphanumeric = passwordValidatorOptions.CurrentValue.RequireNonLetterOrDigitLength >= 1 ? true : false;
+            //options.Password.RequireUppercase = passwordValidatorOptions.CurrentValue.RequireUppercaseLength >= 1 ? true : false;
+            //options.Password.RequiredLength = passwordValidatorOptions.CurrentValue.RequiredMinLength;
+            //options.Password.RequiredUniqueChars = 1;
         });
     }
 
     public static void AddInterceptorPersistence(this IServiceCollection services)
     {
+        services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
     }
 

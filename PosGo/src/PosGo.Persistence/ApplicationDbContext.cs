@@ -1,17 +1,50 @@
 ﻿using PosGo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using PosGo.Domain.Abstractions.Entities;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace PosGo.Persistence;
 
-public sealed class ApplicationDbContext : DbContext
+public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder builder) =>
+    protected override void OnModelCreating(ModelBuilder builder) 
+    {
+        // Global filter for soft delete pattern
+        var softDeleteEntities = typeof(ISoftDeletableEntity).Assembly.GetTypes()
+                .Where(type => typeof(ISoftDeletableEntity)
+                                .IsAssignableFrom(type)
+                                && type.IsClass
+                                && !type.IsAbstract);
+
+        foreach (var softDeleteEntity in softDeleteEntities)
+        {
+            builder.Entity(softDeleteEntity).HasQueryFilter(GenerateQueryFilterLambda(softDeleteEntity));
+        }
+
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
+    }
+
+    private LambdaExpression? GenerateQueryFilterLambda(Type type)
+    {
+        // parameter: w =>
+        var parameter = Expression.Parameter(type, "w");
+        // falseConstantValue: false
+        var falseConstantValue = Expression.Constant(false);
+        // propertyAccess: w.IsDeleted
+        var propertyAccess = Expression.PropertyOrField(parameter, nameof(ISoftDeletableEntity.IsDeleted));
+        // equalExpression: w.IsDeleted == false
+        var equalExpression = Expression.Equal(propertyAccess, falseConstantValue);
+        // lambda: w => w.IsDeleted == false
+        var lambda = Expression.Lambda(equalExpression, parameter);
+
+        return lambda; // w => w.IsDeleted == false
+    }
 
     public DbSet<Product> Products { get; set; }
     public DbSet<RestaurantGroup> RestaurantGroups { get; set; }
@@ -46,7 +79,5 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<OrderItemAttribute> OrderItemAttributes { get; set; }
     public DbSet<RestaurantOpeningHour> RestaurantOpeningHours { get; set; }
-    public DbSet<Permission> Permissions { get; set; }
-    public DbSet<RolePermission> RolePermissions { get; set; }
-    public DbSet<PermissionAssignment> PermissionAssignments { get; set; }
+    public DbSet<Function> Functions { get; set; }
 }

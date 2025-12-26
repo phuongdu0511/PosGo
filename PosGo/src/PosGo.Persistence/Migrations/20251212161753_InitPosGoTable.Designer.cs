@@ -1353,7 +1353,7 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("RestaurantUsers", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Role", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1608,7 +1608,7 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("UnitTranslations", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.User", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1659,7 +1659,7 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.UserSystemRole", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.UserSystemRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1987,12 +1987,12 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.User", "ClosedByUser")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "ClosedByUser")
                         .WithMany("OrdersClosed")
                         .HasForeignKey("ClosedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PosGo.Domain.Entities.User", "CreatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
                         .WithMany("OrdersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2127,7 +2127,7 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.RestaurantUser", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.User", "CreatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
                         .WithMany("RestaurantUsersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2138,18 +2138,18 @@ namespace PosGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.Role", "Role")
+                    b.HasOne("PosGo.Domain.Entities.Identity.Role", "Role")
                         .WithMany("RestaurantUsers")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.User", "UpdatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "UpdatedByUser")
                         .WithMany("RestaurantUsersUpdated")
                         .HasForeignKey("UpdatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PosGo.Domain.Entities.User", "User")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "User")
                         .WithMany("RestaurantUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2231,14 +2231,14 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Unit");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.User", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.User", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.User", "CreatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
                         .WithMany("CreatedUsers")
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PosGo.Domain.Entities.User", "UpdatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "UpdatedByUser")
                         .WithMany("UpdatedUsers")
                         .HasForeignKey("UpdatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2248,15 +2248,15 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.UserSystemRole", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.UserSystemRole", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.Role", "Role")
+                    b.HasOne("PosGo.Domain.Entities.Identity.Role", "Role")
                         .WithMany("UserSystemRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.User", "User")
+                    b.HasOne("PosGo.Domain.Entities.Identity.User", "User")
                         .WithMany("SystemRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2411,7 +2411,7 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Restaurants");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Role", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.Role", b =>
                 {
                     b.Navigation("RestaurantUsers");
 
@@ -2435,7 +2435,7 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Translations");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.User", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Identity.User", b =>
                 {
                     b.Navigation("CreatedUsers");
 

@@ -1,37 +1,33 @@
 ﻿using AutoMapper;
-using PosGo.Contract.Abstractions.Shared.CommonServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Services.V1.Account;
-using PosGo.Domain.Abstractions.Repositories;
+using PosGo.Domain.Entities;
 using PosGo.Domain.Exceptions;
+using PosGo.Domain.Utilities.Helpers;
 
 namespace PosGo.Application.UserCases.V1.Queries.Account;
 
 public sealed class GetAccountMeQueryHandler : IQueryHandler<Query.GetAccountMeQuery, Response.AccountResponse>
 {
-    private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
+    private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
-    private readonly ICurrentUserService _currentUserService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public GetAccountMeQueryHandler(IRepositoryBase<Domain.Entities.User, Guid> userRepository,
+    public GetAccountMeQueryHandler(
+        UserManager<User> userManager,
         IMapper mapper,
-        ICurrentUserService currentUserService)
+        IHttpContextAccessor httpContextAccessor)
     {
-        _userRepository = userRepository;
         _mapper = mapper;
-        _currentUserService = currentUserService;
+        _userManager = userManager;
+        _httpContextAccessor = httpContextAccessor;
     }
     public async Task<Result<Response.AccountResponse>> Handle(Query.GetAccountMeQuery request, CancellationToken cancellationToken)
     {
-        if (_currentUserService.UserId is null)
-        {
-            return Result.Failure<Response.AccountResponse>(
-                new Error("UNAUTHORIZED", "User is not authenticated."));
-        }
-
-        var userId = _currentUserService.UserId.Value;
-
-        var account = await _userRepository.FindByIdAsync(userId)
+        var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
+        var account = await _userManager.FindByIdAsync(userId.ToString())
             ?? throw new CommonNotFoundException.CommonException(userId, "Account");
 
         var result = _mapper.Map<Response.AccountResponse>(account);

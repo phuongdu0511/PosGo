@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PosGo.Contract.Abstractions.Shared;
-using PosGo.Contract.Abstractions.Shared.CommonServices;
-using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Services.V1.Restaurant;
 using PosGo.Domain.Abstractions.Repositories;
-using PosGo.Domain.Entities;
 using PosGo.Persistence;
 
 namespace PosGo.Application.UserCases.V1.Commands.Restaurant;

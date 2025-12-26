@@ -1,19 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using PosGo.Contract.Abstractions.Shared.CommonServices;
 using PosGo.Domain.Abstractions.Entities;
+using PosGo.Domain.Utilities.Helpers;
 
 namespace PosGo.Persistence.Interceptors;
 
 public sealed class UpdateAuditableEntitiesInterceptor
     : SaveChangesInterceptor
 {
-    private readonly ICurrentUserService _currentUserService;
-
-    public UpdateAuditableEntitiesInterceptor(ICurrentUserService currentUserService)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public UpdateAuditableEntitiesInterceptor(IHttpContextAccessor httpContextAccessor)
     {
-        _currentUserService = currentUserService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -34,16 +34,30 @@ public sealed class UpdateAuditableEntitiesInterceptor
                 .Entries<IAuditableEntity>();
         foreach (EntityEntry<IAuditableEntity> entityEntry in entries)
         {
-            if (entityEntry.State == EntityState.Added)
+            var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
+
+            // Added
+            if (entityEntry is { State: EntityState.Added, Entity: IAuditableEntity auditableAdd })
             {
-                entityEntry.Property(a => a.CreatedAt).CurrentValue = DateTimeOffset.UtcNow;
-                entityEntry.Property(a => a.CreatedByUserId).CurrentValue = _currentUserService?.UserId;
+                entityEntry.Property(nameof(auditableAdd.CreatedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                entityEntry.Property(nameof(auditableAdd.CreatedByUserId)).CurrentValue = userId;
             }
 
-            if (entityEntry.State == EntityState.Modified)
+            // Sort Delete Pattern
+            if (entityEntry is { State: EntityState.Deleted, Entity: ISoftDeletableEntity auditableDelete })
             {
-                entityEntry.Property(a => a.UpdatedAt).CurrentValue = DateTimeOffset.UtcNow;
-                entityEntry.Property(a => a.UpdatedByUserId).CurrentValue = _currentUserService?.UserId;
+                // Change State from Deleted to Modified =>> Will run into status = updated
+                entityEntry.State = EntityState.Modified;
+                entityEntry.Property(nameof(auditableDelete.IsDeleted)).CurrentValue = true;
+                entityEntry.Property(nameof(auditableDelete.DeletedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                entityEntry.Property(nameof(auditableDelete.DeletedByUserId)).CurrentValue = userId;
+            }
+
+            // updated
+            if (entityEntry is { State: EntityState.Modified, Entity: IAuditableEntity auditableModify })
+            {
+                entityEntry.Property(nameof(auditableModify.UpdatedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                entityEntry.Property(nameof(auditableModify.UpdatedByUserId)).CurrentValue = userId;
             }
         }
 

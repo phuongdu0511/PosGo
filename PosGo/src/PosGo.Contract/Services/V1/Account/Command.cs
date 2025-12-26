@@ -4,7 +4,7 @@ namespace PosGo.Contract.Services.V1.Account;
 
 public static class Command
 {
-    public record UpdateProfileCommand(string FullName, string Phone) : ICommand;
+    public record UpdateProfileCommand(string FullName, string PhoneNumber) : ICommand;
     public record ChangePasswordCommand(
         string CurrentPassword,
         string NewPassword,

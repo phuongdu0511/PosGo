@@ -37,7 +37,7 @@ public class AccountController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Accounts([FromBody] Command.UpdateProfileCommand updateProfile)
     {
-        var updateProfileCommand = new Command.UpdateProfileCommand(updateProfile.FullName, updateProfile.Phone);
+        var updateProfileCommand = new Command.UpdateProfileCommand(updateProfile.FullName, updateProfile.PhoneNumber);
         var result = await Sender.Send(updateProfileCommand);
 
         if (result.IsFailure)

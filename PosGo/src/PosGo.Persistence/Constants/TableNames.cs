@@ -39,7 +39,11 @@ internal static class TableNames
     internal const string OrderItems = nameof(OrderItems); 
     internal const string OrderItemAttributes = nameof(OrderItemAttributes); 
     internal const string RestaurantOpeningHours = nameof(RestaurantOpeningHours);
-    internal const string Permissions = nameof(Permissions);
-    internal const string PermissionAssignments = nameof(PermissionAssignments);
-    internal const string RolePermissions = nameof(RolePermissions);
+    internal const string Functions = nameof(Functions);
+    internal const string UserRoles = nameof(UserRoles);
+
+    internal const string UserClaims = nameof(UserClaims); // IdentityUserClaim
+    internal const string RoleClaims = nameof(RoleClaims); // IdentityRoleClaim
+    internal const string UserLogins = nameof(UserLogins); // IdentityRoleClaim
+    internal const string UserTokens = nameof(UserTokens); // IdentityUserToken
 }

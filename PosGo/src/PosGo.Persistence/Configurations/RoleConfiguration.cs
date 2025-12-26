@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PosGo.Domain.Entities;
 using PosGo.Persistence.Constants;
 
@@ -17,19 +17,24 @@ internal sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
                .HasMaxLength(20)
                .IsRequired();
 
-        builder.Property(x => x.Code)
-               .HasMaxLength(50)
-               .IsRequired();
+        builder.Property(x => x.Description)
+            .HasMaxLength(250).IsRequired(true);
 
-        builder.HasIndex(x => x.Code)
+        builder.Property(x => x.RoleCode).HasMaxLength(50).IsRequired(true);
+
+        builder.HasIndex(x => x.RoleCode)
                .IsUnique();
 
-        builder.Property(x => x.Name)
-               .HasMaxLength(100)
-               .IsRequired();
+        // Each User can have many RoleClaims
+        builder.HasMany(e => e.Claims)
+            .WithOne()
+            .HasForeignKey(uc => uc.RoleId)
+            .IsRequired();
 
-        builder.Property(x => x.IsActive)
-               .IsRequired()
-               .HasDefaultValue(true);
+        // Each User can have many entries in the UserRole join table
+        builder.HasMany(e => e.UserRoles)
+            .WithOne()
+            .HasForeignKey(ur => ur.RoleId)
+            .IsRequired();
     }
 }

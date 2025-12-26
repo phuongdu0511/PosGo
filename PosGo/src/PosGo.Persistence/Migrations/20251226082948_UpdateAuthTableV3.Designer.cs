@@ -12,8 +12,8 @@ using PosGo.Persistence;
 namespace PosGo.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251223155329_ChangeAuthTableLogic")]
-    partial class ChangeAuthTableLogic
+    [Migration("20251226082948_UpdateAuthTableV3")]
+    partial class UpdateAuthTableV3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,111 @@ namespace PosGo.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LoginProvider")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProviderKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RoleId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LoginProvider")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserTokens", (string)null);
+                });
 
             modelBuilder.Entity("PosGo.Domain.Entities.CodeItem", b =>
                 {
@@ -815,6 +920,60 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("DishVariantTranslations", (string)null);
                 });
 
+            modelBuilder.Entity("PosGo.Domain.Entities.Function", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("ActionValue")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CssClass")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ParrentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(-1);
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(-1);
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Functions", (string)null);
+                });
+
             modelBuilder.Entity("PosGo.Domain.Entities.Language", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1053,102 +1212,6 @@ namespace PosGo.Persistence.Migrations
                     b.HasIndex("RestaurantId");
 
                     b.ToTable("OrderItemAttributes", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.Permission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("HttpMethod")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.ToTable("Permissions", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.PermissionAssignment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AssignedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FromRoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ToRoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignedByUserId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("ToRoleId");
-
-                    b.HasIndex("FromRoleId", "ToRoleId", "PermissionId")
-                        .IsUnique();
-
-                    b.ToTable("PermissionAssignments", (string)null);
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Product", b =>
@@ -1449,16 +1512,14 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("RestaurantUsers", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.Role", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1466,18 +1527,30 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DeletedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rank")
-                        .HasColumnType("int");
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Scope")
                         .IsRequired()
@@ -1492,49 +1565,10 @@ namespace PosGo.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
+                    b.HasIndex("RoleCode")
                         .IsUnique();
 
                     b.ToTable("Roles", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.RolePermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GrantedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GrantedByUserId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("RoleId", "PermissionId")
-                        .IsUnique();
-
-                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Table", b =>
@@ -1743,11 +1777,17 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("UnitTranslations", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.User", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1755,21 +1795,54 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("DeletedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FullName")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Phone")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1792,6 +1865,57 @@ namespace PosGo.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.HasOne("PosGo.Domain.Entities.Role", null)
+                        .WithMany("Claims")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("PosGo.Domain.Entities.User", null)
+                        .WithMany("Claims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("PosGo.Domain.Entities.User", null)
+                        .WithMany("Logins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.HasOne("PosGo.Domain.Entities.Role", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PosGo.Domain.Entities.User", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("PosGo.Domain.Entities.User", null)
+                        .WithMany("Tokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.CodeItem", b =>
@@ -2104,12 +2228,12 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "ClosedByUser")
+                    b.HasOne("PosGo.Domain.Entities.User", "ClosedByUser")
                         .WithMany("OrdersClosed")
                         .HasForeignKey("ClosedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.User", "CreatedByUser")
                         .WithMany("OrdersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2194,51 +2318,6 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Permission", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.PermissionAssignment", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "AssignedByUser")
-                        .WithMany("AssignedPermissionAssignments")
-                        .HasForeignKey("AssignedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Identity.Role", "FromRole")
-                        .WithMany("FromRolePermissionAssignments")
-                        .HasForeignKey("FromRoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Permission", "Permission")
-                        .WithMany("PermissionAssignments")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Identity.Role", "ToRole")
-                        .WithMany("ToRolePermissionAssignments")
-                        .HasForeignKey("ToRoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AssignedByUser");
-
-                    b.Navigation("FromRole");
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("ToRole");
-                });
-
             modelBuilder.Entity("PosGo.Domain.Entities.Restaurant", b =>
                 {
                     b.HasOne("PosGo.Domain.Entities.Language", "DefaultLanguage")
@@ -2289,7 +2368,7 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.RestaurantUser", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.User", "CreatedByUser")
                         .WithMany("RestaurantUsersCreated")
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2300,18 +2379,18 @@ namespace PosGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.Identity.Role", "Role")
+                    b.HasOne("PosGo.Domain.Entities.Role", "Role")
                         .WithMany("RestaurantUsers")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "UpdatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.User", "UpdatedByUser")
                         .WithMany("RestaurantUsersUpdated")
                         .HasForeignKey("UpdatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "User")
+                    b.HasOne("PosGo.Domain.Entities.User", "User")
                         .WithMany("RestaurantUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2326,33 +2405,6 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.RolePermission", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "GrantedByUser")
-                        .WithMany("GrantedRolePermissions")
-                        .HasForeignKey("GrantedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Permission", "Permission")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Identity.Role", "Role")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("GrantedByUser");
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Table", b =>
@@ -2420,14 +2472,14 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Unit");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.User", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.User", b =>
                 {
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "CreatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.User", "CreatedByUser")
                         .WithMany("CreatedUsers")
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PosGo.Domain.Entities.Identity.User", "UpdatedByUser")
+                    b.HasOne("PosGo.Domain.Entities.User", "UpdatedByUser")
                         .WithMany("UpdatedUsers")
                         .HasForeignKey("UpdatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2541,13 +2593,6 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Attributes");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Permission", b =>
-                {
-                    b.Navigation("PermissionAssignments");
-
-                    b.Navigation("RolePermissions");
-                });
-
             modelBuilder.Entity("PosGo.Domain.Entities.Restaurant", b =>
                 {
                     b.Navigation("DishAttributeGroups");
@@ -2588,15 +2633,13 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Restaurants");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.Role", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.Role", b =>
                 {
-                    b.Navigation("FromRolePermissionAssignments");
+                    b.Navigation("Claims");
 
                     b.Navigation("RestaurantUsers");
 
-                    b.Navigation("RolePermissions");
-
-                    b.Navigation("ToRolePermissionAssignments");
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Table", b =>
@@ -2616,13 +2659,13 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Translations");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.Identity.User", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.User", b =>
                 {
-                    b.Navigation("AssignedPermissionAssignments");
+                    b.Navigation("Claims");
 
                     b.Navigation("CreatedUsers");
 
-                    b.Navigation("GrantedRolePermissions");
+                    b.Navigation("Logins");
 
                     b.Navigation("OrdersClosed");
 
@@ -2634,7 +2677,11 @@ namespace PosGo.Persistence.Migrations
 
                     b.Navigation("RestaurantUsersUpdated");
 
+                    b.Navigation("Tokens");
+
                     b.Navigation("UpdatedUsers");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

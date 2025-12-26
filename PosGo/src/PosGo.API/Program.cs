@@ -64,7 +64,34 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
-//await ApplicationDbContextSeed.SeedAsync(app.Services);
+app.ApplyMigrationsPersistence();
+
+// Initialise and seed database
+var isDatabaseInitialized = app.Configuration.GetValue<bool>("DatabaseInitialization");
+if (isDatabaseInitialized)
+{
+    //using (var scope = app.Services.CreateScope())
+    //{
+    //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    //    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
+    //    await SeedData.InitializeIdentityServerDatabase(roleManager, userManager);
+    //    await SeedData.InitializeGuestServerDatabase(roleManager, userManager);
+    //}
+
+    // https://code-maze.com/csharp-difference-between-await-and-task-wait/
+    await app.SeedIdentityDataPersistence();
+    app.SeedIdentityDataPersistence().Wait();
+
+    //using (var scope = app.Services.CreateScope())
+    //{
+    //    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    //    await SeedData.InitializeDatabase(context);
+    //}
+
+    // https://code-maze.com/csharp-difference-between-await-and-task-wait/
+    await app.SeedFunctionDataPersistence();
+    app.SeedFunctionDataPersistence().Wait();
+}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

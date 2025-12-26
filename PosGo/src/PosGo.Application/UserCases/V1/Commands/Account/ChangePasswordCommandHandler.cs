@@ -1,69 +1,69 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using PosGo.Application.Abstractions;
 using PosGo.Contract.Abstractions.Shared;
-using PosGo.Contract.Abstractions.Shared.CommonServices;
 using PosGo.Contract.Services.V1.Account;
-using PosGo.Domain.Abstractions.Repositories;
+using PosGo.Domain.Entities;
 using PosGo.Domain.Exceptions;
+using PosGo.Domain.Utilities.Helpers;
 
 namespace PosGo.Application.UserCases.V1.Commands.Account;
 
 public sealed class ChangePasswordUserCommandHandler : ICommandHandler<Command.ChangePasswordCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
-    private readonly IPasswordHasher<Domain.Entities.User> _passwordHasher;
-    private readonly ICurrentUserService _currentUserService;
+    private readonly UserManager<User> _userManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICacheService _cacheService;
     public ChangePasswordUserCommandHandler(
-        IRepositoryBase<Domain.Entities.User, Guid> userRepository,
-        IPasswordHasher<Domain.Entities.User> passwordHasher,
-        ICurrentUserService currentUserService,
-        ICacheService cacheService)
+        ICacheService cacheService, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
     {
-        _userRepository = userRepository;
-        _passwordHasher = passwordHasher;
-        _currentUserService = currentUserService;
         _cacheService = cacheService;
+        _userManager = userManager;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Result> Handle(Command.ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        if (_currentUserService.UserId is null)
-        {
-            return Result.Failure(new Error("UNAUTHORIZED", "User is not authenticated."));
-        }
 
-        if (request.NewPassword != request.ConfirmNewPassword)
+        if (!string.Equals(request.NewPassword, request.ConfirmNewPassword, StringComparison.Ordinal))
         {
             return Result.Failure(new Error(
                 "PASSWORD_CONFIRM_NOT_MATCH",
                 "Mật khẩu mới và xác nhận mật khẩu không trùng nhau."));
         }
 
-        var userId = _currentUserService.UserId.Value;
-        var user = await _userRepository.FindByIdAsync(userId) ?? throw new CommonNotFoundException.CommonException(userId, "Account");
-        var verify = _passwordHasher.VerifyHashedPassword(user,user.Password,request.CurrentPassword);
-
-        if (verify == PasswordVerificationResult.Failed)
+        var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
+        var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new CommonNotFoundException.CommonException(userId, "Account");
+        var currentOk = await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
+        if (!currentOk)
         {
-            return Result.Failure(new Error(
-                "CURRENT_PASSWORD_INVALID",
+            return Result.Failure(new Error("CURRENT_PASSWORD_INVALID",
                 "Mật khẩu hiện tại không đúng."));
         }
 
-        var newPasswordSame = _passwordHasher.VerifyHashedPassword(user, user.Password, request.NewPassword);
-
-        if (newPasswordSame == PasswordVerificationResult.Success)
+        var newSameAsCurrent = await _userManager.CheckPasswordAsync(user, request.NewPassword);
+        if (newSameAsCurrent)
         {
-            return Result.Failure(new Error(
-                "PASSWORD_SAME_AS_OLD",
+            return Result.Failure(new Error("NEW_PASSWORD_SAME_AS_CURRENT",
                 "Mật khẩu mới không được trùng với mật khẩu hiện tại."));
         }
 
-        var newHash = _passwordHasher.HashPassword(user, request.NewPassword);
-        user.ChangePassword(newHash);
+        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        if (!result.Succeeded)
+        {
+            var codes = result.Errors
+                .Select(e => e.Code)
+                .Distinct()
+                .ToList();
 
-        await _cacheService.RemoveAsync(user.UserName, cancellationToken);
+            return Result.Failure(new Error(
+                code: JsonSerializer.Serialize(codes),
+                message: "VALIDATION_FAILED"
+            ));
+        }
+
+        await _cacheService.RemoveAsync(user.UserName!, cancellationToken);
 
         return Result.Success();
     }

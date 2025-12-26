@@ -1,21 +1,22 @@
-﻿using PosGo.Domain.Abstractions.Aggregates;
+﻿using Microsoft.AspNetCore.Identity;
+using PosGo.Domain.Abstractions.Entities;
 
 namespace PosGo.Domain.Entities;
 
-// =====================================
-//  IDENTITY + ROLE
-// =====================================
-public class Role : AuditableAggregateRoot<Guid>
+public class Role : IdentityRole<Guid>, IAuditableEntity, ISoftDeletableEntity
 {
-    public string Scope { get; private set; } = null!;  // SYSTEM | RESTAURANT
-    public string Code { get; private set; } = null!;   // SystemAdmin, Owner, Manager...
-    public string Name { get; private set; } = null!;
-    public int Rank { get; private set; }
-    public bool IsActive { get; private set; }
-    public virtual ICollection<RestaurantUser> RestaurantUsers { get; private set; }
+    public string Scope { get; set; } 
+    public string Description { get; set; }
+    public string RoleCode { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public Guid? CreatedByUserId { get; set; }
+    public DateTimeOffset? UpdatedAt { get; set; }
+    public Guid? UpdatedByUserId { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
+    public Guid? DeletedByUserId { get; set; }
 
-    // RBAC
-    public virtual ICollection<RolePermission> RolePermissions { get; private set; }
-    public virtual ICollection<PermissionAssignment> FromRolePermissionAssignments { get; private set; }
-    public virtual ICollection<PermissionAssignment> ToRolePermissionAssignments { get; private set; }
+    public virtual ICollection<IdentityUserRole<Guid>> UserRoles { get; set; }
+    public virtual ICollection<IdentityRoleClaim<Guid>> Claims { get; set; }
+    public virtual ICollection<RestaurantUser> RestaurantUsers { get; private set; }
 }
