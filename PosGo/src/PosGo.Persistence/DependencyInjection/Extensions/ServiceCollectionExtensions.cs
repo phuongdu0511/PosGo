@@ -46,7 +46,8 @@ public static class ServiceCollectionExtensions
         services.AddIdentityCore<User>()
             .AddRoles<Role>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddErrorDescriber<CustomIdentityErrorDescriber>();
+            .AddErrorDescriber<CustomIdentityErrorDescriber>()
+            .AddDefaultTokenProviders();
 
         services.Configure<IdentityOptions>(options =>
         {

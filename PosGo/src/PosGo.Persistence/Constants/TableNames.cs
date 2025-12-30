@@ -3,47 +3,47 @@ using PosGo.Domain.Entities;
 
 namespace PosGo.Persistence.Constants;
 
-internal static class TableNames
+public static class TableNames
 {
-    internal const string Product = nameof(Product);
-    internal const string RestaurantGroups = nameof(RestaurantGroups);
-    internal const string Languages = nameof(Languages); 
-    internal const string Restaurants = nameof(Restaurants); 
-    internal const string RestaurantLanguages = nameof(RestaurantLanguages); 
-    internal const string CodeSets = nameof(CodeSets); 
-    internal const string CodeItems = nameof(CodeItems); 
-    internal const string CodeItemTranslations = nameof(CodeItemTranslations); 
-    internal const string Users = nameof(Users); 
-    internal const string Roles = nameof(Roles); 
-    internal const string UserSystemRoles = nameof(UserSystemRoles); 
-    internal const string RestaurantUsers = nameof(RestaurantUsers); 
-    internal const string TableAreas = nameof(TableAreas); 
-    internal const string Tables = nameof(Tables); 
-    internal const string Units = nameof(Units); 
-    internal const string UnitTranslations = nameof(UnitTranslations); 
-    internal const string DishCategories = nameof(DishCategories); 
-    internal const string DishCategoryTranslations = nameof(DishCategoryTranslations); 
-    internal const string Dishes = nameof(Dishes); 
-    internal const string DishTranslations = nameof(DishTranslations); 
-    internal const string DishVariants = nameof(DishVariants); 
-    internal const string DishVariantTranslations = nameof(DishVariantTranslations); 
-    internal const string DishVariantOptions = nameof(DishVariantOptions); 
-    internal const string DishVariantOptionTranslations = nameof(DishVariantOptionTranslations); 
-    internal const string DishSkus = nameof(DishSkus); 
-    internal const string DishSkuVariantOptions = nameof(DishSkuVariantOptions); 
-    internal const string DishAttributeGroups = nameof(DishAttributeGroups); 
-    internal const string DishAttributeGroupTranslations = nameof(DishAttributeGroupTranslations); 
-    internal const string DishAttributeItems = nameof(DishAttributeItems); 
-    internal const string DishAttributeItemTranslations = nameof(DishAttributeItemTranslations); 
-    internal const string Orders = nameof(Orders); 
-    internal const string OrderItems = nameof(OrderItems); 
-    internal const string OrderItemAttributes = nameof(OrderItemAttributes); 
-    internal const string RestaurantOpeningHours = nameof(RestaurantOpeningHours);
-    internal const string Functions = nameof(Functions);
-    internal const string UserRoles = nameof(UserRoles);
+    public const string Product = nameof(Product);
+    public const string RestaurantGroups = nameof(RestaurantGroups);
+    public const string Languages = nameof(Languages); 
+    public const string Restaurants = nameof(Restaurants); 
+    public const string RestaurantLanguages = nameof(RestaurantLanguages); 
+    public const string CodeSets = nameof(CodeSets); 
+    public const string CodeItems = nameof(CodeItems); 
+    public const string CodeItemTranslations = nameof(CodeItemTranslations); 
+    public const string Users = nameof(Users); 
+    public const string Roles = nameof(Roles); 
+    public const string UserSystemRoles = nameof(UserSystemRoles); 
+    public const string RestaurantUsers = nameof(RestaurantUsers); 
+    public const string TableAreas = nameof(TableAreas); 
+    public const string Tables = nameof(Tables); 
+    public const string Units = nameof(Units); 
+    public const string UnitTranslations = nameof(UnitTranslations); 
+    public const string DishCategories = nameof(DishCategories); 
+    public const string DishCategoryTranslations = nameof(DishCategoryTranslations); 
+    public const string Dishes = nameof(Dishes); 
+    public const string DishTranslations = nameof(DishTranslations); 
+    public const string DishVariants = nameof(DishVariants); 
+    public const string DishVariantTranslations = nameof(DishVariantTranslations); 
+    public const string DishVariantOptions = nameof(DishVariantOptions); 
+    public const string DishVariantOptionTranslations = nameof(DishVariantOptionTranslations); 
+    public const string DishSkus = nameof(DishSkus); 
+    public const string DishSkuVariantOptions = nameof(DishSkuVariantOptions); 
+    public const string DishAttributeGroups = nameof(DishAttributeGroups); 
+    public const string DishAttributeGroupTranslations = nameof(DishAttributeGroupTranslations); 
+    public const string DishAttributeItems = nameof(DishAttributeItems); 
+    public const string DishAttributeItemTranslations = nameof(DishAttributeItemTranslations); 
+    public const string Orders = nameof(Orders); 
+    public const string OrderItems = nameof(OrderItems); 
+    public const string OrderItemAttributes = nameof(OrderItemAttributes); 
+    public const string RestaurantOpeningHours = nameof(RestaurantOpeningHours);
+    public const string Functions = nameof(Functions);
+    public const string UserRoles = nameof(UserRoles);
 
-    internal const string UserClaims = nameof(UserClaims); // IdentityUserClaim
-    internal const string RoleClaims = nameof(RoleClaims); // IdentityRoleClaim
-    internal const string UserLogins = nameof(UserLogins); // IdentityRoleClaim
-    internal const string UserTokens = nameof(UserTokens); // IdentityUserToken
+    public const string UserClaims = nameof(UserClaims); // IdentityUserClaim
+    public const string RoleClaims = nameof(RoleClaims); // IdentityRoleClaim
+    public const string UserLogins = nameof(UserLogins); // IdentityRoleClaim
+    public const string UserTokens = nameof(UserTokens); // IdentityUserToken
 }

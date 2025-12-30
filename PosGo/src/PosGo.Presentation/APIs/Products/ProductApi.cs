@@ -37,14 +37,14 @@ public class ProductApi : ApiEndpoint, ICarterModule
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> GetProductsV1(ISender sender, string? serchTerm = null,
+    public static async Task<IResult> GetProductsV1(ISender sender, string? searchTerm = null,
         string? sortColumn = null,
         string? sortOrder = null,
         string? sortColumnAndOrder = null,
         int pageIndex = 1,
         int pageSize = 10)
     {
-        var result = await sender.Send(new CommandV1.Query.GetProductsQuery(serchTerm, sortColumn,
+        var result = await sender.Send(new CommandV1.Query.GetProductsQuery(searchTerm, sortColumn,
             SortOrderExtension.ConvertStringToSortOrder(sortOrder),
             SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder),
             pageIndex,

@@ -7,7 +7,10 @@ using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Extensions;
 using PosGo.Contract.Services.V1.User;
+using PosGo.Domain.Enums;
+using PosGo.Domain.Utilities.Constants;
 using PosGo.Presentation.Abstractions;
+using PosGo.Presentation.Attributes;
 
 namespace PosGo.Presentation.Controllers.V1;
 
@@ -22,16 +25,15 @@ public class UserController : ApiController
     [HttpGet(Name = "GetUsers")]
     [ProducesResponseType(typeof(Result<IEnumerable<Response.UserResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Users(string? serchTerm = null,
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.View)]
+    public async Task<IActionResult> Users(string? searchTerm = null,
         string? sortColumn = null,
         string? sortOrder = null,
         string? sortColumnAndOrder = null,
         int pageIndex = 1,
         int pageSize = 10)
     {
-        var result = await Sender.Send(new Query.GetUsersQuery(serchTerm, sortColumn,
+        var result = await Sender.Send(new Query.GetUsersQuery(searchTerm, sortColumn,
             SortOrderExtension.ConvertStringToSortOrder(sortOrder),
             SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder),
             pageIndex,
@@ -46,8 +48,7 @@ public class UserController : ApiController
     [HttpGet("{userId}")]
     [ProducesResponseType(typeof(Result<Response.UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.View)]
     public async Task<IActionResult> Users(Guid userId)
     {
         var result = await Sender.Send(new Query.GetUserByIdQuery(userId));
@@ -59,11 +60,9 @@ public class UserController : ApiController
     }
 
     [HttpPost(Name = "CreateUser")]
-    [Authorize(Roles = SystemConstants.Role.ADMIN)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Add)]
     public async Task<IActionResult> Users([FromBody] Command.CreateUserCommand request)
     {
         var result = await Sender.Send(request);
@@ -77,26 +76,22 @@ public class UserController : ApiController
     [HttpPost("{userId}")]
     [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    //[Authorize(Roles = "SystemAdmin, Owner")]
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Update)]
     public async Task<IActionResult> Users(Guid userId, [FromBody] Command.UpdateUserCommand request)
     {
-        var updateUserCommand = new Command.UpdateUserCommand(userId, request.UserName, request.FullName, request.Phone);
-        var result = await Sender.Send(updateUserCommand);
+        var command = new Command.UpdateUserCommand(userId, request.FullName, request.PhoneNumber);
+        var result = await Sender.Send(command);
         return Ok(result);
     }
 
     [HttpPost("change-password/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Authorize(Roles = SystemConstants.Role.ADMIN + "," + SystemConstants.Role.OWNER)]
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Update)]
     public async Task<IActionResult> Users(Guid userId, [FromBody] Command.ChangePasswordUserCommand request)
     {
-        var changePasswordUserCommand = new Command.ChangePasswordUserCommand(userId, request.NewPassword, request.ConfirmNewPassword);
-        var result = await Sender.Send(changePasswordUserCommand);
+        var command = new Command.ChangePasswordUserCommand(userId, request.NewPassword, request.ConfirmNewPassword);
+        var result = await Sender.Send(command);
 
         if (result.IsFailure)
             return HandlerFailure(result);
@@ -107,13 +102,11 @@ public class UserController : ApiController
     [HttpPost("change-status/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Authorize(Roles = SystemConstants.Role.ADMIN + "," + SystemConstants.Role.OWNER)]
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Update)]
     public async Task<IActionResult> ChangeStatus(Guid userId, [FromBody] Command.ChangeStatusUserCommand request)
     {
-        var changePasswordUserCommand = new Command.ChangeStatusUserCommand(userId, request.status);
-        var result = await Sender.Send(changePasswordUserCommand);
+        var command = new Command.ChangeStatusUserCommand(userId, request.status);
+        var result = await Sender.Send(command);
 
         if (result.IsFailure)
             return HandlerFailure(result);
@@ -124,9 +117,7 @@ public class UserController : ApiController
     [HttpPost("update-roles/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Authorize(Roles = SystemConstants.Role.ADMIN)]
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Update)]
     public async Task<IActionResult> UpdateUserRoles(Guid userId, [FromBody] Command.UpdateUserRolesCommand request)
     {
         var command = new Command.UpdateUserRolesCommand(userId, request.RoleCodes);

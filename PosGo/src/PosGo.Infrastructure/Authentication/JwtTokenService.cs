@@ -42,7 +42,6 @@ public class JwtTokenService : IJwtTokenService
         var dateExpire = DateTime.UtcNow.AddHours(7).AddMinutes(expire);
         var claims = new[]
         {
-                new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.GivenName,user.FullName),
                 new Claim(nameof(ActionDes),JsonConvert.SerializeObject(ActionDes)),
                 new Claim(ClaimTypes.Role,JsonConvert.SerializeObject(roles)),

@@ -1,32 +1,37 @@
-﻿//using PosGo.Contract.Abstractions.Shared;
-//using PosGo.Domain.Abstractions.Repositories;
-//using PosGo.Domain.Exceptions;
-//using PosGo.Contract.Services.V1.User;
-//using AutoMapper;
+﻿using PosGo.Contract.Abstractions.Shared;
+using PosGo.Domain.Abstractions.Repositories;
+using PosGo.Domain.Exceptions;
+using PosGo.Contract.Services.V1.User;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
-//namespace PosGo.Application.UserCases.V1.Commands.User;
+namespace PosGo.Application.UserCases.V1.Commands.User;
 
-//public sealed class UpdateUserCommandHandler : ICommandHandler<Command.UpdateUserCommand>
-//{
-//    private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
-//    private readonly IMapper _mapper;
+public sealed class UpdateUserCommandHandler : ICommandHandler<Command.UpdateUserCommand>
+{
+    private readonly UserManager<Domain.Entities.User> _userManager;
+    private readonly IMapper _mapper;
 
-//    public UpdateUserCommandHandler(IRepositoryBase<Domain.Entities.User, Guid> userRepository, IMapper mapper)
-//    {
-//        _userRepository = userRepository;
-//        _mapper = mapper;
-//    }
-//    public async Task<Result> Handle(Command.UpdateUserCommand request, CancellationToken cancellationToken)
-//    {
-//        var user = await _userRepository.FindByIdAsync(request.Id) ?? throw new CommonNotFoundException.CommonException(request.Id, nameof(User));
-//        var existedUserName = await _userRepository.FindSingleAsync(x => x.UserName.Equals(request.UserName) && x.Id != request.Id);
-//        if (existedUserName is not null)
-//        {
-//            return Result.Failure(
-//                new Error("EXISTED", "UserName đã tồn tại"));
-//        }
-//        user.UpdateUser(request.UserName, request.FullName, request.Phone);
-//        var result = _mapper.Map<Response.UpdateUserResponse>(user);
-//        return Result.Success(result);
-//    }
-//}
+    public UpdateUserCommandHandler(UserManager<Domain.Entities.User> userManager, IMapper mapper)
+    {
+        _userManager = userManager;
+        _mapper = mapper;
+    }
+    public async Task<Result> Handle(Command.UpdateUserCommand request, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(request.Id.ToString()) ?? throw new CommonNotFoundException.CommonException(request.Id, nameof(User));
+
+        user.FullName = request.FullName;
+        user.PhoneNumber = request.PhoneNumber;
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            var codes = string.Join(",", updateResult.Errors.Select(e => e.Code));
+            return Result.Failure(new Error("IDENTITY_UPDATE_FAILED", codes));
+        }
+
+        var result = _mapper.Map<Response.UpdateUserResponse>(user);
+        return Result.Success(result);
+    }
+}

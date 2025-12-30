@@ -12,11 +12,11 @@ namespace PosGo.Application.UserCases.V1.Commands.Account;
 
 public sealed class ChangePasswordUserCommandHandler : ICommandHandler<Command.ChangePasswordCommand>
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICacheService _cacheService;
     public ChangePasswordUserCommandHandler(
-        ICacheService cacheService, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
+        ICacheService cacheService, UserManager<Domain.Entities.User> userManager, IHttpContextAccessor httpContextAccessor)
     {
         _cacheService = cacheService;
         _userManager = userManager;

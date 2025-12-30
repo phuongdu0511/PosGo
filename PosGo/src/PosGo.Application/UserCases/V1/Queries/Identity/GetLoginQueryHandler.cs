@@ -1,23 +1,18 @@
-﻿using System.Runtime.InteropServices;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using PosGo.Application.Abstractions;
 using PosGo.Contract.Abstractions.Shared;
-using PosGo.Contract.Enumerations;
 using PosGo.Contract.Services.V1.Identity;
-using PosGo.Domain.Abstractions.Repositories;
-using PosGo.Domain.Entities;
 using PosGo.Domain.Exceptions;
 
 namespace PosGo.Application.UserCases.V1.Queries.Identity;
 
 public class GetLoginQueryHandler : IQueryHandler<Query.Login, Response.Authenticated>
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ICacheService _cacheService;
 
-    public GetLoginQueryHandler(UserManager<User> userManager,
+    public GetLoginQueryHandler(UserManager<Domain.Entities.User> userManager,
         IJwtTokenService jwtTokenService, ICacheService cacheService)
     {
         _userManager = userManager;

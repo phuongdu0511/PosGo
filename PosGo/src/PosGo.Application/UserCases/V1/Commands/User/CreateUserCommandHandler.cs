@@ -1,48 +1,63 @@
-﻿//using AutoMapper;
-//using Microsoft.AspNetCore.Identity;
-//using PosGo.Contract.Abstractions.Shared;
-//using PosGo.Contract.Services.V1.User;
-//using PosGo.Domain.Abstractions.Repositories;
+﻿using System.Text.Json;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using PosGo.Contract.Abstractions.Shared;
+using PosGo.Contract.Services.V1.User;
+using PosGo.Domain.Abstractions.Repositories;
 
-//namespace PosGo.Application.UserCases.V1.Commands.User;
+namespace PosGo.Application.UserCases.V1.Commands.User;
 
-//public sealed class CreateUserCommandHandler : ICommandHandler<Command.CreateUserCommand>
-//{
-//    private readonly IRepositoryBase<Domain.Entities.User, Guid> _userRepository;
-//    private readonly IMapper _mapper;
-//    private readonly IPasswordHasher<Domain.Entities.User> _passwordHasher;
+public sealed class CreateUserCommandHandler : ICommandHandler<Command.CreateUserCommand>
+{
+    private readonly UserManager<Domain.Entities.User> _userManager;
+    private readonly IMapper _mapper;
 
-//    public CreateUserCommandHandler(IRepositoryBase<Domain.Entities.User, Guid> userRepository, IMapper mapper, IPasswordHasher<Domain.Entities.User> passwordHasher)
-//    {
-//        _userRepository = userRepository;
-//        _mapper = mapper;
-//        _passwordHasher = passwordHasher;
-//    }
+    public CreateUserCommandHandler(UserManager<Domain.Entities.User> userManager, IMapper mapper)
+    {
+        _userManager = userManager;
+        _mapper = mapper;
+    }
 
-//    public async Task<Result> Handle(Command.CreateUserCommand request, CancellationToken cancellationToken)
-//    {
-//        var userExisted = await _userRepository.FindSingleAsync(x => x.UserName.Equals(request.UserName));
-//        if (userExisted is not null)
-//        {
-//            return Result.Failure<Response.UserResponse>(
-//                new Error("EXISTED", "UserName đã tồn tại"));
-//        }
+    public async Task<Result> Handle(Command.CreateUserCommand request, CancellationToken cancellationToken)
+    {
+        var userExisted = await _userManager.FindByNameAsync(request.UserName);
+        if (userExisted is not null)
+        {
+            return Result.Failure<Response.UserResponse>(
+                new Error("EXISTED", "UserName đã tồn tại"));
+        }
 
-//        if (request.Password != request.ConfirmPassword)
-//        {
-//            return Result.Failure<Response.UserResponse>(
-//                new Error("PASSWORD_CONFIRM_NOT_MATCH", "Mật khẩu và xác nhận mật khẩu không trùng nhau."));
-//        }
+        if (!string.Equals(request.Password, request.ConfirmPassword, StringComparison.Ordinal))
+        {
+            return Result.Failure(new Error(
+                "PASSWORD_CONFIRM_NOT_MATCH",
+                "Mật khẩu mới và xác nhận mật khẩu không trùng nhau."));
+        }
 
-//        var user = Domain.Entities.User.CreateUser(Guid.NewGuid(), request.UserName, request.Password, request.FullName, request.Phone);
+        var user = new Domain.Entities.User
+        {
+            Id = Guid.NewGuid(),
+            UserName = request.UserName,
+            FullName = request.FullName,
+            PhoneNumber = request.PhoneNumber,
+        };
 
-//        var passwordHash = _passwordHasher.HashPassword(user, request.Password);
-//        user.ChangePassword(passwordHash);
+        var createdResult = await _userManager.CreateAsync(user, request.Password);
+        if (!createdResult.Succeeded)
+        {
+            var codes = createdResult.Errors
+                .Select(e => e.Code)
+                .Distinct()
+                .ToList();
 
-//        _userRepository.Add(user);
+            return Result.Failure(new Error(
+                code: JsonSerializer.Serialize(codes),
+                message: "VALIDATION_FAILED"
+            ));
+        }
 
-//        var result = _mapper.Map<Response.UserResponse>(user);
+        var result = _mapper.Map<Response.UserResponse>(user);
 
-//        return Result.Success(result);
-//    }
-//}
+        return Result.Success(result);
+    }
+}

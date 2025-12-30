@@ -21,7 +21,8 @@ internal sealed class AppUserConfiguration : IEntityTypeConfiguration<User>
                .IsUnique();
 
         builder.Property(x => x.FullName)
-               .HasMaxLength(200);
+               .HasMaxLength(200)
+               .IsRequired();
 
         // Each User can have many UserClaims
         builder.HasMany(e => e.Claims)

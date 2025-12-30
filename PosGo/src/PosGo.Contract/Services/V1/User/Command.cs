@@ -5,9 +5,9 @@ namespace PosGo.Contract.Services.V1.User;
 
 public static class Command
 {
-    public record CreateUserCommand(string UserName, string Password, string ConfirmPassword, string FullName, string Phone) : ICommand;
+    public record CreateUserCommand(string UserName, string Password, string ConfirmPassword, string FullName, string? PhoneNumber) : ICommand;
 
-    public record UpdateUserCommand(Guid Id, string UserName, string FullName, string Phone) : ICommand;
+    public record UpdateUserCommand(Guid Id, string FullName, string? PhoneNumber) : ICommand;
 
     public record ChangePasswordUserCommand(Guid Id, string NewPassword, string ConfirmNewPassword) : ICommand;
 

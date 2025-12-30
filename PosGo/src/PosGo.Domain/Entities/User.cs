@@ -6,7 +6,7 @@ namespace PosGo.Domain.Entities;
 
 public class User : IdentityUser<Guid>, IAuditableEntity, ISoftDeletableEntity
 {
-    public string? FullName { get;  set; }
+    public string FullName { get;  set; }
     public EUserStatus Status { get;  set; } = EUserStatus.Active;
     public DateTimeOffset CreatedAt { get; set; }
     public Guid? CreatedByUserId { get; set; }

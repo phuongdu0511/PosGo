@@ -40,14 +40,14 @@ public class RestaurantController : ApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Restaurants(string? serchTerm = null,
+    public async Task<IActionResult> Restaurants(string? searchTerm = null,
         string? sortColumn = null,
         string? sortOrder = null,
         string? sortColumnAndOrder = null,
         int pageIndex = 1,
         int pageSize = 10)
     {
-        var result = await Sender.Send(new Query.GetRestaurantsQuery(serchTerm, sortColumn,
+        var result = await Sender.Send(new Query.GetRestaurantsQuery(searchTerm, sortColumn,
             SortOrderExtension.ConvertStringToSortOrder(sortOrder),
             SortOrderExtension.ConvertStringToSortOrderV2(sortColumnAndOrder),
             pageIndex,

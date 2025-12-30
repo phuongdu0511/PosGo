@@ -11,12 +11,12 @@ namespace PosGo.Application.UserCases.V1.Commands.Account;
 
 public sealed class UpdateProfileCommandHandler : ICommandHandler<Command.UpdateProfileCommand>
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UpdateProfileCommandHandler(
-        UserManager<User> userManager,
+        UserManager<Domain.Entities.User> userManager,
         IMapper mapper,
         IHttpContextAccessor httpContextAccessor)
     {
