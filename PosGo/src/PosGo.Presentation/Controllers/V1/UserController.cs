@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PosGo.Contract.Abstractions.Shared;
-using PosGo.Contract.Common.Constants;
+using PosGo.Contract.Enumerations;
 using PosGo.Contract.Extensions;
 using PosGo.Contract.Services.V1.User;
-using PosGo.Domain.Enums;
 using PosGo.Domain.Utilities.Constants;
 using PosGo.Presentation.Abstractions;
 using PosGo.Presentation.Attributes;
@@ -114,18 +113,18 @@ public class UserController : ApiController
         return Ok();
     }
 
-    [HttpPost("update-roles/{userId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Update)]
-    public async Task<IActionResult> UpdateUserRoles(Guid userId, [FromBody] Command.UpdateUserRolesCommand request)
-    {
-        var command = new Command.UpdateUserRolesCommand(userId, request.RoleCodes);
-        var result = await Sender.Send(command);
+    //[HttpPost("update-roles/{userId}")]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //[BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Update)]
+    //public async Task<IActionResult> UpdateUserRoles(Guid userId, [FromBody] Command.UpdateUserRolesCommand request)
+    //{
+    //    var command = new Command.UpdateUserRolesCommand(userId, request.RoleCodes);
+    //    var result = await Sender.Send(command);
 
-        if (result.IsFailure)
-            return HandlerFailure(result);
+    //    if (result.IsFailure)
+    //        return HandlerFailure(result);
 
-        return Ok();
-    }
+    //    return Ok();
+    //}
 }

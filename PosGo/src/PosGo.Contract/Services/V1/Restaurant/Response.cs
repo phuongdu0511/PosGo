@@ -14,6 +14,7 @@ public static class Response
         string? TimeZone,
         string? LogoUrl,
         string? Description,
-        Guid? RestaurantGroupId
+        Guid? RestaurantGroupId,
+        bool IsActive
     );
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace PosGo.Domain.Enums;
+namespace PosGo.Contract.Enumerations;
 
 [Flags]
 public enum ActionType

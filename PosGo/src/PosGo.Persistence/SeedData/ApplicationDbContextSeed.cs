@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PosGo.Contract.Enumerations;
 using PosGo.Domain.Entities;
-using PosGo.Domain.Enums;
 using PosGo.Domain.Utilities.Constants;
 using PosGo.Domain.Utilities.Helpers;
 

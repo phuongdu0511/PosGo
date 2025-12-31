@@ -18,6 +18,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public string? TimeZone { get; private set; }
     public string? LogoUrl { get; private set; }
     public string? Description { get; private set; }
+    public bool IsActive { get; private set; }
     public virtual RestaurantGroup? RestaurantGroup { get; private set; }
     public virtual Language DefaultLanguage { get; private set; } = null!;
     public virtual ICollection<RestaurantLanguage> RestaurantLanguages { get; private set; }
@@ -105,7 +106,8 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
         string? timeZone,
         string? logoUrl,
         string? description,
-        Guid? restaurantGroupId)
+        Guid? restaurantGroupId,
+        bool isActive)
     {
         Name = name;
         Slug = slug;
@@ -118,5 +120,6 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
         LogoUrl = logoUrl;
         Description = description;
         RestaurantGroupId = restaurantGroupId;
+        IsActive = isActive;
     }
 }

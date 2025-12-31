@@ -1,5 +1,5 @@
-﻿using PosGo.Domain.Abstractions.Entities;
-using PosGo.Domain.Enums;
+﻿using PosGo.Contract.Enumerations;
+using PosGo.Domain.Abstractions.Entities;
 
 namespace PosGo.Domain.Entities;
 

@@ -1,5 +1,4 @@
-﻿namespace PosGo.Domain.Enums;
-
+﻿namespace PosGo.Contract.Enumerations;
 public enum Status
 {
     InActive = 0,

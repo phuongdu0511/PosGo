@@ -30,6 +30,7 @@ public static class Command
         string? TimeZone,
         string? LogoUrl,
         string? Description,
-        Guid? RestaurantGroupId
+        Guid? RestaurantGroupId,
+        bool IsActive
     ) : ICommand;
 }

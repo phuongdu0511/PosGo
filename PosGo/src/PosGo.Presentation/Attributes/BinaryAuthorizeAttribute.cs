@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using PosGo.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using PosGo.Contract.Enumerations;
 
 namespace PosGo.Presentation.Attributes;
 

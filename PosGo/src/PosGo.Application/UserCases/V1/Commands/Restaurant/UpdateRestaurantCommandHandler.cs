@@ -60,7 +60,8 @@ public sealed class UpdateRestaurantCommandHandler : ICommandHandler<Command.Upd
             request.TimeZone,
             request.LogoUrl,
             request.Description,
-            request.RestaurantGroupId
+            request.RestaurantGroupId,
+            request.IsActive
         );
 
         var result = _mapper.Map<Response.RestaurantResponse>(restaurant);

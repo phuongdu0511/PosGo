@@ -44,6 +44,10 @@ internal sealed class RestaurantConfiguration
 
         builder.HasIndex(x => x.Slug).IsUnique();
 
+        builder.Property(x => x.IsActive)
+               .IsRequired()
+               .HasDefaultValue(true);
+
         // FK -> RestaurantGroup (nullable)
         builder.HasOne(x => x.RestaurantGroup)
                .WithMany(g => g.Restaurants)

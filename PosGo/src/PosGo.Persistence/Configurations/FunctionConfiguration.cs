@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using PosGo.Domain.Enums;
 using PosGo.Persistence.Constants;
 using PosGo.Domain.Entities;
+using PosGo.Contract.Enumerations;
 
 namespace PosGo.Persistence.Configurations;
 
