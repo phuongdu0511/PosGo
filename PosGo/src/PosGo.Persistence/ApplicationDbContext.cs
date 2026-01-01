@@ -80,4 +80,7 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
     public DbSet<OrderItemAttribute> OrderItemAttributes { get; set; }
     public DbSet<RestaurantOpeningHour> RestaurantOpeningHours { get; set; }
     public DbSet<Function> Functions { get; set; }
+    public DbSet<Plan> Plans { get; set; }
+    public DbSet<RestaurantPlan> RestaurantPlans { get; set; }
+    public DbSet<PlanFunction> PlanFunctions { get; set; }
 }

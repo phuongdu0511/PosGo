@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using PosGo.Application.UserCases.V1.Queries.Function;
+using PosGo.Application.UserCases.V1.Queries.Menu;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Domain.Entities;
 
@@ -22,6 +22,8 @@ public class ServiceProfile : Profile
         CreateMap<Restaurant, Contract.Services.V1.Restaurant.Response.RestaurantResponse>().ReverseMap();
         CreateMap<PagedResult<Restaurant>, PagedResult<Contract.Services.V1.Restaurant.Response.RestaurantResponse>>().ReverseMap();
 
-        CreateMap<Function, GetFunctionsByUserResponse>().ReverseMap();
+        CreateMap<Function, GetMenuByUserResponse>().ReverseMap();
+
+        CreateMap<Role, Contract.Services.V1.Role.Response.RoleResponse>().ReverseMap();
     }
 }

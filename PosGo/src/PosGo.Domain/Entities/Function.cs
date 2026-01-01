@@ -14,4 +14,5 @@ public class Function : Entity<int>
     public Status Status { get; set; }
     public string Key { get; set; }
     public int ActionValue { get; set; }
+    public virtual ICollection<PlanFunction> PlanFunctions { get; set; }
 }

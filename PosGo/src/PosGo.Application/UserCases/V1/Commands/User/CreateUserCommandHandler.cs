@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Services.V1.User;
-using PosGo.Domain.Abstractions.Repositories;
 
 namespace PosGo.Application.UserCases.V1.Commands.User;
 

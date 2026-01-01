@@ -2,24 +2,24 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PosGo.Application.UserCases.V1.Queries.Function;
+using PosGo.Application.UserCases.V1.Queries.Menu;
 using PosGo.Presentation.Abstractions;
 
 namespace PosGo.Presentation.Controllers.V1;
 
 [ApiVersion(1)]
 [Authorize]
-public class FunctionController : ApiController
+public class MenuController : ApiController
 {
-    public FunctionController(ISender sender) : base(sender)
+    public MenuController(ISender sender) : base(sender)
     {
         
     }
 
-    [HttpGet("menu")]
+    [HttpGet("byUser")]
     public async Task<IActionResult> GetMenuByUser()
     {
-        var request = new GetFunctionsByUserQuery();
+        var request = new GetMenuByUserQuery();
         var result = await Sender.Send(request);
 
         if (result.IsFailure)

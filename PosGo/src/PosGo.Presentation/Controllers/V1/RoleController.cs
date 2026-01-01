@@ -20,8 +20,8 @@ public class RoleController : ApiController
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.Add)]
-    public async Task<IActionResult> CreateUserRole([FromBody] Command.CreateUserRole request)
+    [BinaryAuthorize(PermissionConstants.ManageUsers, ActionType.Add)]
+    public async Task<IActionResult> CreateRole([FromBody] Command.CreateRole request)
     {
         var result = await Sender.Send(request);
 

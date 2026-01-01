@@ -1,8 +1,6 @@
-﻿using PosGo.Contract.Enumerations;
+﻿namespace PosGo.Application.UserCases.V1.Queries.Menu;
 
-namespace PosGo.Application.UserCases.V1.Queries.Function;
-
-public class GetFunctionsByUserResponse
+public class GetMenuByUserResponse
 {
     public string Code { get; set; }
     public string Name { get; set; }

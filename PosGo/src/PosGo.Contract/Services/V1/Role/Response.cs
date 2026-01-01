@@ -1,5 +1,8 @@
-﻿namespace PosGo.Contract.Services.V1.Role;
+﻿using PosGo.Contract.Enumerations;
 
-class Response
+namespace PosGo.Contract.Services.V1.Role;
+
+public static class Response
 {
+    public record RoleResponse(string Scope, string RoleCode, string Name, string Description);
 }

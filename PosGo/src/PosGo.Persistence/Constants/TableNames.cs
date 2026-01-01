@@ -41,9 +41,11 @@ public static class TableNames
     public const string RestaurantOpeningHours = nameof(RestaurantOpeningHours);
     public const string Functions = nameof(Functions);
     public const string UserRoles = nameof(UserRoles);
-
     public const string UserClaims = nameof(UserClaims); // IdentityUserClaim
     public const string RoleClaims = nameof(RoleClaims); // IdentityRoleClaim
     public const string UserLogins = nameof(UserLogins); // IdentityRoleClaim
     public const string UserTokens = nameof(UserTokens); // IdentityUserToken
+    public const string Plans = nameof(Plans);
+    public const string RestaurantPlans = nameof(RestaurantPlans);
+    public const string PlanFunctions = nameof(PlanFunctions);
 }
