@@ -22,7 +22,12 @@ public class RestaurantController : ApiController
 
     }
 
-    [HttpPost(Name = "CreateRestaurant")]
+    /// <summary>
+    /// Create Restaurant
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.Add)]
@@ -36,7 +41,17 @@ public class RestaurantController : ApiController
         return Ok(result);
     }
 
-    [HttpGet(Name = "GetRestaurants")]
+    /// <summary>
+    /// Get Restaurants
+    /// </summary>
+    /// <param name="searchTerm"></param>
+    /// <param name="sortColumn"></param>
+    /// <param name="sortOrder"></param>
+    /// <param name="sortColumnAndOrder"></param>
+    /// <param name="pageIndex"></param>
+    /// <param name="pageSize"></param>
+    /// <returns></returns>
+    [HttpGet]
     [ProducesResponseType(typeof(Result<IEnumerable<Response.RestaurantResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.View)]
@@ -59,6 +74,11 @@ public class RestaurantController : ApiController
         return Ok(result);
     }
 
+    /// <summary>
+    /// Get Restaurant by Id
+    /// </summary>
+    /// <param name="restaurantId"></param>
+    /// <returns></returns>
     [HttpGet("{restaurantId}")]
     [ProducesResponseType(typeof(Result<Response.RestaurantResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,6 +93,12 @@ public class RestaurantController : ApiController
         return Ok(result);
     }
 
+    /// <summary>
+    /// Update Restaurant
+    /// </summary>
+    /// <param name="restaurantId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost("{restaurantId}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -85,6 +111,43 @@ public class RestaurantController : ApiController
             request.LogoUrl, request.Description, request.RestaurantGroupId, request.IsActive);
 
         var result = await Sender.Send(command);
+
+        if (result.IsFailure)
+            return HandlerFailure(result);
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Update Restaurant Plan
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPost("plan")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.Update)]
+    public async Task<IActionResult> UpdateRestaurantPlan([FromBody] Command.UpdateRestaurantPlanCommand request)
+    {
+        var result = await Sender.Send(request);
+
+        if (result.IsFailure)
+            return HandlerFailure(result);
+
+        return Ok(result);
+    }
+    /// <summary>
+    /// Assign User To Restaurant
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPost("assign-user")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.Update)]
+    public async Task<IActionResult> AssignUserToRestaurant([FromBody] Command.AssignUserToRestaurantCommand request)
+    {
+        var result = await Sender.Send(request);
 
         if (result.IsFailure)
             return HandlerFailure(result);

@@ -6,7 +6,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  IDENTITY + ROLE
 // =====================================
-public class RestaurantUser : AuditableEntity<Guid>
+public class RestaurantUser : AuditableEntity<int>
 {
     public Guid RestaurantId { get; private set; }
     public Guid UserId { get; private set; }
@@ -19,13 +19,11 @@ public class RestaurantUser : AuditableEntity<Guid>
     public virtual User? CreatedByUser { get; private set; }
     public virtual User? UpdatedByUser { get; private set; }
     public RestaurantUser(
-        Guid id,
         Guid restaurantId,
         Guid userId,
         Guid roleId,
         ERestaurantUserStatus status)
     {
-        Id = id;
         RestaurantId = restaurantId;
         UserId = userId;
         RoleId = roleId;
@@ -37,7 +35,6 @@ public class RestaurantUser : AuditableEntity<Guid>
         Guid userId,
         Guid roleId)
         => new(
-            id: Guid.NewGuid(),
             restaurantId: restaurantId,
             userId: userId,
             roleId: roleId,

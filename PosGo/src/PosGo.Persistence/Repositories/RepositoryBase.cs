@@ -40,6 +40,8 @@ public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey>, IDi
 
     public void Add(TEntity entity)
         => _context.Add(entity);
+    public void AddRange(List<TEntity> entities)
+        => _context.AddRange(entities);
 
     public void Remove(TEntity entity)
         => _context.Set<TEntity>().Remove(entity);
@@ -49,5 +51,7 @@ public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey>, IDi
 
     public void Update(TEntity entity)
         => _context.Set<TEntity>().Update(entity);
+    public void UpdateRange(List<TEntity> entities)
+        => _context.Set<TEntity>().UpdateRange(entities);
 }
 

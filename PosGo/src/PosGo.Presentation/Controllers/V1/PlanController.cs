@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PosGo.Contract.Enumerations;
-using PosGo.Contract.Services.V1.RestaurantUser;
+using PosGo.Contract.Services.V1.Plan;
 using PosGo.Domain.Utilities.Constants;
 using PosGo.Presentation.Abstractions;
 using PosGo.Presentation.Attributes;
@@ -13,15 +13,18 @@ namespace PosGo.Presentation.Controllers.V1;
 
 [ApiVersion(1)]
 [Authorize]
-public class RestaurantUserController : ApiController
+public class PlanController : ApiController
 {
-    public RestaurantUserController(ISender sender) : base(sender) { }
+    public PlanController(ISender sender) : base(sender)
+    {
+        
+    }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.Update)]
-    public async Task<IActionResult> UpsertRestaurantUser([FromBody] Command.UpsertRestaurantUserCommand request)
+    [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.Add)]
+    public async Task<IActionResult> CreatePlan([FromBody] Command.CreatePlanCommand request)
     {
         var result = await Sender.Send(request);
 

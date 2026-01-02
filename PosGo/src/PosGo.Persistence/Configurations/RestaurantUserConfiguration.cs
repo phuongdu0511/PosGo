@@ -14,6 +14,9 @@ internal sealed class RestaurantUserConfiguration
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd();
+
         builder.HasIndex(x => new { x.RestaurantId, x.UserId })
                .IsUnique();
 

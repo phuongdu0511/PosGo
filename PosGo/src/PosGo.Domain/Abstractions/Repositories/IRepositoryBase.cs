@@ -12,8 +12,10 @@ public interface IRepositoryBase<TEntity, in TKey>
     IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, params Expression<Func<TEntity, object>>[] includeProperties);
 
     void Add(TEntity entity);
+    void AddRange(List<TEntity> entities);
 
     void Update(TEntity entity);
+    void UpdateRange(List<TEntity> entities);
 
     void Remove(TEntity entity);
 

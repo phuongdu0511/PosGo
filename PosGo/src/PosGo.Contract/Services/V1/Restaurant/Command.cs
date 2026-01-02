@@ -33,4 +33,15 @@ public static class Command
         Guid? RestaurantGroupId,
         bool IsActive
     ) : ICommand;
+
+    public record UpdateRestaurantPlanCommand(
+        Guid RestaurantId, 
+        Guid PlanId
+    ) : ICommand;
+
+    public sealed record AssignUserToRestaurantCommand(
+        Guid RestaurantId,
+        Guid UserId,
+        Guid RoleId
+    ) : ICommand;
 }

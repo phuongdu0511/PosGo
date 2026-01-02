@@ -15,6 +15,8 @@ public static class PermissionConstants
     public const string ManageUnits = nameof(ManageUnits);
     public const string ManageEmployees = nameof(ManageEmployees);
     public const string SwitchBranch = nameof(SwitchBranch);
+    public const string ManageInventory = nameof(ManageInventory);
+    public const string ManagePlans = nameof(ManagePlans);
 
     public static readonly List<string> PermissionKeys = new List<string>
     {
@@ -29,20 +31,6 @@ public static class PermissionConstants
         ManageUnits,
         ManageEmployees,
         SwitchBranch,
-    };
-
-    public static readonly List<string> Urls = new List<string>
-    {
-        @"menu/" + ManageRestaurantGroups,
-        @"menu/" + ManageRestaurants,
-        @"menu/" + ManageUsers,
-        @"menu/" + Dashboard,
-        @"menu/" + Report,
-        @"menu/" + ManageOrders,
-        @"menu/" + ManageTables,
-        @"menu/" + ManageDishes,
-        @"menu/" + ManageUnits,
-        @"menu/" + ManageEmployees,
-        @"menu/" + SwitchBranch,
+        ManagePlans,
     };
 }

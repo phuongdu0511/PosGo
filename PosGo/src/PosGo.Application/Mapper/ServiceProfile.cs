@@ -25,5 +25,7 @@ public class ServiceProfile : Profile
         CreateMap<Function, GetMenuByUserResponse>().ReverseMap();
 
         CreateMap<Role, Contract.Services.V1.Role.Response.RoleResponse>().ReverseMap();
+
+        CreateMap<Plan, Contract.Services.V1.Plan.Response.PlanResponse>().ReverseMap();
     }
 }

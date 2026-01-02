@@ -16,9 +16,7 @@ internal sealed class RestaurantPlanConfiguration : IEntityTypeConfiguration<Res
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
 
-        // 1 restaurant chỉ có 1 plan (phase 1)
-        builder.HasIndex(x => x.RestaurantId)
-            .IsUnique();
+        builder.HasIndex(x => new { x.RestaurantId, x.PlanId });
 
         builder.HasOne(x => x.Restaurant)
             .WithMany(p => p.RestaurantPlans)

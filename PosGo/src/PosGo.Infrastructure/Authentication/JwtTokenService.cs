@@ -1,7 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using PosGo.Application.Abstractions;
 using PosGo.Contract.Enumerations;
+using PosGo.Domain.Abstractions.Repositories;
 using PosGo.Domain.Entities;
 using PosGo.Domain.Utilities.Constants;
 using PosGo.Domain.Utilities.Helpers;
@@ -21,15 +24,37 @@ public class JwtTokenService : IJwtTokenService
     private readonly JwtOption jwtOption = new JwtOption();
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
+    private readonly IRepositoryBase<Domain.Entities.RestaurantUser, int> _restaurantUserRepository;
 
-    public JwtTokenService(IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager)
+    public JwtTokenService(
+        IConfiguration configuration, 
+        UserManager<User> userManager, 
+        RoleManager<Role> roleManager, 
+        IRepositoryBase<RestaurantUser, int> restaurantUserRepository)
     {
         configuration.GetSection(nameof(JwtOption)).Bind(jwtOption);
         _userManager = userManager;
         _roleManager = roleManager;
+        _restaurantUserRepository = restaurantUserRepository;
     }
     public async Task<string> GenerateAccessTokenAsync(User user)
     {
+        // 1. Lấy các mapping RestaurantUser đang Active của user
+        var restaurantUsers = await _restaurantUserRepository
+            .FindAll(x => x.UserId == user.Id && x.Status == ERestaurantUserStatus.Active)
+            .ToListAsync();
+
+        var restaurantIds = restaurantUsers
+            .Select(x => x.RestaurantId)
+            .Distinct()
+            .ToList();
+
+        // 2. Nếu user chỉ thuộc đúng 1 nhà hàng -> auto set RestaurantId
+        Guid? activeRestaurantId = null;
+        if (restaurantIds.Count == 1)
+        {
+            activeRestaurantId = restaurantIds[0];
+        }
 
         var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
 
@@ -40,14 +65,20 @@ public class JwtTokenService : IJwtTokenService
         var roles = await GetRolesByUserBinaryAsync(user);
 
         var dateExpire = DateTime.UtcNow.AddHours(7).AddMinutes(expire);
-        var claims = new[]
+        var claims = new List<Claim>
         {
-                new Claim(ClaimTypes.GivenName,user.FullName),
-                new Claim(nameof(ActionDes),JsonConvert.SerializeObject(ActionDes)),
-                new Claim(ClaimTypes.Role,JsonConvert.SerializeObject(roles)),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
+            new Claim(ClaimTypes.GivenName,user.FullName),
+            new Claim(nameof(ActionDes),JsonConvert.SerializeObject(ActionDes)),
+            new Claim(ClaimTypes.Role,JsonConvert.SerializeObject(roles)),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName)
+        };
+
+        // 3. Nếu xác định được 1 RestaurantId duy nhất => add vào token
+        if (activeRestaurantId.HasValue)
+        {
+            claims.Add(new Claim("restaurant_id", activeRestaurantId.Value.ToString()));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
