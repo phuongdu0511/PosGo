@@ -11,26 +11,26 @@ namespace PosGo.Presentation.Attributes;
 
 public class BinaryAuthorizeAttribute : TypeFilterAttribute
 {
-    public string RoleName { get; set; }
+    public string PermissionKey { get; set; }
     public ActionType ActionValue { get; set; }
 
-    public BinaryAuthorizeAttribute(string roleName, ActionType actionValue) : base(typeof(BinaryAuthorizationFilter))
+    public BinaryAuthorizeAttribute(string permissionKey, ActionType actionValue) : base(typeof(BinaryAuthorizationFilter))
     {
-        RoleName = roleName;
+        PermissionKey = permissionKey;
         ActionValue = actionValue;
-        Arguments = new object[] { RoleName, ActionValue };
+        Arguments = new object[] { PermissionKey, ActionValue };
     }
 }
 
 
 public class BinaryAuthorizationFilter : IAuthorizationFilter
 {
-    public string RoleName { get; set; }
+    public string PermissionKey { get; set; }
     public ActionType ActionValue { get; set; }
 
-    public BinaryAuthorizationFilter(string roleName, ActionType actionValue)
+    public BinaryAuthorizationFilter(string permissionKey, ActionType actionValue)
     {
-        RoleName = roleName;
+        PermissionKey = permissionKey;
         ActionValue = actionValue;
     }
 
@@ -46,7 +46,7 @@ public class BinaryAuthorizationFilter : IAuthorizationFilter
         if (!httpContext.User.Identity.IsAuthenticated)
             return false;
 
-        if (string.IsNullOrEmpty(RoleName))
+        if (string.IsNullOrEmpty(PermissionKey))
             return true;
 
         var claimRoleValue = httpContext.User.FindFirstValue(ClaimTypes.Role);
@@ -59,7 +59,7 @@ public class BinaryAuthorizationFilter : IAuthorizationFilter
             var roles = JsonConvert.DeserializeObject<Dictionary<string, int>>(claimRoleValue);
             var actionValue = (int)ActionValue;
 
-            foreach (var name in RoleName.Split(new char[] { ',', ';' }))
+            foreach (var name in PermissionKey.Split(new char[] { ',', ';' }))
             {
                 if (roles.TryGetValue(name, out int roleValue))
                 {

@@ -14,7 +14,7 @@ public static class PermissionConstants
     public const string ManageDishes = nameof(ManageDishes);
     public const string ManageUnits = nameof(ManageUnits);
     public const string ManageEmployees = nameof(ManageEmployees);
-    public const string SwitchBranch = nameof(SwitchBranch);
+    public const string SwitchRestaurant = nameof(SwitchRestaurant);
     public const string ManageInventory = nameof(ManageInventory);
     public const string ManagePlans = nameof(ManagePlans);
 
@@ -30,7 +30,7 @@ public static class PermissionConstants
         ManageDishes,
         ManageUnits,
         ManageEmployees,
-        SwitchBranch,
+        SwitchRestaurant,
         ManagePlans,
     };
 }

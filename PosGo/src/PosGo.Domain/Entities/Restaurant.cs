@@ -19,6 +19,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public string? LogoUrl { get; private set; }
     public string? Description { get; private set; }
     public bool IsActive { get; private set; }
+    public Guid? OwnerUserId { get; private set; }
     public virtual RestaurantGroup? RestaurantGroup { get; private set; }
     public virtual Language DefaultLanguage { get; private set; } = null!;
     public virtual ICollection<RestaurantLanguage> RestaurantLanguages { get; private set; }
@@ -38,6 +39,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public virtual ICollection<OrderItemAttribute> OrderItemAttributes { get; private set; }
     public virtual ICollection<RestaurantOpeningHour> OpeningHours { get; private set; }
     public virtual ICollection<RestaurantPlan> RestaurantPlans { get; set; }
+    public virtual User? OwnerUser { get; private set; }
 
     public Restaurant(
         Guid id,
@@ -122,5 +124,23 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
         Description = description;
         RestaurantGroupId = restaurantGroupId;
         IsActive = isActive;
+    }
+
+    public void AssignOwner(Guid userId)
+    {
+        // idempotent
+        if (OwnerUserId == userId) return;
+
+        // nếu đã có owner khác => chặn
+        if (OwnerUserId.HasValue && OwnerUserId.Value != userId)
+            throw new ArgumentException("Nhà hàng đã có chủ cửa hàng.");
+
+        OwnerUserId = userId;
+    }
+
+    public void ClearOwner(Guid userId)
+    {
+        if (OwnerUserId == userId)
+            OwnerUserId = null;
     }
 }

@@ -57,12 +57,13 @@ public class JwtTokenService : IJwtTokenService
         }
 
         var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
+        var roles = await GetRolesByUserAsync(user);
+        //var roles = await GetRolesByUserBinaryAsync(user);
 
         var tokenKey = jwtOption.SecretKey;
         var issuer = jwtOption.Issuer;
         var audience = jwtOption.Audience;
         var expire = jwtOption.ExpireMin;
-        var roles = await GetRolesByUserBinaryAsync(user);
 
         var dateExpire = DateTime.UtcNow.AddHours(7).AddMinutes(expire);
         var claims = new List<Claim>
@@ -83,6 +84,42 @@ public class JwtTokenService : IJwtTokenService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(issuer, audience, claims, expires: dateExpire, signingCredentials: creds);
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<string> GenerateAccessTokenForRestaurantAsync(User user, Guid restaurantId)
+    {
+        var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
+        var roles = await GetRolesByUserAsync(user);
+        //var roles = await GetRolesByUserBinaryAsync(user);
+
+        var tokenKey = jwtOption.SecretKey;
+        var issuer = jwtOption.Issuer;
+        var audience = jwtOption.Audience;
+        var expire = jwtOption.ExpireMin;
+
+        var dateExpire = DateTime.UtcNow.AddHours(7).AddMinutes(expire);
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.GivenName, user.FullName ?? string.Empty),
+            new Claim(nameof(ActionDes), JsonConvert.SerializeObject(ActionDes)),
+            new Claim(ClaimTypes.Role, JsonConvert.SerializeObject(roles)),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new Claim("restaurant_id", restaurantId.ToString())
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer,
+            audience,
+            claims,
+            expires: dateExpire,
+            signingCredentials: creds);
+
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
@@ -117,6 +154,44 @@ public class JwtTokenService : IJwtTokenService
             throw new SecurityTokenException("Invalid token");
 
         return principal;
+    }
+
+    /// <summary>
+    /// Currently: Hiện tại check quyền theo quyền tổng hợp quyền trong RoleClaim và UserClaim
+    /// Currently: Không ưu tiên UserClaim mà lấy quyền cao nhất của 1 trong 2 RoleClaim hoặc UserClaim
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    private async Task<Dictionary<string, int>> GetRolesByUserAsync(User user)
+    {
+        var results = new Dictionary<string, int>();
+        var roleClaims = await GetClaimsByUserRoleAsync(user);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+
+        if (userClaims.Any())
+            roleClaims.AddRange(userClaims);
+
+        var roleClaimNames = roleClaims.Select(x => x.Type).Distinct();
+
+        foreach (var name in roleClaimNames)
+        {
+            if (!results.ContainsKey(name))
+            {
+                var claims = roleClaims.Where(p => p.Type == name);
+                if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
+                {
+                    var value = 0;
+                    foreach (var claim in claims)
+                    {
+                        if (int.TryParse(claim.Value, out int claimValue))
+                            value |= claimValue;
+                    }
+                    results.Add(name, value);
+                }
+            }
+        }
+
+        return results;
     }
 
     private async Task<Dictionary<string, string>> GetRolesByUserBinaryAsync(User user)

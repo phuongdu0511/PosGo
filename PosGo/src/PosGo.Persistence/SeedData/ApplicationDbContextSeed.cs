@@ -277,11 +277,11 @@ public static class ApplicationDbContextSeed
         //    context.Functions.Add(new Function
         //    {
         //        Id = 11,
-        //        Key = PermissionConstants.SwitchBranch,
+        //        Key = PermissionConstants.SwitchRestaurant,
         //        ActionValue = 15,
-        //        Code = PermissionConstants.SwitchBranch,
+        //        Code = PermissionConstants.SwitchRestaurant,
         //        Name = "Chuyển chi nhánh",
-        //        Url = @"/" + PermissionConstants.SwitchBranch,
+        //        Url = @"/" + PermissionConstants.SwitchRestaurant,
         //        Status = Status.Active,
         //        SortOrder = 1
         //    });

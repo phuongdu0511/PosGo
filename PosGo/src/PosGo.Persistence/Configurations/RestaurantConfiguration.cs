@@ -48,6 +48,15 @@ internal sealed class RestaurantConfiguration
                .IsRequired()
                .HasDefaultValue(true);
 
+        builder.Property(x => x.OwnerUserId).IsRequired(false);
+
+        builder.HasOne(x => x.OwnerUser)
+            .WithMany()
+            .HasForeignKey(x => x.OwnerUserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasIndex(x => x.OwnerUserId);
+
         // FK -> RestaurantGroup (nullable)
         builder.HasOne(x => x.RestaurantGroup)
                .WithMany(g => g.Restaurants)

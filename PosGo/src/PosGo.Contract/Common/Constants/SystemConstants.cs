@@ -8,10 +8,19 @@ public static class SystemConstants
         public const string RESTAURANT = "RESTAURANT";
     }
 
-    public static class Role
+    public static class RoleName
     {
         public const string ADMIN = "SystemAdmin";
         public const string OWNER = "Owner";
         public const string MANAGER = "Manager";
+        public const string STAFF = "Staff";
+    }
+
+    public static class RoleCode
+    {
+        public const string ADMIN = "systemadmin";
+        public const string OWNER = "owner";
+        public const string MANAGER = "manager";
+        public const string STAFF = "staff";
     }
 }
