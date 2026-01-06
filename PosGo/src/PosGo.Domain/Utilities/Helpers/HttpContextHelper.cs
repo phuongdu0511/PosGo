@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PosGo.Contract.Common.Constants;
 using System.Security.Claims;
 
 namespace PosGo.Domain.Utilities.Helpers;
@@ -15,5 +16,10 @@ public static class HttpContextHelper
     public static string GetCurrentUserName(this HttpContext httpContext)
     {
         return httpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
+    }
+
+    public static string GetScope(this HttpContext httpContext)
+    {
+        return httpContext?.User?.FindFirst(SystemConstants.ClaimTypes.SCOPE)?.Value;
     }
 }

@@ -44,4 +44,6 @@ public static class Command
         Guid UserId,
         Guid RoleId
     ) : ICommand;
+
+    public sealed record DeleteRestaurantCommand(Guid RestaurantId) : ICommand;
 }

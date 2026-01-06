@@ -23,4 +23,10 @@ public static class SystemConstants
         public const string MANAGER = "manager";
         public const string STAFF = "staff";
     }
+
+    public static class ClaimTypes
+    {
+        public const string SCOPE = "scope";
+        public const string RESTAURANT_ID = "restaurant_id";
+    }
 }

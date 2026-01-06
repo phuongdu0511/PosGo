@@ -154,4 +154,18 @@ public class RestaurantController : ApiController
 
         return Ok(result);
     }
+
+    [HttpPost("delete")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [BinaryAuthorize(PermissionConstants.ManageRestaurants, ActionType.Delete)]
+    public async Task<IActionResult> DeleteRestaurant([FromBody] Command.DeleteRestaurantCommand request)
+    {
+        var result = await Sender.Send(request);
+
+        if (result.IsFailure)
+            return HandlerFailure(result);
+
+        return Ok(result);
+    }
 }

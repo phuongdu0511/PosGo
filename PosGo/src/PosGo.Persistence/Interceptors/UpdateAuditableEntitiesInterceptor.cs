@@ -27,36 +27,35 @@ public sealed class UpdateAuditableEntitiesInterceptor
         {
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
+        var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
+        var now = DateTimeOffset.UtcNow;
 
-        IEnumerable<EntityEntry<IAuditableEntity>> entries =
-            dbContext
-                .ChangeTracker
-                .Entries<IAuditableEntity>();
-        foreach (EntityEntry<IAuditableEntity> entityEntry in entries)
+        IEnumerable<EntityEntry> entries = dbContext.ChangeTracker.Entries();
+        foreach (EntityEntry entityEntry in entries)
         {
-            var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
-
             // Added
             if (entityEntry is { State: EntityState.Added, Entity: IAuditableEntity auditableAdd })
             {
-                entityEntry.Property(nameof(auditableAdd.CreatedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                entityEntry.Property(nameof(auditableAdd.CreatedAt)).CurrentValue = now;
                 entityEntry.Property(nameof(auditableAdd.CreatedByUserId)).CurrentValue = userId;
             }
 
-            // Sort Delete Pattern
+            // Sort deleted
+            var isSoftDeleting = false;
             if (entityEntry is { State: EntityState.Deleted, Entity: ISoftDeletableEntity auditableDelete })
             {
                 // Change State from Deleted to Modified =>> Will run into status = updated
+                isSoftDeleting = true;
                 entityEntry.State = EntityState.Modified;
                 entityEntry.Property(nameof(auditableDelete.IsDeleted)).CurrentValue = true;
-                entityEntry.Property(nameof(auditableDelete.DeletedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                entityEntry.Property(nameof(auditableDelete.DeletedAt)).CurrentValue = now;
                 entityEntry.Property(nameof(auditableDelete.DeletedByUserId)).CurrentValue = userId;
             }
 
-            // updated
-            if (entityEntry is { State: EntityState.Modified, Entity: IAuditableEntity auditableModify })
+            // Updated
+            if (entityEntry is { State: EntityState.Modified, Entity: IAuditableEntity auditableModify } && !isSoftDeleting)
             {
-                entityEntry.Property(nameof(auditableModify.UpdatedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                entityEntry.Property(nameof(auditableModify.UpdatedAt)).CurrentValue = now;
                 entityEntry.Property(nameof(auditableModify.UpdatedByUserId)).CurrentValue = userId;
             }
         }

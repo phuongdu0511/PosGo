@@ -10,12 +10,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using PosGo.Application.Abstractions;
+using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Enumerations;
 using PosGo.Domain.Abstractions.Repositories;
 using PosGo.Domain.Entities;
 using PosGo.Domain.Utilities.Constants;
 using PosGo.Domain.Utilities.Helpers;
 using PosGo.Infrastructure.DependencyInjection.Options;
+using PosGo.Persistence;
 
 namespace PosGo.Infrastructure.Authentication;
 
@@ -25,17 +27,20 @@ public class JwtTokenService : IJwtTokenService
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IRepositoryBase<Domain.Entities.RestaurantUser, int> _restaurantUserRepository;
+    private readonly ApplicationDbContext _dbContext;
 
     public JwtTokenService(
-        IConfiguration configuration, 
-        UserManager<User> userManager, 
-        RoleManager<Role> roleManager, 
-        IRepositoryBase<RestaurantUser, int> restaurantUserRepository)
+        IConfiguration configuration,
+        UserManager<User> userManager,
+        RoleManager<Role> roleManager,
+        IRepositoryBase<RestaurantUser, int> restaurantUserRepository,
+        ApplicationDbContext dbContext)
     {
         configuration.GetSection(nameof(JwtOption)).Bind(jwtOption);
         _userManager = userManager;
         _roleManager = roleManager;
         _restaurantUserRepository = restaurantUserRepository;
+        _dbContext = dbContext;
     }
     public async Task<string> GenerateAccessTokenAsync(User user)
     {
@@ -56,8 +61,16 @@ public class JwtTokenService : IJwtTokenService
             activeRestaurantId = restaurantIds[0];
         }
 
+        var roleNames = await _userManager.GetRolesAsync(user);
+
+        var isSystemUser = await _dbContext.Roles.AnyAsync(r =>
+            roleNames.Contains(r.Name) &&
+            r.Scope == SystemConstants.Scope.SYSTEM);
+
+        var scope = isSystemUser ? SystemConstants.Scope.SYSTEM : SystemConstants.Scope.RESTAURANT;
+
         var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
-        var roles = await GetRolesByUserAsync(user);
+        var roles = await GetRolesByUserAsync(user, scope, activeRestaurantId);
         //var roles = await GetRolesByUserBinaryAsync(user);
 
         var tokenKey = jwtOption.SecretKey;
@@ -68,6 +81,7 @@ public class JwtTokenService : IJwtTokenService
         var dateExpire = DateTime.UtcNow.AddHours(7).AddMinutes(expire);
         var claims = new List<Claim>
         {
+            new Claim(SystemConstants.ClaimTypes.SCOPE, scope),
             new Claim(ClaimTypes.GivenName,user.FullName),
             new Claim(nameof(ActionDes),JsonConvert.SerializeObject(ActionDes)),
             new Claim(ClaimTypes.Role,JsonConvert.SerializeObject(roles)),
@@ -78,7 +92,7 @@ public class JwtTokenService : IJwtTokenService
         // 3. Nếu xác định được 1 RestaurantId duy nhất => add vào token
         if (activeRestaurantId.HasValue)
         {
-            claims.Add(new Claim("restaurant_id", activeRestaurantId.Value.ToString()));
+            claims.Add(new Claim(SystemConstants.ClaimTypes.RESTAURANT_ID, activeRestaurantId.Value.ToString()));
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
@@ -87,10 +101,10 @@ public class JwtTokenService : IJwtTokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<string> GenerateAccessTokenForRestaurantAsync(User user, Guid restaurantId)
+    public async Task<string> GenerateAccessTokenForRestaurantAsync(User user, string scope, Guid restaurantId)
     {
         var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
-        var roles = await GetRolesByUserAsync(user);
+        var roles = await GetRolesByUserAsync(user, scope, restaurantId);
         //var roles = await GetRolesByUserBinaryAsync(user);
 
         var tokenKey = jwtOption.SecretKey;
@@ -162,7 +176,7 @@ public class JwtTokenService : IJwtTokenService
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    private async Task<Dictionary<string, int>> GetRolesByUserAsync(User user)
+    private async Task<Dictionary<string, int>> GetRolesByUserAsync(User user, string scope, Guid? restaurantId)
     {
         var results = new Dictionary<string, int>();
         var roleClaims = await GetClaimsByUserRoleAsync(user);
@@ -171,10 +185,86 @@ public class JwtTokenService : IJwtTokenService
         if (userClaims.Any())
             roleClaims.AddRange(userClaims);
 
-        var roleClaimNames = roleClaims.Select(x => x.Type).Distinct();
+        var globalKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        PermissionConstants.SwitchRestaurant
+        // có thể thêm: PermissionConstants.GetMyRestaurants, Profile...
+    };
 
-        foreach (var name in roleClaimNames)
+        // Scope system sẽ vào luôn màn hình menu
+        if (scope == SystemConstants.Scope.SYSTEM)
         {
+            var roleClaimNames = roleClaims.Select(x => x.Type).Distinct();
+
+            foreach (var name in roleClaimNames)
+            {
+                if (!results.ContainsKey(name))
+                {
+                    var claims = roleClaims.Where(p => p.Type == name);
+                    if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
+                    {
+                        var value = 0;
+                        foreach (var claim in claims)
+                        {
+                            if (int.TryParse(claim.Value, out int claimValue))
+                                value |= claimValue;
+                        }
+                        results.Add(name, value);
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        if (!restaurantId.HasValue)
+        {
+            roleClaims = roleClaims.Where(c => globalKeys.Contains(c.Type)).ToList();
+            var roleClaimNames0 = roleClaims.Select(x => x.Type).Distinct();
+
+            foreach (var name in roleClaimNames0)
+            {
+                if (!results.ContainsKey(name))
+                {
+                    var claims = roleClaims.Where(p => p.Type == name);
+                    if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
+                    {
+                        var value = 0;
+                        foreach (var claim in claims)
+                        {
+                            if (int.TryParse(claim.Value, out int claimValue))
+                                value |= claimValue;
+                        }
+                        results.Add(name, value);
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        // 2) Lấy danh sách Function Key (Code/Key) mà plan của restaurant đang active cho phép
+        //    -> chính là "planFunctions của restaurant đang active"
+        //    Lưu ý: string key ở đây phải khớp với claim.Type (ví dụ: PermissionConstants.BaoCao, PermissionConstants.Kho...)
+        var planFunctionKeys = await (
+            from rp in _dbContext.RestaurantPlans
+            join pf in _dbContext.PlanFunctions on rp.PlanId equals pf.PlanId
+            join f in _dbContext.Functions on pf.FunctionId equals f.Id
+            where rp.RestaurantId == restaurantId.Value
+                  && rp.IsActive
+                  // nếu có hạn:
+                  // && (rp.ExpiredAt == null || rp.ExpiredAt > DateTimeOffset.UtcNow)
+                  && f.Status == Status.Active
+            select f.Key // hoặc f.Code, miễn TRÙNG claim.Type
+        ).Distinct().ToListAsync();
+
+        var roleClaimNames2 = roleClaims.Select(x => x.Type).Distinct();
+
+        foreach (var name in roleClaimNames2)
+        {
+            if (!planFunctionKeys.Contains(name))
+                continue;
+
             if (!results.ContainsKey(name))
             {
                 var claims = roleClaims.Where(p => p.Type == name);

@@ -38,6 +38,7 @@ public class SwitchRestaurantQueryHandler : IQueryHandler<Query.SwitchRestaurant
     public async Task<Result<Response.Authenticated>> Handle(Query.SwitchRestaurant request, CancellationToken cancellationToken)
     {
         var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
+        var scope = _httpContextAccessor.HttpContext.GetScope();
         
         var user = await _userManager.FindByIdAsync(userId.ToString()) ?? 
             throw new CommonNotFoundException.CommonException(userId, nameof(User));
@@ -59,7 +60,7 @@ public class SwitchRestaurantQueryHandler : IQueryHandler<Query.SwitchRestaurant
         }
 
         // 5. Generate access token mới gắn restaurant_id
-        var accessToken = await _jwtTokenService.GenerateAccessTokenForRestaurantAsync(user, request.RestaurantId);
+        var accessToken = await _jwtTokenService.GenerateAccessTokenForRestaurantAsync(user, scope, request.RestaurantId);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
         var response = new Response.Authenticated
