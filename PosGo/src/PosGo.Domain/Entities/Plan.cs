@@ -26,4 +26,11 @@ public class Plan : AuditableEntity<Guid>
     {
         return new Plan(id, code, description, isActive);
     }
+
+    public void Update(string code, string? description, bool isActive)
+    {
+        Code = code.Trim().ToLowerInvariant();
+        Description = description;
+        IsActive = isActive;
+    }
 }
