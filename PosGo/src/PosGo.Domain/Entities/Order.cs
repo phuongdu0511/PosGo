@@ -1,11 +1,12 @@
 ﻿using PosGo.Domain.Abstractions.Aggregates;
+using PosGo.Domain.Abstractions.Entities;
 
 namespace PosGo.Domain.Entities;
 
 // =====================================
 //  ORDER / REPORT
 // =====================================
-public class Order : AuditableAggregateRoot<Guid>
+public class Order : AuditableAggregateRoot<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid TableId { get; private set; }

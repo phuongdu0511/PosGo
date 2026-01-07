@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  ATTRIBUTE OPTIONS (không ảnh hưởng giá)
 // =====================================
-public class DishAttributeItem : SoftDeletableEntity<Guid>
+public class DishAttributeItem : SoftDeletableEntity<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid AttributeGroupId { get; private set; }

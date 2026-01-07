@@ -1,9 +1,7 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +12,6 @@ using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Enumerations;
 using PosGo.Domain.Abstractions.Repositories;
 using PosGo.Domain.Entities;
-using PosGo.Domain.Utilities.Constants;
 using PosGo.Domain.Utilities.Helpers;
 using PosGo.Infrastructure.DependencyInjection.Options;
 using PosGo.Persistence;
@@ -25,22 +22,22 @@ public class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOption jwtOption = new JwtOption();
     private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
     private readonly IRepositoryBase<Domain.Entities.RestaurantUser, int> _restaurantUserRepository;
     private readonly ApplicationDbContext _dbContext;
+    private readonly IPermissionService _permissionService;
 
     public JwtTokenService(
         IConfiguration configuration,
         UserManager<User> userManager,
-        RoleManager<Role> roleManager,
         IRepositoryBase<RestaurantUser, int> restaurantUserRepository,
-        ApplicationDbContext dbContext)
+        ApplicationDbContext dbContext,
+        IPermissionService permissionService)
     {
         configuration.GetSection(nameof(JwtOption)).Bind(jwtOption);
         _userManager = userManager;
-        _roleManager = roleManager;
         _restaurantUserRepository = restaurantUserRepository;
         _dbContext = dbContext;
+        _permissionService = permissionService;
     }
     public async Task<string> GenerateAccessTokenAsync(User user)
     {
@@ -70,8 +67,7 @@ public class JwtTokenService : IJwtTokenService
         var scope = isSystemUser ? SystemConstants.Scope.SYSTEM : SystemConstants.Scope.RESTAURANT;
 
         var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
-        var roles = await GetRolesByUserAsync(user, scope, activeRestaurantId);
-        //var roles = await GetRolesByUserBinaryAsync(user);
+        var roles = await _permissionService.GetUserPermissionsAsync(user, scope, activeRestaurantId);
 
         var tokenKey = jwtOption.SecretKey;
         var issuer = jwtOption.Issuer;
@@ -104,8 +100,7 @@ public class JwtTokenService : IJwtTokenService
     public async Task<string> GenerateAccessTokenForRestaurantAsync(User user, string scope, Guid restaurantId)
     {
         var ActionDes = EnumHelper<ActionType>.GetNameAndDescription().Values;
-        var roles = await GetRolesByUserAsync(user, scope, restaurantId);
-        //var roles = await GetRolesByUserBinaryAsync(user);
+        var roles = await _permissionService.GetUserPermissionsAsync(user, scope, restaurantId);
 
         var tokenKey = jwtOption.SecretKey;
         var issuer = jwtOption.Issuer;
@@ -121,7 +116,7 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.Role, JsonConvert.SerializeObject(roles)),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new Claim("restaurant_id", restaurantId.ToString())
+            new Claim(SystemConstants.ClaimTypes.RESTAURANT_ID, restaurantId.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
@@ -170,209 +165,4 @@ public class JwtTokenService : IJwtTokenService
         return principal;
     }
 
-    /// <summary>
-    /// Currently: Hiện tại check quyền theo quyền tổng hợp quyền trong RoleClaim và UserClaim
-    /// Currently: Không ưu tiên UserClaim mà lấy quyền cao nhất của 1 trong 2 RoleClaim hoặc UserClaim
-    /// </summary>
-    /// <param name="user"></param>
-    /// <returns></returns>
-    private async Task<Dictionary<string, int>> GetRolesByUserAsync(User user, string scope, Guid? restaurantId)
-    {
-        var results = new Dictionary<string, int>();
-        var roleClaims = await GetClaimsByUserRoleAsync(user);
-        var userClaims = await _userManager.GetClaimsAsync(user);
-
-        if (userClaims.Any())
-            roleClaims.AddRange(userClaims);
-
-        var globalKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        PermissionConstants.SwitchRestaurant
-        // có thể thêm: PermissionConstants.GetMyRestaurants, Profile...
-    };
-
-        // Scope system sẽ vào luôn màn hình menu
-        if (scope == SystemConstants.Scope.SYSTEM)
-        {
-            var roleClaimNames = roleClaims.Select(x => x.Type).Distinct();
-
-            foreach (var name in roleClaimNames)
-            {
-                if (!results.ContainsKey(name))
-                {
-                    var claims = roleClaims.Where(p => p.Type == name);
-                    if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
-                    {
-                        var value = 0;
-                        foreach (var claim in claims)
-                        {
-                            if (int.TryParse(claim.Value, out int claimValue))
-                                value |= claimValue;
-                        }
-                        results.Add(name, value);
-                    }
-                }
-            }
-
-            return results;
-        }
-
-        if (!restaurantId.HasValue)
-        {
-            roleClaims = roleClaims.Where(c => globalKeys.Contains(c.Type)).ToList();
-            var roleClaimNames0 = roleClaims.Select(x => x.Type).Distinct();
-
-            foreach (var name in roleClaimNames0)
-            {
-                if (!results.ContainsKey(name))
-                {
-                    var claims = roleClaims.Where(p => p.Type == name);
-                    if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
-                    {
-                        var value = 0;
-                        foreach (var claim in claims)
-                        {
-                            if (int.TryParse(claim.Value, out int claimValue))
-                                value |= claimValue;
-                        }
-                        results.Add(name, value);
-                    }
-                }
-            }
-
-            return results;
-        }
-
-        // 2) Lấy danh sách Function Key (Code/Key) mà plan của restaurant đang active cho phép
-        //    -> chính là "planFunctions của restaurant đang active"
-        //    Lưu ý: string key ở đây phải khớp với claim.Type (ví dụ: PermissionConstants.BaoCao, PermissionConstants.Kho...)
-        var planFunctionKeys = await (
-            from rp in _dbContext.RestaurantPlans
-            join pf in _dbContext.PlanFunctions on rp.PlanId equals pf.PlanId
-            join f in _dbContext.Functions on pf.FunctionId equals f.Id
-            where rp.RestaurantId == restaurantId.Value
-                  && rp.IsActive
-                  // nếu có hạn:
-                  // && (rp.ExpiredAt == null || rp.ExpiredAt > DateTimeOffset.UtcNow)
-                  && f.Status == Status.Active
-            select f.Key // hoặc f.Code, miễn TRÙNG claim.Type
-        ).Distinct().ToListAsync();
-
-        var roleClaimNames2 = roleClaims.Select(x => x.Type).Distinct();
-
-        foreach (var name in roleClaimNames2)
-        {
-            if (!planFunctionKeys.Contains(name))
-                continue;
-
-            if (!results.ContainsKey(name))
-            {
-                var claims = roleClaims.Where(p => p.Type == name);
-                if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
-                {
-                    var value = 0;
-                    foreach (var claim in claims)
-                    {
-                        if (int.TryParse(claim.Value, out int claimValue))
-                            value |= claimValue;
-                    }
-                    results.Add(name, value);
-                }
-            }
-        }
-
-        return results;
-    }
-
-    private async Task<Dictionary<string, string>> GetRolesByUserBinaryAsync(User user)
-    {
-        var resultBinary = new Dictionary<string, string>();
-        var resultInt = new Dictionary<string, int>();
-
-        var roleClaims = await GetClaimsByUserRoleAsync(user);
-        var userClaims = await _userManager.GetClaimsAsync(user);
-
-        if (userClaims.Any())
-            roleClaims.AddRange(userClaims);
-
-        var roleClaimNames = roleClaims.Select(x => x.Type).Distinct();
-
-        foreach (var name in roleClaimNames)
-        {
-            if (!resultInt.ContainsKey(name))
-            {
-                var claims = roleClaims.Where(p => p.Type == name);
-                if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
-                {
-                    var value = 0;
-                    foreach (var claim in claims)
-                    {
-                        if (int.TryParse(claim.Value, out int claimValue))
-                            value |= claimValue;
-                    }
-                    resultInt.Add(name, value);
-                }
-            }
-        }
-
-        // Convert Decimal to Binary and revert also insert '0' at the end of the role if role count less than action count
-        /**
-		 * Action count = 9 ()
-         * Example: 8 => Convert = 1000 => Revert = 0001 =>> Insert '0' = 000100000
-         * Example: 13 => Convert = 1101 => Revert = 1011 =>> Insert '0' = 101100000
-         */
-        var ActionCount = EnumHelper<ActionType>.GetNameAndDescription().Count;
-
-        foreach (var item in resultInt)
-        {
-            var RoleBinary = StringBuilderReverseMethod(DecimalToBinary(item.Value));
-            var RoleBinaryLength = RoleBinary.Length;
-
-            if (RoleBinaryLength < ActionCount)
-            {
-                RoleBinary.Insert(RoleBinaryLength, "0", ActionCount - RoleBinaryLength);
-            }
-            resultBinary.Add(item.Key, RoleBinary.ToString());
-        }
-
-        return resultBinary;
-    }
-
-    private string DecimalToBinary(int num)
-    {
-        var bin = new StringBuilder();
-        do
-        {
-            bin.Insert(0, (num % 2));
-            num /= 2;
-        } while (num != 0);
-
-        return bin.ToString();
-    }
-
-    private StringBuilder StringBuilderReverseMethod(string stringToReverse)
-    {
-        var sb = new StringBuilder(stringToReverse.Length);
-        for (int i = stringToReverse.Length - 1; i >= 0; i--)
-        {
-            sb.Append(stringToReverse[i]);
-        }
-        return sb;
-    }
-
-    private async Task<List<Claim>> GetClaimsByUserRoleAsync(User user)
-    {
-        var roleNames = await _userManager.GetRolesAsync(user);
-        var roles = await _roleManager.Roles.Where(p => roleNames.Contains(p.Name)).ToListAsync();
-        var roleClaims = new List<Claim>();
-        foreach (var role in roles)
-        {
-            var resultClaims = await _roleManager.GetClaimsAsync(role);
-            if (resultClaims.Any())
-            {
-                roleClaims.AddRange(resultClaims);
-            }
-        }
-        return roleClaims;
-    }
 }

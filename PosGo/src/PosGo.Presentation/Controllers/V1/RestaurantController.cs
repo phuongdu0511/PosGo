@@ -168,4 +168,22 @@ public class RestaurantController : ApiController
 
         return Ok(result);
     }
+
+    /// <summary>
+    /// Get My Restaurants (danh sách restaurant mà user thuộc về)
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("my-restaurants")]
+    [ProducesResponseType(typeof(Result<IEnumerable<Response.MyRestaurantResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [BinaryAuthorize(PermissionConstants.SwitchRestaurant, ActionType.View)]
+    public async Task<IActionResult> GetMyRestaurants()
+    {
+        var result = await Sender.Send(new Query.GetMyRestaurantsQuery());
+
+        if (result.IsFailure)
+            return HandlerFailure(result);
+
+        return Ok(result);
+    }
 }

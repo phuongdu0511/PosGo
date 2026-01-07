@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  CORE / TENANT
 // =====================================
-public class RestaurantLanguage : Entity<Guid>
+public class RestaurantLanguage : Entity<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid LanguageId { get; private set; }

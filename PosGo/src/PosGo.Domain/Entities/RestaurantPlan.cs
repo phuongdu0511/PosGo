@@ -2,7 +2,7 @@
 
 namespace PosGo.Domain.Entities;
 
-public class RestaurantPlan : AuditableEntity<int>
+public class RestaurantPlan : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid PlanId { get; private set; }

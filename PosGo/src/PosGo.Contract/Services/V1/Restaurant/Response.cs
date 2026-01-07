@@ -17,4 +17,12 @@ public static class Response
         Guid? RestaurantGroupId,
         bool IsActive
     );
+
+    public record MyRestaurantResponse(
+        Guid Id,
+        string Name,
+        string Slug,
+        string? LogoUrl,
+        bool IsActive
+    );
 }

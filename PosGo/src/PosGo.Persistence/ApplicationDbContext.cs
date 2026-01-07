@@ -3,14 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using PosGo.Domain.Abstractions.Entities;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using PosGo.Domain.Utilities.Helpers;
 
 namespace PosGo.Persistence;
 
 public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
         : base(options)
     {
+        _httpContextAccessor = httpContextAccessor;
     }
 
     protected override void OnModelCreating(ModelBuilder builder) 
@@ -24,13 +28,25 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
 
         foreach (var softDeleteEntity in softDeleteEntities)
         {
-            builder.Entity(softDeleteEntity).HasQueryFilter(GenerateQueryFilterLambda(softDeleteEntity));
+            builder.Entity(softDeleteEntity).HasQueryFilter(GenerateSoftDeleteFilter(softDeleteEntity));
+        }
+
+        var tenantEntities = typeof(ITenantEntity).Assembly.GetTypes()
+                .Where(type => typeof(ITenantEntity)
+                                .IsAssignableFrom(type)
+                                && type.IsClass
+                                && !type.IsAbstract);
+
+        foreach (var tenantEntity in tenantEntities)
+        {
+            builder.Entity(tenantEntity)
+                .HasQueryFilter(GenerateTenantFilter(tenantEntity));
         }
 
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
     }
 
-    private LambdaExpression? GenerateQueryFilterLambda(Type type)
+    private LambdaExpression? GenerateSoftDeleteFilter(Type type)
     {
         // parameter: w =>
         var parameter = Expression.Parameter(type, "w");
@@ -44,6 +60,35 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
         var lambda = Expression.Lambda(equalExpression, parameter);
 
         return lambda; // w => w.IsDeleted == false
+    }
+
+    private LambdaExpression? GenerateTenantFilter(Type type)
+    {
+        // e => e.RestaurantId == CurrentRestaurantId
+        var parameter = Expression.Parameter(type, "e");
+        
+        // Lấy RestaurantId từ HttpContext token
+        var restaurantId = _httpContextAccessor.HttpContext?.GetRestaurantId();
+        
+        // Nếu không có RestaurantId (Admin SYSTEM scope hoặc chưa switch restaurant), 
+        // trả về filter luôn true để bypass tenant isolation
+        if (!restaurantId.HasValue)
+        {
+            // Trả về filter luôn true: e => true
+            return Expression.Lambda(Expression.Constant(true), parameter);
+        }
+
+        // Nếu có RestaurantId: filter theo RestaurantId
+        // e.RestaurantId
+        var restaurantIdProperty = Expression.PropertyOrField(parameter, nameof(ITenantEntity.RestaurantId));
+        // CurrentRestaurantId (constant)
+        var restaurantIdConstant = Expression.Constant(restaurantId.Value, typeof(Guid));
+        // e.RestaurantId == CurrentRestaurantId
+        var equalExpression = Expression.Equal(restaurantIdProperty, restaurantIdConstant);
+        // lambda: e => e.RestaurantId == CurrentRestaurantId
+        var lambda = Expression.Lambda(equalExpression, parameter);
+        
+        return lambda;
     }
 
     public DbSet<Product> Products { get; set; }

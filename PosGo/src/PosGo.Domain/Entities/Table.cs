@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  TABLE / QR
 // =====================================
-public class Table : SoftDeletableEntity<Guid>
+public class Table : SoftDeletableEntity<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid? AreaId { get; private set; }

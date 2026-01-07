@@ -21,6 +21,7 @@ public class ServiceProfile : Profile
 
         CreateMap<Restaurant, Contract.Services.V1.Restaurant.Response.RestaurantResponse>().ReverseMap();
         CreateMap<PagedResult<Restaurant>, PagedResult<Contract.Services.V1.Restaurant.Response.RestaurantResponse>>().ReverseMap();
+        CreateMap<Restaurant, Contract.Services.V1.Restaurant.Response.MyRestaurantResponse>().ReverseMap();
 
         CreateMap<Function, GetMenuByUserResponse>().ReverseMap();
 

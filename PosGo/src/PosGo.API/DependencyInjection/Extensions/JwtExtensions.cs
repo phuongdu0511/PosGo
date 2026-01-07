@@ -24,8 +24,8 @@ public static class JwtExtensions
 
             o.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = false, // on production make it true
-                ValidateAudience = false, // on production make it true
+                ValidateIssuer = true,
+                ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtOption.Issuer,

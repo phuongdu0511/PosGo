@@ -8,4 +8,5 @@ public static class Query
 {
     public record GetRestaurantsQuery(string? SearchTerm, string? SortColumn, SortOrder? SortOrder, IDictionary<string, SortOrder>? SortColumnAndOrder, int PageIndex, int PageSize) : IQuery<PagedResult<RestaurantResponse>>;
     public record GetRestaurantByIdQuery(Guid Id) : IQuery<RestaurantResponse>;
+    public record GetMyRestaurantsQuery() : IQuery<List<MyRestaurantResponse>>;
 }

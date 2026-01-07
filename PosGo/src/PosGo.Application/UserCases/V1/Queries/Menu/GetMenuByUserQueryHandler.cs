@@ -1,41 +1,36 @@
-﻿using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PosGo.Application.Abstractions;
 using PosGo.Contract.Abstractions.Shared;
-using PosGo.Contract.Common.Constants;
 using PosGo.Contract.Enumerations;
 using PosGo.Domain.Abstractions.Repositories;
 using PosGo.Domain.Exceptions;
-using PosGo.Domain.Utilities.Constants;
 using PosGo.Domain.Utilities.Helpers;
-using PosGo.Persistence;
 
 namespace PosGo.Application.UserCases.V1.Queries.Menu;
 
 public class GetMenuByUserQueryHandler : IQueryHandler<GetMenuByUserQuery, List<GetMenuByUserResponse>>
 {
     private readonly UserManager<Domain.Entities.User> _userManager;
-    private readonly RoleManager<Domain.Entities.Role> _roleManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
     private readonly IRepositoryBase<Domain.Entities.Function, int> _functionRepository;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IPermissionService _permissionService;
+
     public GetMenuByUserQueryHandler(
         UserManager<Domain.Entities.User> userManager,
-        RoleManager<Domain.Entities.Role> roleManager,
         IHttpContextAccessor httpContextAccessor,
         IRepositoryBase<Domain.Entities.Function, int> functionRepository,
         IMapper mapper,
-        ApplicationDbContext dbContext)
+        IPermissionService permissionService)
     {
         _userManager = userManager;
-        _roleManager = roleManager;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _functionRepository = functionRepository;
-        _dbContext = dbContext;
+        _permissionService = permissionService;
     }
 
     public async Task<Result<List<GetMenuByUserResponse>>> Handle(GetMenuByUserQuery request, CancellationToken cancellationToken)
@@ -50,7 +45,11 @@ public class GetMenuByUserQueryHandler : IQueryHandler<GetMenuByUserQuery, List<
     private async Task<List<Domain.Entities.Function>> GetMenusByUserAsync(Domain.Entities.User user)
     {
         // 1. Lấy map PermissionKey -> int ActionValue user có
-        var permissionIntMap = await GetPermissionIntByUserAsync(user);
+        var httpContext = _httpContextAccessor.HttpContext;
+        var scope = httpContext.GetScope();
+        var restaurantId = httpContext.GetRestaurantId();
+        
+        var permissionIntMap = await _permissionService.GetUserPermissionsAsync(user, scope, restaurantId);
 
         // 2. Lấy tất cả Menu đang Active (có thể thêm điều kiện Status == Active)
         var allMenus = await _functionRepository.FindAll(x => x.Status == Status.Active)
@@ -113,111 +112,4 @@ public class GetMenuByUserQueryHandler : IQueryHandler<GetMenuByUserQuery, List<
         //return (userActionValue & MenuActionValue) == MenuActionValue;
     }
 
-    private async Task<Dictionary<string, int>> GetPermissionIntByUserAsync(Domain.Entities.User user)
-    {
-        var resultInt = new Dictionary<string, int>();
-
-        // 1) Lấy claims
-        var roleClaims = await GetClaimsByUserRoleAsync(user);
-        var userClaims = await _userManager.GetClaimsAsync(user);
-
-        if (userClaims.Any())
-            roleClaims.AddRange(userClaims);
-
-        // 2) Lấy restaurant_id hiện tại (đang active) từ HttpContext token
-        //    (Nếu SYSTEM scope thì bạn bỏ qua plan, trả full quyền theo claims)
-        var httpContext = _httpContextAccessor.HttpContext;
-        var restaurantIdStr = httpContext?.User?.FindFirst("restaurant_id")?.Value;
-
-        // SYSTEM scope: không cần restaurant => trả toàn bộ claims hợp nhất
-        var scope = httpContext?.User?.FindFirst("scope")?.Value; // nếu bạn có claim scope
-        if (string.Equals(scope, SystemConstants.Scope.SYSTEM, StringComparison.OrdinalIgnoreCase))
-        {
-            return BuildClaimIntMap(roleClaims);
-        }
-
-        // Nếu không có restaurant_id thì chỉ return các quyền "global" (vd SwitchRestaurant) nếu bạn muốn
-        if (!Guid.TryParse(restaurantIdStr, out var restaurantId))
-        {
-            // ví dụ: chỉ cho phép SwitchRestaurant nếu claim có
-            var map = BuildClaimIntMap(roleClaims);
-            var results = new Dictionary<string, int>();
-
-            if (map.TryGetValue(PermissionConstants.SwitchRestaurant, out var v))
-                results.Add(PermissionConstants.SwitchRestaurant, v);
-
-            return results;
-        }
-
-        // 3) Lấy danh sách function key thuộc plan của restaurant đang active
-        //    key này phải trùng với claim.Type và Function.Key
-        var planFunctionKeys = await (
-            from rp in _dbContext.RestaurantPlans
-            join pf in _dbContext.PlanFunctions on rp.PlanId equals pf.PlanId
-            join f in _dbContext.Functions on pf.FunctionId equals f.Id
-            where rp.RestaurantId == restaurantId
-                  && rp.IsActive
-                  && f.Status == Status.Active
-            select f.Key
-        ).Distinct().ToListAsync();
-
-        var planKeySet = planFunctionKeys.ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        // 4) Build map từ claims rồi intersect theo plan
-        var fullClaimMap = BuildClaimIntMap(roleClaims);
-
-        foreach (var kv in fullClaimMap)
-        {
-            if (planKeySet.Contains(kv.Key))
-            {
-                resultInt[kv.Key] = kv.Value;
-            }
-        }
-
-        return resultInt;
-    }
-
-    private Dictionary<string, int> BuildClaimIntMap(List<Claim> roleClaims)
-    {
-        var resultInt = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-        var roleClaimNames = roleClaims.Select(x => x.Type).Distinct();
-
-        foreach (var name in roleClaimNames)
-        {
-            if (!resultInt.ContainsKey(name))
-            {
-                var claims = roleClaims.Where(p => p.Type == name);
-
-                if (!claims.Any(p => p.Value == PermissionConstants.Deny.ToString()))
-                {
-                    var value = 0;
-                    foreach (var claim in claims)
-                    {
-                        if (int.TryParse(claim.Value, out int claimValue))
-                            value |= claimValue;
-                    }
-                    resultInt.Add(name, value);
-                }
-            }
-        }
-
-        return resultInt;
-    }
-
-    private async Task<List<Claim>> GetClaimsByUserRoleAsync(Domain.Entities.User user)
-    {
-        var roleNames = await _userManager.GetRolesAsync(user);
-        var roles = await _roleManager.Roles.Where(p => roleNames.Contains(p.Name)).ToListAsync();
-        var roleClaims = new List<Claim>();
-        foreach (var role in roles)
-        {
-            var resultClaims = await _roleManager.GetClaimsAsync(role);
-            if (resultClaims.Any())
-            {
-                roleClaims.AddRange(resultClaims);
-            }
-        }
-        return roleClaims;
-    }
 }

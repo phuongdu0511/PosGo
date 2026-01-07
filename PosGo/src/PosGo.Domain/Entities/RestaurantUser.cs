@@ -6,7 +6,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  IDENTITY + ROLE
 // =====================================
-public class RestaurantUser : AuditableEntity<int>
+public class RestaurantUser : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid UserId { get; private set; }

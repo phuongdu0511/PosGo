@@ -1,11 +1,12 @@
 ﻿using PosGo.Domain.Abstractions.Aggregates;
+using PosGo.Domain.Abstractions.Entities;
 
 namespace PosGo.Domain.Entities;
 
 // =====================================
 //  MENU: UNIT / CATEGORY / DISH
 // =====================================
-public class Dish : SoftDeletableAggregateRoot<Guid>
+public class Dish : SoftDeletableAggregateRoot<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid? CategoryId { get; private set; }

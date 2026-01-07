@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  OPENING HOURS
 // =====================================
-public class RestaurantOpeningHour : AuditableEntity<Guid>
+public class RestaurantOpeningHour : AuditableEntity<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public DayOfWeek DayOfWeek { get; private set; }    // 0-6

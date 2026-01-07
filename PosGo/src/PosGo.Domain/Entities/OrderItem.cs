@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  ORDER / REPORT
 // =====================================
-public class OrderItem : AuditableEntity<Guid>
+public class OrderItem : AuditableEntity<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public Guid OrderId { get; private set; }
