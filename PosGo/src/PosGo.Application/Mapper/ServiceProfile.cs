@@ -29,5 +29,8 @@ public class ServiceProfile : Profile
 
         CreateMap<Plan, Contract.Services.V1.Plan.Response.PlanResponse>().ReverseMap();
         CreateMap<PagedResult<Plan>, PagedResult<Contract.Services.V1.Plan.Response.PlanResponse>>().ReverseMap();
+
+        CreateMap<User, Contract.Services.V1.Employee.Response.StaffResponse>().ReverseMap();
+        CreateMap<PagedResult<User>, PagedResult<Contract.Services.V1.Employee.Response.StaffResponse>>().ReverseMap();
     }
 }

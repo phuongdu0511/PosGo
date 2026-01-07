@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Services.V1.Plan;
 using PosGo.Domain.Abstractions.Repositories;
