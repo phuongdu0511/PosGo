@@ -5,7 +5,6 @@ namespace PosGo.Persistence.Constants;
 
 public static class TableNames
 {
-    public const string Product = nameof(Product);
     public const string RestaurantGroups = nameof(RestaurantGroups);
     public const string Languages = nameof(Languages); 
     public const string Restaurants = nameof(Restaurants); 

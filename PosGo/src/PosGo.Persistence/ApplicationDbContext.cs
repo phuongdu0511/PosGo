@@ -91,7 +91,6 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
         return lambda;
     }
 
-    public DbSet<Product> Products { get; set; }
     public DbSet<RestaurantGroup> RestaurantGroups { get; set; }
     public DbSet<Language> Languages { get; set; }
     public DbSet<Restaurant> Restaurants { get; set; }
