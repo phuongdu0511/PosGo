@@ -14,11 +14,11 @@ internal sealed class TableConfiguration
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
+        builder.Property(x => x.Name)
                .HasMaxLength(50)
                .IsRequired();
 
-        builder.HasIndex(x => new { x.RestaurantId, x.Code })
+        builder.HasIndex(x => new { x.RestaurantId, x.Name })
                .IsUnique();
 
         builder.Property(x => x.QrCodeToken)
@@ -30,6 +30,10 @@ internal sealed class TableConfiguration
         builder.Property(x => x.DoNotAllowOrder)
                .IsRequired()
                .HasDefaultValue(false);
+
+        builder.Property(x => x.IsActive)
+               .IsRequired()
+               .HasDefaultValue(true);
 
         builder.Property(x => x.MinOrderAmount)
                .HasColumnType("decimal(18,2)");
@@ -45,13 +49,5 @@ internal sealed class TableConfiguration
                .WithMany(a => a.Tables)
                .HasForeignKey(x => x.AreaId)
                .OnDelete(DeleteBehavior.SetNull);
-
-        // FK -> TableStatus (CodeItem)
-        builder.HasOne(x => x.Status)
-               .WithMany(s => s.TablesUsingStatus)
-               .HasForeignKey(x => x.StatusId)
-               .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasIndex(x => new { x.RestaurantId, x.StatusId });
     }
 }

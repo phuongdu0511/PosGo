@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using PosGo.Domain.Utilities.Helpers;
+using static PosGo.Domain.Utilities.Helpers.HttpContextHelper;
 
 namespace PosGo.Persistence;
 
@@ -30,19 +31,6 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
         {
             builder.Entity(softDeleteEntity).HasQueryFilter(GenerateSoftDeleteFilter(softDeleteEntity));
         }
-
-        var tenantEntities = typeof(ITenantEntity).Assembly.GetTypes()
-                .Where(type => typeof(ITenantEntity)
-                                .IsAssignableFrom(type)
-                                && type.IsClass
-                                && !type.IsAbstract);
-
-        foreach (var tenantEntity in tenantEntities)
-        {
-            builder.Entity(tenantEntity)
-                .HasQueryFilter(GenerateTenantFilter(tenantEntity));
-        }
-
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
     }
 
@@ -62,33 +50,47 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
         return lambda; // w => w.IsDeleted == false
     }
 
-    private LambdaExpression? GenerateTenantFilter(Type type)
+    public IQueryable<TEntity> ApplyTenantFilter<TEntity>(IQueryable<TEntity> query)
+        where TEntity : class
     {
-        // e => e.RestaurantId == CurrentRestaurantId
-        var parameter = Expression.Parameter(type, "e");
-        
-        // Lấy RestaurantId từ HttpContext token
-        var restaurantId = _httpContextAccessor.HttpContext?.GetRestaurantId();
-        
-        // Nếu không có RestaurantId (Admin SYSTEM scope hoặc chưa switch restaurant), 
-        // trả về filter luôn true để bypass tenant isolation
+        var http = _httpContextAccessor.HttpContext;
+        // nếu request đang bypass -> không filter
+        if (http?.Items.TryGetValue(TenantFilterBypass.Key, out var v) == true
+            && v is true)
+            return query;
+
+        var restaurantId = http?.GetRestaurantId();
+
         if (!restaurantId.HasValue)
         {
-            // Trả về filter luôn true: e => true
-            return Expression.Lambda(Expression.Constant(true), parameter);
+            // System scope - không filter
+            return query;
         }
 
-        // Nếu có RestaurantId: filter theo RestaurantId
-        // e.RestaurantId
-        var restaurantIdProperty = Expression.PropertyOrField(parameter, nameof(ITenantEntity.RestaurantId));
-        // CurrentRestaurantId (constant)
-        var restaurantIdConstant = Expression.Constant(restaurantId.Value, typeof(Guid));
-        // e.RestaurantId == CurrentRestaurantId
-        var equalExpression = Expression.Equal(restaurantIdProperty, restaurantIdConstant);
-        // lambda: e => e.RestaurantId == CurrentRestaurantId
-        var lambda = Expression.Lambda(equalExpression, parameter);
-        
-        return lambda;
+        // Nếu entity không thuộc tenant => không filter
+        if (!typeof(ITenantEntity).IsAssignableFrom(typeof(TEntity)))
+            return query;
+
+        // Nếu RestaurantId của entity là Guid
+        var prop = typeof(TEntity).GetProperty(nameof(ITenantEntity.RestaurantId));
+        if (prop == null)
+            return query;
+
+        if (prop.PropertyType == typeof(Guid))
+        {
+            return query.Where(e =>
+                EF.Property<Guid>(e, nameof(ITenantEntity.RestaurantId)) == restaurantId.Value);
+        }
+
+        // Nếu RestaurantId là Guid? (nullable)
+        if (prop.PropertyType == typeof(Guid?))
+        {
+            return query.Where(e =>
+                EF.Property<Guid?>(e, nameof(ITenantEntity.RestaurantId)) == restaurantId.Value);
+        }
+
+        // Trường hợp lạ (không phải Guid/Guid?)
+        return query;
     }
 
     public DbSet<RestaurantGroup> RestaurantGroups { get; set; }

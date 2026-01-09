@@ -15,7 +15,6 @@ public class CodeItem : AuditableEntity<Guid>
     public bool IsActive { get; private set; }
     public virtual CodeSet CodeSet { get; private set; } = null!;
     public virtual ICollection<CodeItemTranslation> Translations { get; private set; }
-    public virtual ICollection<Table> TablesUsingStatus { get; private set; }
     public virtual ICollection<Dish> DishesUsingType { get; private set; }
     public virtual ICollection<Order> OrdersUsingStatus { get; private set; }
 }

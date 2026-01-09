@@ -41,6 +41,14 @@ public static class HttpContextHelper
     }
 
     /// <summary>
+    /// Key By Pass
+    /// </summary>
+    public static class TenantFilterBypass
+    {
+        public const string Key = "__BYPASS_TENANT_FILTER__";
+    }
+
+    /// <summary>
     /// Kiểm tra user có phải SYSTEM scope không (Admin)
     /// </summary>
     public static bool IsSystemScope(this HttpContext httpContext)

@@ -8,6 +8,7 @@ using PosGo.Domain.Abstractions.Repositories;
 using PosGo.Domain.Entities;
 using PosGo.Domain.Exceptions;
 using PosGo.Domain.Utilities.Helpers;
+using static PosGo.Domain.Utilities.Helpers.HttpContextHelper;
 
 namespace PosGo.Application.UserCases.V1.Queries.Identity;
 
@@ -37,41 +38,49 @@ public class SwitchRestaurantQueryHandler : IQueryHandler<Query.SwitchRestaurant
 
     public async Task<Result<Response.Authenticated>> Handle(Query.SwitchRestaurant request, CancellationToken cancellationToken)
     {
-        var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
-        var scope = _httpContextAccessor.HttpContext.GetScope();
-        
-        var user = await _userManager.FindByIdAsync(userId.ToString()) ?? 
-            throw new CommonNotFoundException.CommonException(userId, nameof(User));
-
-        var restaurant = await _restaurantRepository.FindByIdAsync(request.RestaurantId) ??
-            throw new CommonNotFoundException.CommonException(request.RestaurantId, nameof(Restaurant));
-
-        // Check user có thuộc nhà hàng này không
-        var ru = await _restaurantUserRepository.FindSingleAsync(
-            x => x.RestaurantId == request.RestaurantId
-              && x.UserId == userId
-              && x.Status == ERestaurantUserStatus.Active,
-            cancellationToken);
-
-        if (ru is null)
+        _httpContextAccessor.HttpContext!.Items[TenantFilterBypass.Key] = true;
+        try
         {
-            return Result.Failure<Response.Authenticated>(
-                new Error("FORBIDDEN", "Bạn không có quyền truy cập nhà hàng này."));
+            var userId = _httpContextAccessor.HttpContext.GetCurrentUserId();
+            var scope = _httpContextAccessor.HttpContext.GetScope();
+
+            var user = await _userManager.FindByIdAsync(userId.ToString()) ??
+                throw new CommonNotFoundException.CommonException(userId, nameof(User));
+
+            var restaurant = await _restaurantRepository.FindByIdAsync(request.RestaurantId) ??
+                throw new CommonNotFoundException.CommonException(request.RestaurantId, nameof(Restaurant));
+
+            // Check user có thuộc nhà hàng này không
+            var ru = await _restaurantUserRepository.FindSingleAsync(
+                x => x.RestaurantId == request.RestaurantId
+                  && x.UserId == userId
+                  && x.Status == ERestaurantUserStatus.Active,
+                cancellationToken);
+
+            if (ru is null)
+            {
+                return Result.Failure<Response.Authenticated>(
+                    new Error("FORBIDDEN", "Bạn không có quyền truy cập nhà hàng này."));
+            }
+
+            // 5. Generate access token mới gắn restaurant_id
+            var accessToken = await _jwtTokenService.GenerateAccessTokenForRestaurantAsync(user, scope, request.RestaurantId);
+            var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+            var response = new Response.Authenticated
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(5)
+            };
+
+            await _cacheService.SetAsync(user.UserName!, response, cancellationToken);
+
+            return Result.Success(response);
         }
-
-        // 5. Generate access token mới gắn restaurant_id
-        var accessToken = await _jwtTokenService.GenerateAccessTokenForRestaurantAsync(user, scope, request.RestaurantId);
-        var refreshToken = _jwtTokenService.GenerateRefreshToken();
-
-        var response = new Response.Authenticated
+        finally
         {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(5)
-        };
-
-        await _cacheService.SetAsync(user.UserName!, response, cancellationToken);
-
-        return Result.Success(response);
+            _httpContextAccessor.HttpContext!.Items.Remove(TenantFilterBypass.Key);
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PosGo.Persistence;
 
@@ -11,9 +12,11 @@ using PosGo.Persistence;
 namespace PosGo.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260108124652_UpdateTableAndTableArea")]
+    partial class UpdateTableAndTableArea
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1664,11 +1667,6 @@ namespace PosGo.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<decimal?>("MinOrderAmount")
                         .HasColumnType("decimal(18,2)");
 
@@ -1687,6 +1685,9 @@ namespace PosGo.Persistence.Migrations
                     b.Property<int?>("Seats")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("StatusId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1700,8 +1701,12 @@ namespace PosGo.Persistence.Migrations
                     b.HasIndex("QrCodeToken")
                         .IsUnique();
 
+                    b.HasIndex("StatusId");
+
                     b.HasIndex("RestaurantId", "Name")
                         .IsUnique();
+
+                    b.HasIndex("RestaurantId", "StatusId");
 
                     b.ToTable("Tables", (string)null);
                 });
@@ -2515,9 +2520,16 @@ namespace PosGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PosGo.Domain.Entities.CodeItem", "Status")
+                        .WithMany("TablesUsingStatus")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Area");
 
                     b.Navigation("Restaurant");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.TableArea", b =>
@@ -2565,6 +2577,8 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("DishesUsingType");
 
                     b.Navigation("OrdersUsingStatus");
+
+                    b.Navigation("TablesUsingStatus");
 
                     b.Navigation("Translations");
                 });

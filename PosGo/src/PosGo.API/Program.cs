@@ -48,7 +48,6 @@ builder.Services.AddRedisInfrastructure(builder.Configuration);
 
 builder.Services.AddMediatRApplication();
 builder.Services.AddAutoMapperApplication();
-builder.Services.AddPasswordHaserApplication();
 
 // Configure Options and SQL
 builder.Services.AddInterceptorPersistence();

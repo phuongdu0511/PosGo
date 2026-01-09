@@ -29,5 +29,15 @@ public class ServiceProfile : Profile
 
         CreateMap<User, Contract.Services.V1.Employee.Response.StaffResponse>().ReverseMap();
         CreateMap<PagedResult<User>, PagedResult<Contract.Services.V1.Employee.Response.StaffResponse>>().ReverseMap();
+
+        CreateMap<TableArea, Contract.Services.V1.Table.Response.TableAreaResponse>()
+            .ForMember(dest => dest.TableCount, opt => opt.MapFrom(src => src.Tables != null ? src.Tables.Count : 0))
+            .ReverseMap();
+        CreateMap<PagedResult<TableArea>, PagedResult<Contract.Services.V1.Table.Response.TableAreaResponse>>().ReverseMap();
+
+        CreateMap<Domain.Entities.Table, Contract.Services.V1.Table.Response.TableResponse>()
+            .ForMember(dest => dest.AreaName, opt => opt.MapFrom(src => src.Area != null ? src.Area.Name : null))
+            .ReverseMap();
+        CreateMap<PagedResult<Domain.Entities.Table>, PagedResult<Contract.Services.V1.Table.Response.TableResponse>>().ReverseMap();
     }
 }

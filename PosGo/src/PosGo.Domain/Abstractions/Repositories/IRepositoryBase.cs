@@ -5,6 +5,8 @@ namespace PosGo.Domain.Abstractions.Repositories;
 public interface IRepositoryBase<TEntity, in TKey> 
     where TEntity : class
 {
+    Task<List<TEntity>> FromSqlRawAsync(string sql, object[] parameters, params Expression<Func<TEntity, object>>[] includeProperties);
+    IQueryable<TEntity> FromSqlRaw(string sql, object[] parameters, params Expression<Func<TEntity, object>>[] includeProperties);
     Task<TEntity> FindByIdAsync(TKey id, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
 
     Task<TEntity> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
