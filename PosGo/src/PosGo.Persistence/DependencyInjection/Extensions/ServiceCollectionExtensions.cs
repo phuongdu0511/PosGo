@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddSqlServerPersistence(this IServiceCollection services)
     {
-        services.AddDbContextPool<DbContext, ApplicationDbContext>((provider, builder) =>
+        services.AddDbContext<ApplicationDbContext>((provider, builder) =>
         {
             // Interceptor
             var auditableInterceptor = provider.GetService<UpdateAuditableEntitiesInterceptor>();

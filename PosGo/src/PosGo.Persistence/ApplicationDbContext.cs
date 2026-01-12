@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using PosGo.Domain.Utilities.Helpers;
 using static PosGo.Domain.Utilities.Helpers.HttpContextHelper;
+using System.Reflection;
 
 namespace PosGo.Persistence;
 
@@ -31,6 +32,30 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
         {
             builder.Entity(softDeleteEntity).HasQueryFilter(GenerateSoftDeleteFilter(softDeleteEntity));
         }
+
+        var exemptEntityTypes = new[] {
+            typeof(Restaurant),           // Owner cần load danh sách để chọn
+            typeof(RestaurantUser),       // Login/auth cần query user-restaurant mapping  
+            typeof(User),                 // User info không phụ thuộc restaurant
+            typeof(RestaurantGroup),      // System level data
+            typeof(Language),             // System level data
+            typeof(RestaurantLanguage),   // Có thể cần khi setup restaurant
+            typeof(Plan),                 // System level data
+            typeof(RestaurantPlan)        // Có thể cần khi setup restaurant
+        };
+
+        var tenantEntities = typeof(ITenantEntity).Assembly.GetTypes()
+            .Where(type => typeof(ITenantEntity)
+                            .IsAssignableFrom(type)
+                            && type.IsClass
+                            && !type.IsAbstract
+                            && !exemptEntityTypes.Contains(type)); // Loại trừ các entities đặc biệt
+
+        foreach (var tenantEntity in tenantEntities)
+        {
+            builder.Entity(tenantEntity).HasQueryFilter(GenerateTenantFilter(tenantEntity));
+        }
+
         builder.ApplyConfigurationsFromAssembly(AssemblyReference.Assembly);
     }
 
@@ -50,47 +75,43 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
         return lambda; // w => w.IsDeleted == false
     }
 
-    public IQueryable<TEntity> ApplyTenantFilter<TEntity>(IQueryable<TEntity> query)
-        where TEntity : class
+    private LambdaExpression? GenerateTenantFilter(Type type)
     {
-        var http = _httpContextAccessor.HttpContext;
-        // nếu request đang bypass -> không filter
-        if (http?.Items.TryGetValue(TenantFilterBypass.Key, out var v) == true
-            && v is true)
-            return query;
+        // parameter: e =>
+        var parameter = Expression.Parameter(type, "e");
 
-        var restaurantId = http?.GetRestaurantId();
+        // Method call: GetCurrentRestaurantId() - sử dụng HttpContextHelper
+        var getCurrentRestaurantIdMethod = typeof(ApplicationDbContext)
+            .GetMethod(nameof(GetCurrentRestaurantId), BindingFlags.NonPublic | BindingFlags.Instance);
 
-        if (!restaurantId.HasValue)
-        {
-            // System scope - không filter
-            return query;
-        }
+        var contextInstance = Expression.Constant(this);
+        var getCurrentRestaurantIdCall = Expression.Call(contextInstance, getCurrentRestaurantIdMethod);
 
-        // Nếu entity không thuộc tenant => không filter
-        if (!typeof(ITenantEntity).IsAssignableFrom(typeof(TEntity)))
-            return query;
+        // propertyAccess: EF.Property<Guid?>(e, "RestaurantId")
+        var efPropertyMethod = typeof(EF).GetMethod(nameof(EF.Property))
+            .MakeGenericMethod(typeof(Guid?));
+        var propertyNameConstant = Expression.Constant(nameof(ITenantEntity.RestaurantId));
+        var propertyAccess = Expression.Call(efPropertyMethod, parameter, propertyNameConstant);
 
-        // Nếu RestaurantId của entity là Guid
-        var prop = typeof(TEntity).GetProperty(nameof(ITenantEntity.RestaurantId));
-        if (prop == null)
-            return query;
+        // equalExpression: EF.Property<Guid?>(e, "RestaurantId") == GetCurrentRestaurantId()
+        var equalExpression = Expression.Equal(propertyAccess, getCurrentRestaurantIdCall);
 
-        if (prop.PropertyType == typeof(Guid))
-        {
-            return query.Where(e =>
-                EF.Property<Guid>(e, nameof(ITenantEntity.RestaurantId)) == restaurantId.Value);
-        }
+        // lambda: e => EF.Property<Guid?>(e, "RestaurantId") == GetCurrentRestaurantId()
+        var lambda = Expression.Lambda(equalExpression, parameter);
 
-        // Nếu RestaurantId là Guid? (nullable)
-        if (prop.PropertyType == typeof(Guid?))
-        {
-            return query.Where(e =>
-                EF.Property<Guid?>(e, nameof(ITenantEntity.RestaurantId)) == restaurantId.Value);
-        }
+        return lambda;
+    }
+    private Guid? GetCurrentRestaurantId()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
 
-        // Trường hợp lạ (không phải Guid/Guid?)
-        return query;
+        if (httpContext?.Items.TryGetValue(TenantFilterBypass.Key, out var v) == true && v is true)
+            return null;
+
+        if (httpContext?.IsSystemScope() == true)
+            return null;
+
+        return httpContext?.GetRestaurantId();
     }
 
     public DbSet<RestaurantGroup> RestaurantGroups { get; set; }

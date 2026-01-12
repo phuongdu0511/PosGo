@@ -76,10 +76,6 @@ public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey>, IDi
         params Expression<Func<TEntity, object>>[] includeProperties)
     {
         IQueryable<TEntity> items = _context.Set<TEntity>().AsNoTracking(); // Importance Always include AsNoTracking for Query Side
-        if (typeof(ITenantEntity).IsAssignableFrom(typeof(TEntity)))
-        {
-            items = _context.ApplyTenantFilter(items);
-        }
         if (includeProperties != null)
             foreach (var includeProperty in includeProperties)
                 items = items.Include(includeProperty);

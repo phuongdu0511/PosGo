@@ -92,6 +92,7 @@ public sealed class UpdateStaffPermissionsCommandHandler : ICommandHandler<Comma
 
         // 7. Validate permissions
         var invalidPermissions = new List<string>();
+        var maxClaimValue = EnumHelper<ActionType>.GetValues().Sum(p => (int)p);
         foreach (var permission in request.Permissions)
         {
             // 7.1. Kiểm tra PermissionKey có trong Plan không
@@ -115,8 +116,8 @@ public sealed class UpdateStaffPermissionsCommandHandler : ICommandHandler<Comma
                 continue;
             }
 
-            // 7.4. Kiểm tra ActionValue hợp lệ (phải là tổ hợp của View/Add/Update/Delete)
-            if (permission.ActionValue <= 0 || permission.ActionValue > 15)
+            // 7.4. Kiểm tra ActionValue hợp lệ (phải là tổ hợp của Action Type (View/Create/Update/Delete))
+            if (permission.ActionValue <= 0 || permission.ActionValue > maxClaimValue)
             {
                 invalidPermissions.Add($"{permission.PermissionKey}: ActionValue không hợp lệ");
             }

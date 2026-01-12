@@ -20,10 +20,6 @@ internal sealed class DishAttributeGroupConfiguration
         builder.Property(x => x.IsRequired)
                .IsRequired()
                .HasDefaultValue(false);
-        
-        builder.Property(x => x.IsMultipleSelection)
-               .IsRequired()
-               .HasDefaultValue(false);
 
         builder.Property(x => x.IsMultipleSelection)
                .IsRequired()
