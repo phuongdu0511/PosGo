@@ -31,6 +31,7 @@ public static class PermissionConstants
         ManageUnits,
         ManageEmployees,
         SwitchRestaurant,
+        ManageInventory,
         ManagePlans,
     };
 }

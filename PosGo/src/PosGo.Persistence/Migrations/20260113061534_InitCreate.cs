@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PosGo.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitPosGoTable : Migration
+    public partial class InitCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,8 @@ namespace PosGo.Persistence.Migrations
                 name: "CodeSets",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -30,10 +31,31 @@ namespace PosGo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Functions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CssClass = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: -1),
+                    ParrentId = table.Column<int>(type: "int", nullable: false, defaultValue: -1),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Key = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ActionValue = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Functions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Languages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -45,6 +67,25 @@ namespace PosGo.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Languages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Plans",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plans", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,14 +115,18 @@ namespace PosGo.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Scope = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Rank = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    RoleCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -93,39 +138,42 @@ namespace PosGo.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Users_CreatedByUserId",
-                        column: x => x.CreatedByUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Users_Users_UpdatedByUserId",
-                        column: x => x.UpdatedByUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "CodeItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CodeSetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CodeSetId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     NumericValue = table.Column<int>(type: "int", nullable: true),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -147,6 +195,55 @@ namespace PosGo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlanFunctions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlanId = table.Column<int>(type: "int", nullable: false),
+                    FunctionId = table.Column<int>(type: "int", nullable: false),
+                    ActionValue = table.Column<int>(type: "int", nullable: false, defaultValue: 15),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlanFunctions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlanFunctions_Functions_FunctionId",
+                        column: x => x.FunctionId,
+                        principalTable: "Functions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PlanFunctions_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "Plans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoleClaims_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Restaurants",
                 columns: table => new
                 {
@@ -158,10 +255,12 @@ namespace PosGo.Persistence.Migrations
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    DefaultLanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DefaultLanguageId = table.Column<int>(type: "int", nullable: false),
                     TimeZone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -185,40 +284,106 @@ namespace PosGo.Persistence.Migrations
                         principalTable: "RestaurantGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Restaurants_Users_OwnerUserId",
+                        column: x => x.OwnerUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserSystemRoles",
+                name: "UserClaims",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserSystemRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserSystemRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_UserSystemRoles_Users_UserId",
+                        name: "FK_UserClaims_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserLogins",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLogins", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_UserLogins_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.RoleId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTokens", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_UserTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "CodeItemTranslations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CodeItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CodeItemId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
@@ -242,9 +407,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishCategories",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParentCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentCategoryId = table.Column<int>(type: "int", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -278,7 +444,7 @@ namespace PosGo.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     IsEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -325,10 +491,42 @@ namespace PosGo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RestaurantPlans",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PlanId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RestaurantPlans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RestaurantPlans_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "Plans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RestaurantPlans_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RestaurantUsers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -377,7 +575,8 @@ namespace PosGo.Persistence.Migrations
                 name: "TableAreas",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -385,10 +584,7 @@ namespace PosGo.Persistence.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -405,7 +601,8 @@ namespace PosGo.Persistence.Migrations
                 name: "Units",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -433,9 +630,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishCategoryTranslations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -464,32 +662,24 @@ namespace PosGo.Persistence.Migrations
                 name: "Tables",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AreaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     QrCodeToken = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Seats = table.Column<int>(type: "int", nullable: true),
-                    StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     DoNotAllowOrder = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     MinOrderAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tables", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tables_CodeItems_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "CodeItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tables_Restaurants_RestaurantId",
                         column: x => x.RestaurantId,
@@ -508,12 +698,13 @@ namespace PosGo.Persistence.Migrations
                 name: "Dishes",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UnitId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    UnitId = table.Column<int>(type: "int", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    DishTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DishTypeId = table.Column<int>(type: "int", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -559,9 +750,10 @@ namespace PosGo.Persistence.Migrations
                 name: "UnitTranslations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UnitId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UnitId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -585,11 +777,12 @@ namespace PosGo.Persistence.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TableId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TableId = table.Column<int>(type: "int", nullable: false),
                     OrderCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    StatusId = table.Column<int>(type: "int", nullable: true),
                     NumberOfGuests = table.Column<int>(type: "int", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     SubTotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -641,51 +834,13 @@ namespace PosGo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DishAttributeGroups",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    IsRequired = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    IsMultipleSelection = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    MinSelected = table.Column<int>(type: "int", nullable: true),
-                    MaxSelected = table.Column<int>(type: "int", nullable: true),
-                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DishAttributeGroups", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeGroups_Dishes_DishId",
-                        column: x => x.DishId,
-                        principalTable: "Dishes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeGroups_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DishSkus",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DishId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false),
@@ -720,9 +875,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishTranslations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DishId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -751,9 +907,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishVariants",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DishId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -783,76 +940,15 @@ namespace PosGo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DishAttributeGroupTranslations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AttributeGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DishAttributeGroupTranslations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeGroupTranslations_DishAttributeGroups_AttributeGroupId",
-                        column: x => x.AttributeGroupId,
-                        principalTable: "DishAttributeGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeGroupTranslations_Languages_LanguageId",
-                        column: x => x.LanguageId,
-                        principalTable: "Languages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DishAttributeItems",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AttributeGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    IsDefault = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DishAttributeItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeItems_DishAttributeGroups_AttributeGroupId",
-                        column: x => x.AttributeGroupId,
-                        principalTable: "DishAttributeGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeItems_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DishId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    DishSkuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    DishId = table.Column<int>(type: "int", nullable: true),
+                    DishSkuId = table.Column<int>(type: "int", nullable: true),
                     DishName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DishUnit = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     SkuCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -899,13 +995,15 @@ namespace PosGo.Persistence.Migrations
                 name: "DishVariantOptions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VariantId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    PriceAdjustment = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -935,9 +1033,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishVariantTranslations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VariantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VariantId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
@@ -958,72 +1057,11 @@ namespace PosGo.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DishAttributeItemTranslations",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AttributeItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DishAttributeItemTranslations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeItemTranslations_DishAttributeItems_AttributeItemId",
-                        column: x => x.AttributeItemId,
-                        principalTable: "DishAttributeItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DishAttributeItemTranslations_Languages_LanguageId",
-                        column: x => x.LanguageId,
-                        principalTable: "Languages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderItemAttributes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ItemName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    UpdatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderItemAttributes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderItemAttributes_OrderItems_OrderItemId",
-                        column: x => x.OrderItemId,
-                        principalTable: "OrderItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_OrderItemAttributes_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DishSkuVariantOptions",
                 columns: table => new
                 {
-                    DishSkuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VariantOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    DishSkuId = table.Column<int>(type: "int", nullable: false),
+                    VariantOptionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1046,9 +1084,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishVariantOptionTranslations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VariantOptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LanguageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VariantOptionId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
@@ -1064,6 +1103,33 @@ namespace PosGo.Persistence.Migrations
                         name: "FK_DishVariantOptionTranslations_Languages_LanguageId",
                         column: x => x.LanguageId,
                         principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderItemVariantOptions",
+                columns: table => new
+                {
+                    OrderItemId = table.Column<int>(type: "int", nullable: false),
+                    VariantOptionId = table.Column<int>(type: "int", nullable: false),
+                    VariantName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    OptionName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    PriceAdjustment = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItemVariantOptions", x => new { x.OrderItemId, x.VariantOptionId });
+                    table.ForeignKey(
+                        name: "FK_OrderItemVariantOptions_DishVariantOptions_VariantOptionId",
+                        column: x => x.VariantOptionId,
+                        principalTable: "DishVariantOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OrderItemVariantOptions_OrderItems_OrderItemId",
+                        column: x => x.OrderItemId,
+                        principalTable: "OrderItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1090,48 +1156,6 @@ namespace PosGo.Persistence.Migrations
                 table: "CodeSets",
                 column: "Code",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeGroups_DishId",
-                table: "DishAttributeGroups",
-                column: "DishId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeGroups_RestaurantId",
-                table: "DishAttributeGroups",
-                column: "RestaurantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeGroupTranslations_AttributeGroupId_LanguageId",
-                table: "DishAttributeGroupTranslations",
-                columns: new[] { "AttributeGroupId", "LanguageId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeGroupTranslations_LanguageId",
-                table: "DishAttributeGroupTranslations",
-                column: "LanguageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeItems_AttributeGroupId",
-                table: "DishAttributeItems",
-                column: "AttributeGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeItems_RestaurantId",
-                table: "DishAttributeItems",
-                column: "RestaurantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeItemTranslations_AttributeItemId_LanguageId",
-                table: "DishAttributeItemTranslations",
-                columns: new[] { "AttributeItemId", "LanguageId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DishAttributeItemTranslations_LanguageId",
-                table: "DishAttributeItemTranslations",
-                column: "LanguageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DishCategories_ParentCategoryId",
@@ -1264,16 +1288,6 @@ namespace PosGo.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItemAttributes_OrderItemId",
-                table: "OrderItemAttributes",
-                column: "OrderItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderItemAttributes_RestaurantId",
-                table: "OrderItemAttributes",
-                column: "RestaurantId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_DishId",
                 table: "OrderItems",
                 column: "DishId");
@@ -1292,6 +1306,11 @@ namespace PosGo.Persistence.Migrations
                 name: "IX_OrderItems_RestaurantId_DishSkuId",
                 table: "OrderItems",
                 columns: new[] { "RestaurantId", "DishSkuId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItemVariantOptions_VariantOptionId",
+                table: "OrderItemVariantOptions",
+                column: "VariantOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_ClosedByUserId",
@@ -1330,6 +1349,23 @@ namespace PosGo.Persistence.Migrations
                 column: "TableId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlanFunctions_FunctionId",
+                table: "PlanFunctions",
+                column: "FunctionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanFunctions_PlanId_FunctionId",
+                table: "PlanFunctions",
+                columns: new[] { "PlanId", "FunctionId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plans_Code",
+                table: "Plans",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RestaurantGroups_Slug",
                 table: "RestaurantGroups",
                 column: "Slug",
@@ -1353,9 +1389,24 @@ namespace PosGo.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_RestaurantPlans_PlanId",
+                table: "RestaurantPlans",
+                column: "PlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RestaurantPlans_RestaurantId_PlanId",
+                table: "RestaurantPlans",
+                columns: new[] { "RestaurantId", "PlanId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Restaurants_DefaultLanguageId",
                 table: "Restaurants",
                 column: "DefaultLanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Restaurants_OwnerUserId",
+                table: "Restaurants",
+                column: "OwnerUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Restaurants_RestaurantGroupId",
@@ -1395,9 +1446,14 @@ namespace PosGo.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Roles_Code",
+                name: "IX_RoleClaims_RoleId",
+                table: "RoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_RoleCode",
                 table: "Roles",
-                column: "Code",
+                column: "RoleCode",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1417,20 +1473,10 @@ namespace PosGo.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tables_RestaurantId_Code",
+                name: "IX_Tables_RestaurantId_Name",
                 table: "Tables",
-                columns: new[] { "RestaurantId", "Code" },
+                columns: new[] { "RestaurantId", "Name" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tables_RestaurantId_StatusId",
-                table: "Tables",
-                columns: new[] { "RestaurantId", "StatusId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tables_StatusId",
-                table: "Tables",
-                column: "StatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Units_RestaurantId_Code",
@@ -1451,25 +1497,20 @@ namespace PosGo.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_CreatedByUserId",
-                table: "Users",
-                column: "CreatedByUserId");
+                name: "IX_UserClaims_UserId",
+                table: "UserClaims",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_UpdatedByUserId",
-                table: "Users",
-                column: "UpdatedByUserId");
+                name: "IX_UserRoles_UserId",
+                table: "UserRoles",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_UserName",
                 table: "Users",
                 column: "UserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserSystemRoles_RoleId",
-                table: "UserSystemRoles",
-                column: "RoleId");
         }
 
         /// <inheritdoc />
@@ -1477,12 +1518,6 @@ namespace PosGo.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "CodeItemTranslations");
-
-            migrationBuilder.DropTable(
-                name: "DishAttributeGroupTranslations");
-
-            migrationBuilder.DropTable(
-                name: "DishAttributeItemTranslations");
 
             migrationBuilder.DropTable(
                 name: "DishCategoryTranslations");
@@ -1500,7 +1535,10 @@ namespace PosGo.Persistence.Migrations
                 name: "DishVariantTranslations");
 
             migrationBuilder.DropTable(
-                name: "OrderItemAttributes");
+                name: "OrderItemVariantOptions");
+
+            migrationBuilder.DropTable(
+                name: "PlanFunctions");
 
             migrationBuilder.DropTable(
                 name: "RestaurantLanguages");
@@ -1509,16 +1547,28 @@ namespace PosGo.Persistence.Migrations
                 name: "RestaurantOpeningHours");
 
             migrationBuilder.DropTable(
+                name: "RestaurantPlans");
+
+            migrationBuilder.DropTable(
                 name: "RestaurantUsers");
+
+            migrationBuilder.DropTable(
+                name: "RoleClaims");
 
             migrationBuilder.DropTable(
                 name: "UnitTranslations");
 
             migrationBuilder.DropTable(
-                name: "UserSystemRoles");
+                name: "UserClaims");
 
             migrationBuilder.DropTable(
-                name: "DishAttributeItems");
+                name: "UserLogins");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserTokens");
 
             migrationBuilder.DropTable(
                 name: "DishVariantOptions");
@@ -1527,10 +1577,13 @@ namespace PosGo.Persistence.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Functions");
 
             migrationBuilder.DropTable(
-                name: "DishAttributeGroups");
+                name: "Plans");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "DishVariants");
@@ -1548,16 +1601,13 @@ namespace PosGo.Persistence.Migrations
                 name: "Tables");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "CodeItems");
 
             migrationBuilder.DropTable(
                 name: "DishCategories");
 
             migrationBuilder.DropTable(
                 name: "Units");
-
-            migrationBuilder.DropTable(
-                name: "CodeItems");
 
             migrationBuilder.DropTable(
                 name: "TableAreas");
@@ -1573,6 +1623,9 @@ namespace PosGo.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "RestaurantGroups");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

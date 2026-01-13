@@ -8,11 +8,11 @@ namespace PosGo.Application.UserCases.V1.Queries.Plan;
 
 public sealed class GetPlanByIdQueryHandler : IQueryHandler<Query.GetPlanByIdQuery, Response.PlanResponse>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IMapper _mapper;
 
     public GetPlanByIdQueryHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IMapper mapper)
     {
         _planRepository = planRepository;
@@ -22,7 +22,7 @@ public sealed class GetPlanByIdQueryHandler : IQueryHandler<Query.GetPlanByIdQue
     public async Task<Result<Response.PlanResponse>> Handle(Query.GetPlanByIdQuery request, CancellationToken cancellationToken)
     {
         var plan = await _planRepository.FindByIdAsync(request.Id)
-            ?? throw new CommonNotFoundException.CommonException(request.Id, nameof(Domain.Entities.Plan));
+            ?? throw new CommonNotFoundException.CommonException(Guid.Parse(request.Id.ToString()), nameof(Domain.Entities.Plan));
 
         var result = _mapper.Map<Response.PlanResponse>(plan);
 

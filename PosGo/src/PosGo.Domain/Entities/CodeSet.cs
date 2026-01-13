@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  CODE SERVICE
 // =====================================
-public class CodeSet : AuditableAggregateRoot<Guid>
+public class CodeSet : AuditableAggregateRoot<int>
 {
     public string Code { get; private set; } = null!;  // OrderStatus, TableStatus...
     public string Name { get; private set; } = null!;

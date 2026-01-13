@@ -10,12 +10,12 @@ namespace PosGo.Application.UserCases.V1.Queries.Table;
 
 public sealed class GetTablesByAreaQueryHandler : IQueryHandler<Query.GetTablesByAreaQuery, List<Response.TableResponse>>
 {
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public GetTablesByAreaQueryHandler(
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper)
     {

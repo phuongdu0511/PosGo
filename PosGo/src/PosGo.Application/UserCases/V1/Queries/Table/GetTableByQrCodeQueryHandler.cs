@@ -8,11 +8,11 @@ namespace PosGo.Application.UserCases.V1.Queries.Table;
 
 public sealed class GetTableByQrCodeQueryHandler : IQueryHandler<Query.GetTableByQrCodeQuery, Response.TableResponse>
 {
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
     private readonly IMapper _mapper;
 
     public GetTableByQrCodeQueryHandler(
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
         IMapper mapper)
     {
         _tableRepository = tableRepository;

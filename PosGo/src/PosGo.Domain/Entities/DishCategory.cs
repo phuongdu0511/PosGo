@@ -5,10 +5,10 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  MENU: UNIT / CATEGORY / DISH
 // =====================================
-public class DishCategory : SoftDeletableEntity<Guid>, ITenantEntity
+public class DishCategory : SoftDeletableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid? ParentCategoryId { get; private set; }
+    public int? ParentCategoryId { get; private set; }
 
     public string? Code { get; private set; }
     public int SortOrder { get; private set; }

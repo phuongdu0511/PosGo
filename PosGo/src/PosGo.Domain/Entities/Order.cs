@@ -6,12 +6,12 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  ORDER / REPORT
 // =====================================
-public class Order : AuditableAggregateRoot<Guid>, ITenantEntity
+public class Order : AuditableAggregateRoot<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid TableId { get; private set; }
+    public int TableId { get; private set; }
     public string OrderCode { get; private set; } = null!;
-    public Guid? StatusId { get; private set; }   // CodeSet=OrderStatus
+    public int? StatusId { get; private set; }   // CodeSet=OrderStatus
     public int? NumberOfGuests { get; private set; }
     public string? Note { get; private set; }
     public decimal SubTotalAmount { get; private set; }

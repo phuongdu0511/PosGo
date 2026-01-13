@@ -138,16 +138,12 @@ public sealed class ApplicationDbContext : IdentityDbContext<User, Role, Guid>
     public DbSet<DishVariantOptionTranslation> DishVariantOptionTranslations { get; set; }
     public DbSet<DishSku> DishSkus { get; set; }
     public DbSet<DishSkuVariantOption> DishSkuVariantOptions { get; set; }
-    public DbSet<DishAttributeGroup> DishAttributeGroups { get; set; }
-    public DbSet<DishAttributeGroupTranslation> DishAttributeGroupTranslations { get; set; }
-    public DbSet<DishAttributeItem> DishAttributeItems { get; set; }
-    public DbSet<DishAttributeItemTranslation> DishAttributeItemTranslations { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<OrderItemAttribute> OrderItemAttributes { get; set; }
     public DbSet<RestaurantOpeningHour> RestaurantOpeningHours { get; set; }
     public DbSet<Function> Functions { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<RestaurantPlan> RestaurantPlans { get; set; }
     public DbSet<PlanFunction> PlanFunctions { get; set; }
+    public DbSet<OrderItemVariantOption> OrderItemVariantOptions { get; set; }
 }

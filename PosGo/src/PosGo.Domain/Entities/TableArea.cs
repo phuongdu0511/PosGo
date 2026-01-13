@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  TABLE / QR
 // =====================================
-public class TableArea : AuditableEntity<Guid>, ITenantEntity
+public class TableArea : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public string Name { get; private set; } = null!;
@@ -14,18 +14,17 @@ public class TableArea : AuditableEntity<Guid>, ITenantEntity
     public virtual Restaurant Restaurant { get; private set; } = null!;
     public virtual ICollection<Table> Tables { get; private set; }
 
-    public TableArea(Guid id, Guid restaurantId, string name, int sortOrder, bool isActive = true)
+    public TableArea(Guid restaurantId, string name, int sortOrder, bool isActive = true)
     {
-        Id = id;
         RestaurantId = restaurantId;
         Name = name;
         SortOrder = sortOrder;
         IsActive = isActive;
     }
 
-    public static TableArea Create(Guid id, Guid restaurantId, string name, int sortOrder, bool isActive = true)
+    public static TableArea Create(Guid restaurantId, string name, int sortOrder, bool isActive = true)
     {
-        return new TableArea(id, restaurantId, name, sortOrder, isActive);
+        return new TableArea(restaurantId, name, sortOrder, isActive);
     }
 
     public void Update(string name, int sortOrder, bool isActive)

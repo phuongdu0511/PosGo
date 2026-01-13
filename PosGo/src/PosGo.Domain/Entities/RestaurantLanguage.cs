@@ -8,7 +8,7 @@ namespace PosGo.Domain.Entities;
 public class RestaurantLanguage : Entity<Guid>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid LanguageId { get; private set; }
+    public int LanguageId { get; private set; }
     public bool IsEnabled { get; private set; }
 
     public virtual Restaurant Restaurant { get; private set; } = null!;

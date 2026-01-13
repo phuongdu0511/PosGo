@@ -5,10 +5,10 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  CODE SERVICE
 // =====================================
-public class CodeItemTranslation : Entity<Guid>
+public class CodeItemTranslation : Entity<int>
 {
-    public Guid CodeItemId { get; private set; }
-    public Guid LanguageId { get; private set; }
+    public int CodeItemId { get; private set; }
+    public int LanguageId { get; private set; }
     public string Name { get; private set; } = null!;
 
     public virtual CodeItem CodeItem { get; private set; } = null!;

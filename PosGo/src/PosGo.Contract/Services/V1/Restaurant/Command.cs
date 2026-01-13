@@ -7,7 +7,7 @@ public static class Command
     public record CreateRestaurantCommand(
         string Name,
         string Slug,
-        Guid DefaultLanguageId,
+        int DefaultLanguageId,
         string? Address,
         string? City,
         string? Country,
@@ -22,7 +22,7 @@ public static class Command
         Guid Id,
         string Name,
         string Slug,
-        Guid DefaultLanguageId,
+        int DefaultLanguageId,
         string? Address,
         string? City,
         string? Country,
@@ -35,8 +35,8 @@ public static class Command
     ) : ICommand;
 
     public record UpdateRestaurantPlanCommand(
-        Guid RestaurantId, 
-        Guid PlanId
+        Guid RestaurantId,
+        int PlanId
     ) : ICommand;
 
     public sealed record AssignUserToRestaurantCommand(

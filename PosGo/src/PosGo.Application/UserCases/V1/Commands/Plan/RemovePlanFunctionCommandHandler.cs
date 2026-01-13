@@ -6,11 +6,11 @@ namespace PosGo.Application.UserCases.V1.Commands.Plan;
 
 public sealed class RemovePlanFunctionCommandHandler : ICommandHandler<Command.RemovePlanFunctionCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IRepositoryBase<Domain.Entities.PlanFunction, int> _planFunctionRepository;
 
     public RemovePlanFunctionCommandHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IRepositoryBase<Domain.Entities.PlanFunction, int> planFunctionRepository)
     {
         _planRepository = planRepository;

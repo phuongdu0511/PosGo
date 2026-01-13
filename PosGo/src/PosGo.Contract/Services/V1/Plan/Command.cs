@@ -8,13 +8,13 @@ public static class Command
     
     public record CreatePlanCommand(string Code, string? Description, bool isActive, List<PlanFunctionItem> Functions) : ICommand;
     
-    public record UpdatePlanCommand(Guid Id, string Code, string? Description, bool IsActive) : ICommand;
+    public record UpdatePlanCommand(int Id, string Code, string? Description, bool IsActive) : ICommand;
     
-    public record DeletePlanCommand(Guid Id) : ICommand;
+    public record DeletePlanCommand(int Id) : ICommand;
     
-    public record AddPlanFunctionCommand(Guid PlanId, int FunctionId, int ActionValue) : ICommand;
+    public record AddPlanFunctionCommand(int PlanId, int FunctionId, int ActionValue) : ICommand;
     
-    public record UpdatePlanFunctionCommand(Guid PlanId, int FunctionId, int ActionValue) : ICommand;
+    public record UpdatePlanFunctionCommand(int PlanId, int FunctionId, int ActionValue) : ICommand;
     
-    public record RemovePlanFunctionCommand(Guid PlanId, int FunctionId) : ICommand;
+    public record RemovePlanFunctionCommand(int PlanId, int FunctionId) : ICommand;
 }

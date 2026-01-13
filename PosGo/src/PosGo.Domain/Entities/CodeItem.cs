@@ -5,9 +5,9 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  CODE SERVICE
 // =====================================
-public class CodeItem : AuditableEntity<Guid>
+public class CodeItem : AuditableEntity<int>
 {
-    public Guid CodeSetId { get; private set; }
+    public int CodeSetId { get; private set; }
 
     public string Code { get; private set; } = null!;
     public int? NumericValue { get; private set; }

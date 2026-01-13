@@ -10,14 +10,14 @@ namespace PosGo.Application.UserCases.V1.Commands.Table;
 
 public sealed class CreateTableCommandHandler : ICommandHandler<Command.CreateTableCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
-    private readonly IRepositoryBase<TableArea, Guid> _tableAreaRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
+    private readonly IRepositoryBase<TableArea, int> _tableAreaRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public CreateTableCommandHandler(
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
-        IRepositoryBase<TableArea, Guid> tableAreaRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
+        IRepositoryBase<TableArea, int> tableAreaRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper)
     {
@@ -59,7 +59,6 @@ public sealed class CreateTableCommandHandler : ICommandHandler<Command.CreateTa
         // Tạo QR Code Token unique
 
         var table = Domain.Entities.Table.Create(
-            Guid.NewGuid(),
             restaurantId.Value,
             request.Name,
             request.QrCodeToken,

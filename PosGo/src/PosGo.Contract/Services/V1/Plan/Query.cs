@@ -8,7 +8,7 @@ public static class Query
 {
     public record GetPlansQuery(string? SearchTerm, string? SortColumn, SortOrder? SortOrder, IDictionary<string, SortOrder>? SortColumnAndOrder, int PageIndex, int PageSize) : IQuery<PagedResult<PlanResponse>>;
     
-    public record GetPlanByIdQuery(Guid Id) : IQuery<PlanResponse>;
+    public record GetPlanByIdQuery(int Id) : IQuery<PlanResponse>;
     
-    public record GetPlanFunctionsQuery(Guid PlanId) : IQuery<List<PlanFunctionResponse>>;
+    public record GetPlanFunctionsQuery(int PlanId) : IQuery<List<PlanFunctionResponse>>;
 }

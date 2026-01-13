@@ -7,11 +7,11 @@ namespace PosGo.Contract.Services.V1.Table;
 public static class Query
 {
     // Table Queries
-    public record GetTablesByAreaQuery(Guid AreaId) : IQuery<List<TableResponse>>;
+    public record GetTablesByAreaQuery(int AreaId) : IQuery<List<TableResponse>>;
     
     public record GetTablesByRestaurantQuery(
-        string? SearchTerm, 
-        Guid? AreaId, 
+        string? SearchTerm,
+        int? AreaId, 
         bool? IsActive,
         string? SortColumn, 
         SortOrder? SortOrder, 

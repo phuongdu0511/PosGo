@@ -170,7 +170,7 @@ public class TableController : ApiController
     [ProducesResponseType(typeof(Result<List<Response.TableResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManageTables, ActionType.View)]
-    public async Task<IActionResult> GetTablesByArea(Guid areaId)
+    public async Task<IActionResult> GetTablesByArea(int areaId)
     {
         var result = await Sender.Send(new Query.GetTablesByAreaQuery(areaId));
 
@@ -189,7 +189,7 @@ public class TableController : ApiController
     [BinaryAuthorize(PermissionConstants.ManageTables, ActionType.View)]
     public async Task<IActionResult> GetTablesByRestaurant(
         string? searchTerm = null,
-        Guid? areaId = null,
+        int? areaId = null,
         bool? isActive = null,
         string? sortColumn = null,
         string? sortOrder = null,

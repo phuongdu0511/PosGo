@@ -10,14 +10,14 @@ namespace PosGo.Application.UserCases.V1.Commands.Table;
 
 public sealed class UpdateTableCommandHandler : ICommandHandler<Command.UpdateTableCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
-    private readonly IRepositoryBase<TableArea, Guid> _tableAreaRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
+    private readonly IRepositoryBase<TableArea, int> _tableAreaRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public UpdateTableCommandHandler(
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
-        IRepositoryBase<TableArea, Guid> tableAreaRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
+        IRepositoryBase<TableArea, int> tableAreaRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper)
     {

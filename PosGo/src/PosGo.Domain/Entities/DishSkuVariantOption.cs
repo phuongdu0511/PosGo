@@ -7,8 +7,8 @@ namespace PosGo.Domain.Entities;
 // =====================================
 public class DishSkuVariantOption
 {
-    public Guid DishSkuId { get; private set; }
-    public Guid VariantOptionId { get; private set; }
+    public int DishSkuId { get; private set; }
+    public int VariantOptionId { get; private set; }
 
     public virtual DishSku DishSku { get; private set; } = null!;
     public virtual DishVariantOption VariantOption { get; private set; } = null!;

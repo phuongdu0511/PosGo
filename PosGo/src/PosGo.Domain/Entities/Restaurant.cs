@@ -14,7 +14,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public string? City { get; private set; }
     public string? Country { get; private set; }
     public string? Phone { get; private set; }
-    public Guid DefaultLanguageId { get; private set; }
+    public int DefaultLanguageId { get; private set; }
     public string? TimeZone { get; private set; }
     public string? LogoUrl { get; private set; }
     public string? Description { get; private set; }
@@ -32,11 +32,8 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public virtual ICollection<DishVariant> DishVariants { get; private set; }
     public virtual ICollection<DishVariantOption> DishVariantOptions { get; private set; }
     public virtual ICollection<DishSku> DishSkus { get; private set; }
-    public virtual ICollection<DishAttributeGroup> DishAttributeGroups { get; private set; }
-    public virtual ICollection<DishAttributeItem> DishAttributeItems { get; private set; }
     public virtual ICollection<Order> Orders { get; private set; }
     public virtual ICollection<OrderItem> OrderItems { get; private set; }
-    public virtual ICollection<OrderItemAttribute> OrderItemAttributes { get; private set; }
     public virtual ICollection<RestaurantOpeningHour> OpeningHours { get; private set; }
     public virtual ICollection<RestaurantPlan> RestaurantPlans { get; set; }
     public virtual User? OwnerUser { get; private set; }
@@ -45,7 +42,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
         Guid id,
         string name,
         string slug,
-        Guid defaultLanguageId,
+        int defaultLanguageId,
         string? address,
         string? city,
         string? country,
@@ -73,7 +70,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
         Guid id,
         string name,
         string slug,
-        Guid defaultLanguageId,
+        int defaultLanguageId,
         string? address,
         string? city,
         string? country,
@@ -101,7 +98,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public void Update(
         string name,
         string slug,
-        Guid defaultLanguageId,
+        int defaultLanguageId,
         string? address,
         string? city,
         string? country,

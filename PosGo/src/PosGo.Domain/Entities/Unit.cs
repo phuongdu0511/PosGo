@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  MENU: UNIT / CATEGORY / DISH
 // =====================================
-public class Unit : SoftDeletableEntity<Guid>
+public class Unit : SoftDeletableEntity<int>
 {
     public Guid? RestaurantId { get; private set; }   // null = global unit
     public string Code { get; private set; } = null!; // GLASS...

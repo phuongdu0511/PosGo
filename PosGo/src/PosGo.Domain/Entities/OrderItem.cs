@@ -5,13 +5,13 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  ORDER / REPORT
 // =====================================
-public class OrderItem : AuditableEntity<Guid>, ITenantEntity
+public class OrderItem : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid OrderId { get; private set; }
+    public int OrderId { get; private set; }
 
-    public Guid? DishId { get; private set; }
-    public Guid? DishSkuId { get; private set; }
+    public int? DishId { get; private set; }
+    public int? DishSkuId { get; private set; }
 
     public string DishName { get; private set; } = null!;    // snapshot
     public string? DishUnit { get; private set; }           // snapshot
@@ -27,6 +27,5 @@ public class OrderItem : AuditableEntity<Guid>, ITenantEntity
     public virtual Order Order { get; private set; } = null!;
     public virtual Dish? Dish { get; private set; }
     public virtual DishSku? DishSku { get; private set; }
-
-    public virtual ICollection<OrderItemAttribute> Attributes { get; private set; }
+    public virtual ICollection<OrderItemVariantOption> VariantOptions { get; private set; }
 }

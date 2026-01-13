@@ -1,6 +1,5 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Services.V1.Table;
 using PosGo.Domain.Abstractions.Repositories;
@@ -11,12 +10,12 @@ namespace PosGo.Application.UserCases.V1.Commands.Table;
 
 public sealed class CreateTableAreaCommandHandler : ICommandHandler<Command.CreateTableAreaCommand>
 {
-    private readonly IRepositoryBase<TableArea, Guid> _tableAreaRepository;
+    private readonly IRepositoryBase<TableArea, int> _tableAreaRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public CreateTableAreaCommandHandler(
-        IRepositoryBase<TableArea, Guid> tableAreaRepository,
+        IRepositoryBase<TableArea, int> tableAreaRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper)
     {
@@ -35,7 +34,7 @@ public sealed class CreateTableAreaCommandHandler : ICommandHandler<Command.Crea
 
         // Kiểm tra trùng tên trong cùng nhà hàng
         var existingArea = await _tableAreaRepository.FindSingleAsync(
-            x => x.RestaurantId == restaurantId.Value && 
+            x => x.RestaurantId == restaurantId.Value &&
                  x.Name.ToLower() == request.Name.ToLower());
 
         if (existingArea != null)
@@ -44,7 +43,6 @@ public sealed class CreateTableAreaCommandHandler : ICommandHandler<Command.Crea
         }
 
         var tableArea = Domain.Entities.TableArea.Create(
-            Guid.NewGuid(),
             restaurantId.Value,
             request.Name,
             request.SortOrder,

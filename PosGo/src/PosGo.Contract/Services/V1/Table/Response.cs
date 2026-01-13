@@ -3,18 +3,15 @@ namespace PosGo.Contract.Services.V1.Table;
 public static class Response
 {
     public record TableAreaResponse(
-        Guid Id,
         Guid RestaurantId,
         string Name,
         int SortOrder,
-        bool IsActive,
-        int TableCount
+        bool IsActive
     );
 
     public record TableResponse(
-        Guid Id,
         Guid RestaurantId,
-        Guid? AreaId,
+        int? AreaId,
         string? AreaName,
         string Name,
         string QrCodeToken,
@@ -25,10 +22,9 @@ public static class Response
     );
 
     public record TableDetailResponse(
-        Guid Id,
         Guid RestaurantId,
         string RestaurantName,
-        Guid? AreaId,
+        int? AreaId,
         string? AreaName,
         string Name,
         string QrCodeToken,

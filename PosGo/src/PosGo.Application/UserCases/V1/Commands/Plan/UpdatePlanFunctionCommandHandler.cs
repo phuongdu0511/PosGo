@@ -6,11 +6,11 @@ namespace PosGo.Application.UserCases.V1.Commands.Plan;
 
 public sealed class UpdatePlanFunctionCommandHandler : ICommandHandler<Command.UpdatePlanFunctionCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IRepositoryBase<Domain.Entities.PlanFunction, int> _planFunctionRepository;
 
     public UpdatePlanFunctionCommandHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IRepositoryBase<Domain.Entities.PlanFunction, int> planFunctionRepository)
     {
         _planRepository = planRepository;
@@ -47,7 +47,7 @@ public sealed class UpdatePlanFunctionCommandHandler : ICommandHandler<Command.U
         }
 
         // 4. Update ActionValue
-        planFunction.ActionValue = request.ActionValue;
+        planFunction.Update(request.ActionValue);
 
         return Result.Success();
     }

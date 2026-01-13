@@ -8,9 +8,9 @@ namespace PosGo.Application.UserCases.V1.Commands.Plan;
 
 public sealed class UpdatePlanCommandHandler : ICommandHandler<Command.UpdatePlanCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
 
-    public UpdatePlanCommandHandler(IRepositoryBase<Domain.Entities.Plan, Guid> planRepository)
+    public UpdatePlanCommandHandler(IRepositoryBase<Domain.Entities.Plan, int> planRepository)
     {
         _planRepository = planRepository;
     }

@@ -5,10 +5,10 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  TABLE / QR
 // =====================================
-public class Table : AuditableEntity<Guid>, ITenantEntity
+public class Table : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid? AreaId { get; private set; }
+    public int? AreaId { get; private set; }
     public string Name { get; private set; } = null!;
     public string QrCodeToken { get; private set; } = null!;   // unique
     public int? Seats { get; private set; }
@@ -20,17 +20,15 @@ public class Table : AuditableEntity<Guid>, ITenantEntity
     public virtual ICollection<Order> Orders { get; private set; }
 
     public Table(
-        Guid id, 
         Guid restaurantId, 
         string name, 
         string qrCodeToken, 
-        Guid? areaId = null, 
+        int? areaId = null, 
         int? seats = null, 
-        bool isActive = true, 
         bool doNotAllowOrder = false, 
+        bool isActive = true, 
         decimal? minOrderAmount = null)
     {
-        Id = id;
         RestaurantId = restaurantId;
         AreaId = areaId;
         Name = name;
@@ -41,12 +39,12 @@ public class Table : AuditableEntity<Guid>, ITenantEntity
         MinOrderAmount = minOrderAmount;
     }
 
-    public static Table Create(Guid id, Guid restaurantId, string code, string qrCodeToken, Guid? areaId = null, int? seats = null, bool doNotAllowOrder = false, bool isActive = true, decimal? minOrderAmount = null)
+    public static Table Create(Guid restaurantId, string name, string qrCodeToken, int? areaId = null, int? seats = null, bool doNotAllowOrder = false, bool isActive = true, decimal? minOrderAmount = null)
     {
-        return new Table(id, restaurantId, code, qrCodeToken, areaId, seats, doNotAllowOrder, isActive, minOrderAmount);
+        return new Table(restaurantId, name, qrCodeToken, areaId, seats, doNotAllowOrder, isActive, minOrderAmount);
     }
 
-    public void Update(Guid? areaId, string name, int? seats, bool doNotAllowOrder, decimal? minOrderAmount)
+    public void Update(int? areaId, string name, int? seats, bool doNotAllowOrder, decimal? minOrderAmount)
     {
         AreaId = areaId;
         Name = name;

@@ -30,13 +30,8 @@ public static class TableNames
     public const string DishVariantOptionTranslations = nameof(DishVariantOptionTranslations); 
     public const string DishSkus = nameof(DishSkus); 
     public const string DishSkuVariantOptions = nameof(DishSkuVariantOptions); 
-    public const string DishAttributeGroups = nameof(DishAttributeGroups); 
-    public const string DishAttributeGroupTranslations = nameof(DishAttributeGroupTranslations); 
-    public const string DishAttributeItems = nameof(DishAttributeItems); 
-    public const string DishAttributeItemTranslations = nameof(DishAttributeItemTranslations); 
     public const string Orders = nameof(Orders); 
     public const string OrderItems = nameof(OrderItems); 
-    public const string OrderItemAttributes = nameof(OrderItemAttributes); 
     public const string RestaurantOpeningHours = nameof(RestaurantOpeningHours);
     public const string Functions = nameof(Functions);
     public const string UserRoles = nameof(UserRoles);
@@ -47,4 +42,5 @@ public static class TableNames
     public const string Plans = nameof(Plans);
     public const string RestaurantPlans = nameof(RestaurantPlans);
     public const string PlanFunctions = nameof(PlanFunctions);
+    public const string OrderItemVariantOptions = nameof(OrderItemVariantOptions);
 }

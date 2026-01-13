@@ -33,6 +33,11 @@ internal sealed class DishVariantOptionConfiguration
                .IsRequired()
                .HasDefaultValue(true);
 
+        builder.Property(x => x.PriceAdjustment)
+               .HasColumnType("decimal(18,2)")
+               .IsRequired()
+               .HasDefaultValue(0);
+
         // FK -> Restaurant
         builder.HasOne(x => x.Restaurant)
                .WithMany(r => r.DishVariantOptions)

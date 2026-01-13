@@ -8,12 +8,12 @@ namespace PosGo.Application.UserCases.V1.Commands.Restaurant;
 public sealed class CreateRestaurantCommandHandler : ICommandHandler<Command.CreateRestaurantCommand>
 {
     private readonly IRepositoryBase<Domain.Entities.Restaurant, Guid> _restaurantRepository;
-    private readonly IRepositoryBase<Domain.Entities.Language, Guid> _languageRepository;
+    private readonly IRepositoryBase<Domain.Entities.Language, int> _languageRepository;
     private readonly IMapper _mapper;
 
     public CreateRestaurantCommandHandler(
         IRepositoryBase<Domain.Entities.Restaurant, Guid> restaurantRepository,
-        IRepositoryBase<Domain.Entities.Language, Guid> languageRepository,
+        IRepositoryBase<Domain.Entities.Language, int> languageRepository,
         IMapper mapper)
     {
         _restaurantRepository = restaurantRepository;

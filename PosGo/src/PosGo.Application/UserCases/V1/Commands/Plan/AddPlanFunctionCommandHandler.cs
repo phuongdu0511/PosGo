@@ -1,19 +1,20 @@
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Services.V1.Plan;
 using PosGo.Domain.Abstractions.Repositories;
+using PosGo.Domain.Entities;
 using PosGo.Persistence;
 
 namespace PosGo.Application.UserCases.V1.Commands.Plan;
 
 public sealed class AddPlanFunctionCommandHandler : ICommandHandler<Command.AddPlanFunctionCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IRepositoryBase<Domain.Entities.Function, int> _functionRepository;
     private readonly IRepositoryBase<Domain.Entities.PlanFunction, int> _planFunctionRepository;
     private readonly ApplicationDbContext _context;
 
     public AddPlanFunctionCommandHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IRepositoryBase<Domain.Entities.Function, int> functionRepository,
         IRepositoryBase<Domain.Entities.PlanFunction, int> planFunctionRepository,
         ApplicationDbContext context)
@@ -61,13 +62,7 @@ public sealed class AddPlanFunctionCommandHandler : ICommandHandler<Command.AddP
         }
 
         // 5. Tạo PlanFunction mới
-        var planFunction = new Domain.Entities.PlanFunction
-        {
-            PlanId = request.PlanId,
-            FunctionId = request.FunctionId,
-            ActionValue = request.ActionValue,
-            IsActive = true
-        };
+        var planFunction = PlanFunction.Create(request.PlanId, request.FunctionId, request.ActionValue, true);
 
         _planFunctionRepository.Add(planFunction);
 

@@ -5,10 +5,10 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  VARIANTS + SKU
 // =====================================
-public class DishVariant : SoftDeletableEntity<Guid>, ITenantEntity
+public class DishVariant : SoftDeletableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid DishId { get; private set; }
+    public int DishId { get; private set; }
 
     public string Code { get; private set; } = null!;  // SIZE...
     public int SortOrder { get; private set; }

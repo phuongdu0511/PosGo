@@ -12,8 +12,8 @@ using PosGo.Persistence;
 namespace PosGo.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260102085245_UpdateTypeColumnRestaurantUserId")]
-    partial class UpdateTypeColumnRestaurantUserId
+    [Migration("20260113061534_InitCreate")]
+    partial class InitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,17 +135,19 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.CodeItem", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("CodeSetId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("CodeSetId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -182,15 +184,17 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.CodeItemTranslation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("CodeItemId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("CodeItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -209,9 +213,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.CodeSet", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -249,12 +255,14 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Dish", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
@@ -272,8 +280,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("DeletedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DishTypeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("DishTypeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
@@ -300,8 +308,8 @@ namespace PosGo.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<Guid?>("UnitId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -326,208 +334,13 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("Dishes", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("DeletedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DishId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMultipleSelection")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsRequired")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int?>("MaxSelected")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MinSelected")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("RestaurantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DishId");
-
-                    b.HasIndex("RestaurantId");
-
-                    b.ToTable("DishAttributeGroups", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeGroupTranslation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AttributeGroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageId");
-
-                    b.HasIndex("AttributeGroupId", "LanguageId")
-                        .IsUnique();
-
-                    b.ToTable("DishAttributeGroupTranslations", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AttributeGroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("DeletedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDefault")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("RestaurantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttributeGroupId");
-
-                    b.HasIndex("RestaurantId");
-
-                    b.ToTable("DishAttributeItems", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeItemTranslation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AttributeItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageId");
-
-                    b.HasIndex("AttributeItemId", "LanguageId")
-                        .IsUnique();
-
-                    b.ToTable("DishAttributeItemTranslations", (string)null);
-                });
-
             modelBuilder.Entity("PosGo.Domain.Entities.DishCategory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
@@ -553,8 +366,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -581,12 +394,14 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishCategoryTranslation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -598,8 +413,8 @@ namespace PosGo.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -624,9 +439,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishSku", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -645,8 +462,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("DeletedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DishId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DishId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
@@ -689,11 +506,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishSkuVariantOption", b =>
                 {
-                    b.Property<Guid>("DishSkuId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DishSkuId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("VariantOptionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("VariantOptionId")
+                        .HasColumnType("int");
 
                     b.HasKey("DishSkuId", "VariantOptionId");
 
@@ -704,9 +521,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishTranslation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -718,11 +537,11 @@ namespace PosGo.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid>("DishId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DishId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -747,9 +566,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishVariant", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -768,8 +589,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("DeletedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DishId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DishId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -805,9 +626,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishVariantOption", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -839,6 +662,11 @@ namespace PosGo.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<decimal>("PriceAdjustment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
 
@@ -853,8 +681,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("UpdatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("VariantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("VariantId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -868,20 +696,22 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishVariantOptionTranslation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<Guid>("VariantOptionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("VariantOptionId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -895,20 +725,22 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishVariantTranslation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<Guid>("VariantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("VariantId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -976,9 +808,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Language", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -1017,9 +851,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Order", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset?>("CancelledAt")
                         .HasColumnType("datetimeoffset");
@@ -1060,8 +896,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("StatusId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("StatusId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("SubTotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -1069,8 +905,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<DateTimeOffset?>("SubmittedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid>("TableId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("TableId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1100,9 +936,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.OrderItem", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1110,16 +948,16 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DishId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("DishId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DishName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<Guid?>("DishSkuId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("DishSkuId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DishUnit")
                         .HasMaxLength(100)
@@ -1129,8 +967,8 @@ namespace PosGo.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(9,2)");
@@ -1171,54 +1009,39 @@ namespace PosGo.Persistence.Migrations
                     b.ToTable("OrderItems", (string)null);
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.OrderItemAttribute", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.OrderItemVariantOption", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrderItemId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<int>("VariantOptionId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("GroupName")
-                        .IsRequired()
+                    b.Property<string>("OptionName")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("ItemName")
-                        .IsRequired()
+                    b.Property<decimal?>("PriceAdjustment")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VariantName")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<Guid>("OrderItemId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasKey("OrderItemId", "VariantOptionId");
 
-                    b.Property<Guid>("RestaurantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasIndex("VariantOptionId");
 
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderItemId");
-
-                    b.HasIndex("RestaurantId");
-
-                    b.ToTable("OrderItemAttributes", (string)null);
+                    b.ToTable("OrderItemVariantOptions", (string)null);
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Plan", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -1275,8 +1098,8 @@ namespace PosGo.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<Guid>("PlanId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1286,56 +1109,6 @@ namespace PosGo.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("PlanFunctions", (string)null);
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.Product", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("DeletedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Sku")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("UpdatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Restaurant", b =>
@@ -1362,8 +1135,8 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("DefaultLanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DefaultLanguageId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
@@ -1392,6 +1165,9 @@ namespace PosGo.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -1417,6 +1193,8 @@ namespace PosGo.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DefaultLanguageId");
+
+                    b.HasIndex("OwnerUserId");
 
                     b.HasIndex("RestaurantGroupId");
 
@@ -1486,8 +1264,8 @@ namespace PosGo.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -1564,8 +1342,8 @@ namespace PosGo.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<Guid>("PlanId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -1694,17 +1472,14 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Table", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("AreaId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1712,22 +1487,23 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("DeletedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("DoNotAllowOrder")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<decimal?>("MinOrderAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("QrCodeToken")
                         .IsRequired()
@@ -1738,9 +1514,6 @@ namespace PosGo.Persistence.Migrations
 
                     b.Property<int?>("Seats")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("StatusId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1755,21 +1528,19 @@ namespace PosGo.Persistence.Migrations
                     b.HasIndex("QrCodeToken")
                         .IsUnique();
 
-                    b.HasIndex("StatusId");
-
-                    b.HasIndex("RestaurantId", "Code")
+                    b.HasIndex("RestaurantId", "Name")
                         .IsUnique();
-
-                    b.HasIndex("RestaurantId", "StatusId");
 
                     b.ToTable("Tables", (string)null);
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.TableArea", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -1777,19 +1548,10 @@ namespace PosGo.Persistence.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("DeletedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1819,9 +1581,11 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Unit", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -1873,20 +1637,22 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.UnitTranslation", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("LanguageId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("UnitId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -2096,82 +1862,6 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Restaurant");
 
                     b.Navigation("Unit");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeGroup", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.Dish", "Dish")
-                        .WithMany("AttributeGroups")
-                        .HasForeignKey("DishId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Restaurant", "Restaurant")
-                        .WithMany("DishAttributeGroups")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Dish");
-
-                    b.Navigation("Restaurant");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeGroupTranslation", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.DishAttributeGroup", "AttributeGroup")
-                        .WithMany("Translations")
-                        .HasForeignKey("AttributeGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Language", "Language")
-                        .WithMany("DishAttributeGroupTranslations")
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AttributeGroup");
-
-                    b.Navigation("Language");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeItem", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.DishAttributeGroup", "AttributeGroup")
-                        .WithMany("Items")
-                        .HasForeignKey("AttributeGroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Restaurant", "Restaurant")
-                        .WithMany("DishAttributeItems")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AttributeGroup");
-
-                    b.Navigation("Restaurant");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeItemTranslation", b =>
-                {
-                    b.HasOne("PosGo.Domain.Entities.DishAttributeItem", "AttributeItem")
-                        .WithMany("Translations")
-                        .HasForeignKey("AttributeItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PosGo.Domain.Entities.Language", "Language")
-                        .WithMany("DishAttributeItemTranslations")
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("AttributeItem");
-
-                    b.Navigation("Language");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishCategory", b =>
@@ -2417,23 +2107,23 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("PosGo.Domain.Entities.OrderItemAttribute", b =>
+            modelBuilder.Entity("PosGo.Domain.Entities.OrderItemVariantOption", b =>
                 {
                     b.HasOne("PosGo.Domain.Entities.OrderItem", "OrderItem")
-                        .WithMany("Attributes")
+                        .WithMany("VariantOptions")
                         .HasForeignKey("OrderItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.Restaurant", "Restaurant")
-                        .WithMany("OrderItemAttributes")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("PosGo.Domain.Entities.DishVariantOption", "VariantOption")
+                        .WithMany()
+                        .HasForeignKey("VariantOptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("OrderItem");
 
-                    b.Navigation("Restaurant");
+                    b.Navigation("VariantOption");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.PlanFunction", b =>
@@ -2463,12 +2153,19 @@ namespace PosGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("PosGo.Domain.Entities.User", "OwnerUser")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("PosGo.Domain.Entities.RestaurantGroup", "RestaurantGroup")
                         .WithMany("Restaurants")
                         .HasForeignKey("RestaurantGroupId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("DefaultLanguage");
+
+                    b.Navigation("OwnerUser");
 
                     b.Navigation("RestaurantGroup");
                 });
@@ -2576,16 +2273,9 @@ namespace PosGo.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PosGo.Domain.Entities.CodeItem", "Status")
-                        .WithMany("TablesUsingStatus")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Area");
 
                     b.Navigation("Restaurant");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.TableArea", b =>
@@ -2634,8 +2324,6 @@ namespace PosGo.Persistence.Migrations
 
                     b.Navigation("OrdersUsingStatus");
 
-                    b.Navigation("TablesUsingStatus");
-
                     b.Navigation("Translations");
                 });
 
@@ -2646,8 +2334,6 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Dish", b =>
                 {
-                    b.Navigation("AttributeGroups");
-
                     b.Navigation("OrderItems");
 
                     b.Navigation("Skus");
@@ -2655,18 +2341,6 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Translations");
 
                     b.Navigation("Variants");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeGroup", b =>
-                {
-                    b.Navigation("Items");
-
-                    b.Navigation("Translations");
-                });
-
-            modelBuilder.Entity("PosGo.Domain.Entities.DishAttributeItem", b =>
-                {
-                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.DishCategory", b =>
@@ -2710,10 +2384,6 @@ namespace PosGo.Persistence.Migrations
 
                     b.Navigation("DefaultRestaurants");
 
-                    b.Navigation("DishAttributeGroupTranslations");
-
-                    b.Navigation("DishAttributeItemTranslations");
-
                     b.Navigation("DishCategoryTranslations");
 
                     b.Navigation("DishTranslations");
@@ -2734,7 +2404,7 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.OrderItem", b =>
                 {
-                    b.Navigation("Attributes");
+                    b.Navigation("VariantOptions");
                 });
 
             modelBuilder.Entity("PosGo.Domain.Entities.Plan", b =>
@@ -2746,10 +2416,6 @@ namespace PosGo.Persistence.Migrations
 
             modelBuilder.Entity("PosGo.Domain.Entities.Restaurant", b =>
                 {
-                    b.Navigation("DishAttributeGroups");
-
-                    b.Navigation("DishAttributeItems");
-
                     b.Navigation("DishCategories");
 
                     b.Navigation("DishSkus");
@@ -2761,8 +2427,6 @@ namespace PosGo.Persistence.Migrations
                     b.Navigation("Dishes");
 
                     b.Navigation("OpeningHours");
-
-                    b.Navigation("OrderItemAttributes");
 
                     b.Navigation("OrderItems");
 

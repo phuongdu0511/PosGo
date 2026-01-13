@@ -8,11 +8,11 @@ namespace PosGo.Application.UserCases.V1.Commands.Plan;
 
 public sealed class CreatePlanCommandHandler : ICommandHandler<Command.CreatePlanCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IRepositoryBase<Domain.Entities.Function, int> _functionRepository;
     private readonly IRepositoryBase<Domain.Entities.PlanFunction, int> _planFunctionRepository;
     public CreatePlanCommandHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IRepositoryBase<Domain.Entities.Function, int> functionRepository,
         IRepositoryBase<Domain.Entities.PlanFunction, int> planFunctionRepository)
     {
@@ -59,8 +59,7 @@ public sealed class CreatePlanCommandHandler : ICommandHandler<Command.CreatePla
         }
 
         // 3. Tạo Plan
-        var planId = Guid.NewGuid();
-        var plan = Domain.Entities.Plan.Create(planId, normalizedCode, request.Description);
+        var plan = Domain.Entities.Plan.Create(normalizedCode, request.Description);
         _planRepository.Add(plan);
 
         // 4. Tạo PlanFunction cho từng function trong request
@@ -73,14 +72,7 @@ public sealed class CreatePlanCommandHandler : ICommandHandler<Command.CreatePla
                 continue;
             }
 
-            var pf = new PlanFunction
-            {
-                PlanId = planId,
-                FunctionId = item.FunctionId,
-                ActionValue = item.ActionValue,
-                IsActive = true
-            };
-
+            var pf = PlanFunction.Create(plan, item.FunctionId, item.ActionValue);
             planFunctions.Add(pf);
         }
 

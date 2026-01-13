@@ -5,10 +5,10 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  MENU: UNIT / CATEGORY / DISH
 // =====================================
-public class DishCategoryTranslation : AuditableEntity<Guid>
+public class DishCategoryTranslation : AuditableEntity<int>
 {
-    public Guid CategoryId { get; private set; }
-    public Guid LanguageId { get; private set; }
+    public int CategoryId { get; private set; }
+    public int LanguageId { get; private set; }
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
 

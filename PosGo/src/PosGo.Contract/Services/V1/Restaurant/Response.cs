@@ -10,7 +10,7 @@ public static class Response
         string? City,
         string? Country,
         string? Phone,
-        Guid DefaultLanguageId,
+        int DefaultLanguageId,
         string? TimeZone,
         string? LogoUrl,
         string? Description,

@@ -75,7 +75,7 @@ public class PlanController : ApiController
     [ProducesResponseType(typeof(Result<Response.PlanResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.View)]
-    public async Task<IActionResult> GetPlanById(Guid planId)
+    public async Task<IActionResult> GetPlanById(int planId)
     {
         var result = await Sender.Send(new Query.GetPlanByIdQuery(planId));
 
@@ -92,7 +92,7 @@ public class PlanController : ApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.Update)]
-    public async Task<IActionResult> UpdatePlan(Guid planId, [FromBody] Command.UpdatePlanCommand request)
+    public async Task<IActionResult> UpdatePlan(int planId, [FromBody] Command.UpdatePlanCommand request)
     {
         var command = new Command.UpdatePlanCommand(planId, request.Code, request.Description, request.IsActive);
         var result = await Sender.Send(command);
@@ -127,7 +127,7 @@ public class PlanController : ApiController
     [ProducesResponseType(typeof(Result<IEnumerable<Response.PlanFunctionResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.View)]
-    public async Task<IActionResult> GetPlanFunctions(Guid planId)
+    public async Task<IActionResult> GetPlanFunctions(int planId)
     {
         var result = await Sender.Send(new Query.GetPlanFunctionsQuery(planId));
 
@@ -144,7 +144,7 @@ public class PlanController : ApiController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.Add)]
-    public async Task<IActionResult> AddPlanFunction(Guid planId, [FromBody] Command.AddPlanFunctionCommand request)
+    public async Task<IActionResult> AddPlanFunction(int planId, [FromBody] Command.AddPlanFunctionCommand request)
     {
         var command = new Command.AddPlanFunctionCommand(planId, request.FunctionId, request.ActionValue);
         var result = await Sender.Send(command);
@@ -162,7 +162,7 @@ public class PlanController : ApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.Update)]
-    public async Task<IActionResult> UpdatePlanFunction(Guid planId, [FromBody] Command.UpdatePlanFunctionCommand request)
+    public async Task<IActionResult> UpdatePlanFunction(int planId, [FromBody] Command.UpdatePlanFunctionCommand request)
     {
         var command = new Command.UpdatePlanFunctionCommand(planId, request.FunctionId, request.ActionValue);
         var result = await Sender.Send(command);
@@ -180,7 +180,7 @@ public class PlanController : ApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [BinaryAuthorize(PermissionConstants.ManagePlans, ActionType.Delete)]
-    public async Task<IActionResult> RemovePlanFunction(Guid planId, [FromBody] Command.RemovePlanFunctionCommand request)
+    public async Task<IActionResult> RemovePlanFunction(int planId, [FromBody] Command.RemovePlanFunctionCommand request)
     {
         var command = new Command.RemovePlanFunctionCommand(planId, request.FunctionId);
         var result = await Sender.Send(command);

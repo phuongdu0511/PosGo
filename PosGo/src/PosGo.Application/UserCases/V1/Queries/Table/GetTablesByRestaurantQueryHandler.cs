@@ -15,13 +15,13 @@ namespace PosGo.Application.UserCases.V1.Queries.Table;
 
 public sealed class GetTablesByRestaurantQueryHandler : IQueryHandler<Query.GetTablesByRestaurantQuery, PagedResult<Response.TableResponse>>
 {
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
     private readonly ApplicationDbContext _context;
 
     public GetTablesByRestaurantQueryHandler(
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper,
         ApplicationDbContext context)

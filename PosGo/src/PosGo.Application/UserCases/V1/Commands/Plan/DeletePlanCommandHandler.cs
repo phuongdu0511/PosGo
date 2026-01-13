@@ -8,11 +8,11 @@ namespace PosGo.Application.UserCases.V1.Commands.Plan;
 
 public sealed class DeletePlanCommandHandler : ICommandHandler<Command.DeletePlanCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly ApplicationDbContext _context;
 
     public DeletePlanCommandHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         ApplicationDbContext context)
     {
         _planRepository = planRepository;

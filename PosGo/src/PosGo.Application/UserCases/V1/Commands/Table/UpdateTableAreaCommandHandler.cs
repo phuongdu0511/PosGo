@@ -11,12 +11,12 @@ namespace PosGo.Application.UserCases.V1.Commands.Table;
 
 public sealed class UpdateTableAreaCommandHandler : ICommandHandler<Command.UpdateTableAreaCommand>
 {
-    private readonly IRepositoryBase<TableArea, Guid> _tableAreaRepository;
+    private readonly IRepositoryBase<TableArea, int> _tableAreaRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public UpdateTableAreaCommandHandler(
-        IRepositoryBase<TableArea, Guid> tableAreaRepository,
+        IRepositoryBase<TableArea, int> tableAreaRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper)
     {

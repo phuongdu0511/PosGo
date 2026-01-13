@@ -29,8 +29,6 @@ public static class ApplicationDbContextSeed
                 FullName = adminUserName,
                 Email = $"{adminUserName.ToLower()}@gmail.com",
                 EmailConfirmed = true, // Set for admin,
-                CreatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8"),
-                UpdatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8")
             };
             await userManager.CreateAsync(userAdmin, password);
         }
@@ -44,8 +42,6 @@ public static class ApplicationDbContextSeed
                 RoleCode = adminRoleName.ToLower(),
                 Description = $"Role for {adminUserName}",
                 Id = Guid.NewGuid(),
-                CreatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8"),
-                UpdatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8")
             };
             await roleManager.CreateAsync(role);
             await userManager.AddToRoleAsync(userAdmin, role.Name);
@@ -97,8 +93,6 @@ public static class ApplicationDbContextSeed
                 FullName = adminUserName,
                 Email = $"{adminUserName.ToLower()}@gmail.com",
                 EmailConfirmed = true, // Set for user test
-                CreatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8"),
-                UpdatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8")
             };
             await userManager.CreateAsync(userAdmin, password);
         }
@@ -112,8 +106,6 @@ public static class ApplicationDbContextSeed
                 RoleCode = adminRoleName.ToLower(),
                 Description = $"Role for {adminUserName}",
                 Id = Guid.NewGuid(),
-                CreatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8"),
-                UpdatedByUserId = Guid.Parse("F3F48780-6A03-4C88-AFB5-E42A01D395F8")
             };
             await roleManager.CreateAsync(role);
             await userManager.AddToRoleAsync(userAdmin, role.Name);
@@ -152,6 +144,24 @@ public static class ApplicationDbContextSeed
 
     private static async Task SeedDataFunctions(ApplicationDbContext context)
     {
+        //if (!(await context.Languages.AnyAsync()))
+        //{
+        //    context.Languages.Add(new Language
+        //    {
+        //        Code = "vi",
+        //        Name = "Tiếng Việt",
+        //        IsActive = true
+        //    });
+        //    context.Languages.Add(new Language
+        //    {
+        //        Code = "en",
+        //        Name = "English",
+        //        IsActive = true
+        //    });
+        //    // New Permission Objects
+        //    await context.SaveChangesAsync();
+        //}
+
         //if (!(await context.Functions.AnyAsync()))
         //{
         //    context.Functions.Add(new Function
@@ -282,6 +292,30 @@ public static class ApplicationDbContextSeed
         //        Code = PermissionConstants.SwitchRestaurant,
         //        Name = "Chuyển chi nhánh",
         //        Url = @"/" + PermissionConstants.SwitchRestaurant,
+        //        Status = Status.Active,
+        //        SortOrder = 1
+        //    });
+
+        //    context.Functions.Add(new Function
+        //    {
+        //        Id = 12,
+        //        Key = PermissionConstants.ManageInventory,
+        //        ActionValue = 15,
+        //        Code = PermissionConstants.ManageInventory,
+        //        Name = "Quản lý kho",
+        //        Url = @"/" + PermissionConstants.ManageInventory,
+        //        Status = Status.Active,
+        //        SortOrder = 1
+        //    });
+
+        //    context.Functions.Add(new Function
+        //    {
+        //        Id = 13,
+        //        Key = PermissionConstants.ManagePlans,
+        //        ActionValue = 15,
+        //        Code = PermissionConstants.ManagePlans,
+        //        Name = "Quản lý gói chức năng",
+        //        Url = @"/" + PermissionConstants.ManagePlans,
         //        Status = Status.Active,
         //        SortOrder = 1
         //    });

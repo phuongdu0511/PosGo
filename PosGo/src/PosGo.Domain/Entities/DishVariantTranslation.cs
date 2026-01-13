@@ -5,10 +5,10 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  VARIANTS + SKU
 // =====================================
-public class DishVariantTranslation : Entity<Guid>
+public class DishVariantTranslation : Entity<int>
 {
-    public Guid VariantId { get; private set; }
-    public Guid LanguageId { get; private set; }
+    public int VariantId { get; private set; }
+    public int LanguageId { get; private set; }
     public string Name { get; private set; } = null!;
 
     public virtual DishVariant Variant { get; private set; } = null!;

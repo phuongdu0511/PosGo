@@ -9,11 +9,11 @@ namespace PosGo.Application.UserCases.V1.Commands.Restaurant;
 public sealed class UpdateRestaurantPlanCommandHandler : ICommandHandler<Command.UpdateRestaurantPlanCommand>
 {
     private readonly IRepositoryBase<Domain.Entities.Restaurant, Guid> _restaurantRepository;
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IRepositoryBase<Domain.Entities.RestaurantPlan, int> _restaurantPlanRepository;
     public UpdateRestaurantPlanCommandHandler(
         IRepositoryBase<Domain.Entities.Restaurant, Guid> restaurantRepository,
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IRepositoryBase<Domain.Entities.RestaurantPlan, int> restaurantPlanRepository)
     {
         _restaurantRepository = restaurantRepository;

@@ -11,12 +11,12 @@ namespace PosGo.Application.UserCases.V1.Queries.Plan;
 
 public sealed class GetPlansQueryHandler : IQueryHandler<Query.GetPlansQuery, PagedResult<Response.PlanResponse>>
 {
-    private readonly IRepositoryBase<Domain.Entities.Plan, Guid> _planRepository;
+    private readonly IRepositoryBase<Domain.Entities.Plan, int> _planRepository;
     private readonly IMapper _mapper;
     private readonly ApplicationDbContext _context;
 
     public GetPlansQueryHandler(
-        IRepositoryBase<Domain.Entities.Plan, Guid> planRepository,
+        IRepositoryBase<Domain.Entities.Plan, int> planRepository,
         IMapper mapper,
         ApplicationDbContext context)
     {

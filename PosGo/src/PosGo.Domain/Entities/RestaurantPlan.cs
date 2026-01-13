@@ -5,12 +5,12 @@ namespace PosGo.Domain.Entities;
 public class RestaurantPlan : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
-    public Guid PlanId { get; private set; }
+    public int PlanId { get; private set; }
     public bool IsActive { get; private set; }
     public virtual Restaurant Restaurant { get; private set; }
     public virtual Plan Plan { get; private set; }
 
-    public RestaurantPlan(Guid restaurantId, Guid planId)
+    public RestaurantPlan(Guid restaurantId, int planId)
     {
         RestaurantId = restaurantId;
         PlanId = planId;
@@ -18,7 +18,7 @@ public class RestaurantPlan : AuditableEntity<int>, ITenantEntity
     }
 
     // Factory method: chỗ khác muốn tạo phải đi qua đây
-    public static RestaurantPlan Create(Guid restaurantId, Guid planId)
+    public static RestaurantPlan Create(Guid restaurantId, int planId)
         => new RestaurantPlan(restaurantId, planId);
 
     // Đổi trạng thái

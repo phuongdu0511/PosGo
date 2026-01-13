@@ -10,13 +10,13 @@ namespace PosGo.Application.UserCases.V1.Commands.Table;
 
 public sealed class DeleteTableCommandHandler : ICommandHandler<Command.DeleteTableCommand>
 {
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
-    private readonly IRepositoryBase<Order, Guid> _orderRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
+    private readonly IRepositoryBase<Order, int> _orderRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public DeleteTableCommandHandler(
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
-        IRepositoryBase<Order, Guid> orderRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
+        IRepositoryBase<Order, int> orderRepository,
         IHttpContextAccessor httpContextAccessor)
     {
         _tableRepository = tableRepository;

@@ -5,7 +5,7 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  CORE / TENANT
 // =====================================
-public class Language : AuditableEntity<Guid>
+public class Language : AuditableEntity<int>
 {
     public string Code { get; private set; } = null!;   // vi, en...
     public string Name { get; private set; } = null!;
@@ -18,6 +18,4 @@ public class Language : AuditableEntity<Guid>
     public virtual ICollection<DishTranslation> DishTranslations { get; private set; }
     public virtual ICollection<DishVariantTranslation> DishVariantTranslations { get; private set; }
     public virtual ICollection<DishVariantOptionTranslation> DishVariantOptionTranslations { get; private set; }
-    public virtual ICollection<DishAttributeGroupTranslation> DishAttributeGroupTranslations { get; private set; }
-    public virtual ICollection<DishAttributeItemTranslation> DishAttributeItemTranslations { get; private set; }
 }

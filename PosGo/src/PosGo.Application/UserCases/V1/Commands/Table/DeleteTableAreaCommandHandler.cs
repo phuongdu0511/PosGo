@@ -10,13 +10,13 @@ namespace PosGo.Application.UserCases.V1.Commands.Table;
 
 public sealed class DeleteTableAreaCommandHandler : ICommandHandler<Command.DeleteTableAreaCommand>
 {
-    private readonly IRepositoryBase<TableArea, Guid> _tableAreaRepository;
-    private readonly IRepositoryBase<Domain.Entities.Table, Guid> _tableRepository;
+    private readonly IRepositoryBase<TableArea, int> _tableAreaRepository;
+    private readonly IRepositoryBase<Domain.Entities.Table, int> _tableRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public DeleteTableAreaCommandHandler(
-        IRepositoryBase<TableArea, Guid> tableAreaRepository,
-        IRepositoryBase<Domain.Entities.Table, Guid> tableRepository,
+        IRepositoryBase<TableArea, int> tableAreaRepository,
+        IRepositoryBase<Domain.Entities.Table, int> tableRepository,
         IHttpContextAccessor httpContextAccessor)
     {
         _tableAreaRepository = tableAreaRepository;
