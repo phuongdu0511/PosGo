@@ -28,6 +28,8 @@ internal sealed class DishSkuConfiguration : IEntityTypeConfiguration<DishSku>
                .IsRequired()
                .HasDefaultValue(true);
 
+        builder.HasIndex(x => new { x.RestaurantId, x.IsActive, x.StockQuantity });
+
         // Indexes theo DBML: (DishId, Code) unique; (DishId, IsDefault)
         builder.HasIndex(x => new { x.DishId, x.Code })
                .IsUnique();

@@ -43,4 +43,6 @@ public static class TableNames
     public const string RestaurantPlans = nameof(RestaurantPlans);
     public const string PlanFunctions = nameof(PlanFunctions);
     public const string OrderItemVariantOptions = nameof(OrderItemVariantOptions);
+    public const string DishComboItems = nameof(DishComboItems);
+    public const string DishImages = nameof(DishImages);
 }

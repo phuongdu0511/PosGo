@@ -25,6 +25,13 @@ internal sealed class DishCategoryConfiguration
                .IsRequired()
                .HasDefaultValue(true);
 
+        builder.Property(x => x.ShowOnMenu)
+               .IsRequired()
+               .HasDefaultValue(true);
+
+        builder.HasIndex(x => new { x.RestaurantId, x.ParentCategoryId, x.SortOrder });  // Query tree
+        builder.HasIndex(x => new { x.RestaurantId, x.IsActive });  // Query active categories
+
         // FK -> Restaurant
         builder.HasOne(x => x.Restaurant)
                .WithMany(r => r.DishCategories)

@@ -17,6 +17,8 @@ public class Dish : SoftDeletableAggregateRoot<int>, ITenantEntity
     public int SortOrder { get; private set; }
     public bool IsActive { get; private set; }
     public bool IsAvailable { get; private set; }
+    public bool ShowOnMenu { get; private set; }
+    public decimal? TaxRate { get; private set; }
     public virtual Restaurant Restaurant { get; private set; } = null!;
     public virtual DishCategory? Category { get; private set; }
     public virtual Unit? Unit { get; private set; }
@@ -25,4 +27,7 @@ public class Dish : SoftDeletableAggregateRoot<int>, ITenantEntity
     public virtual ICollection<DishVariant> Variants { get; private set; }
     public virtual ICollection<DishSku> Skus { get; private set; }
     public virtual ICollection<OrderItem> OrderItems { get; private set; }
+    public virtual ICollection<DishComboItem> ComboItems { get; private set; } // Món này là combo
+    public virtual ICollection<DishComboItem> UsedInCombos { get; private set; } // Món này được dùng trong combo
+    public virtual ICollection<DishImage> Images { get; private set; }
 }

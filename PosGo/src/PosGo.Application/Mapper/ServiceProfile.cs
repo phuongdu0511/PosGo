@@ -35,5 +35,9 @@ public class ServiceProfile : Profile
 
         CreateMap<Domain.Entities.Table, Contract.Services.V1.Table.Response.TableResponse>().ReverseMap();
         CreateMap<PagedResult<Domain.Entities.Table>, PagedResult<Contract.Services.V1.Table.Response.TableResponse>>().ReverseMap();
+
+        CreateMap<Language, Contract.Services.V1.Language.Response.LanguageResponse>().ReverseMap();
+        CreateMap<PagedResult<Language>, PagedResult<Contract.Services.V1.Language.Response.LanguageResponse>>().ReverseMap();
+        CreateMap<Language, Contract.Services.V1.Language.Response.LanguageDetailResponse>().ReverseMap();
     }
 }

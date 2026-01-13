@@ -34,7 +34,15 @@ internal sealed class DishConfiguration : IEntityTypeConfiguration<Dish>
                .IsRequired()
                .HasDefaultValue(true);
 
+        builder.Property(x => x.ShowOnMenu)
+               .IsRequired()
+               .HasDefaultValue(true);
+
         builder.HasIndex(x => new { x.RestaurantId, x.CategoryId });
+
+        builder.HasIndex(x => new { x.RestaurantId, x.IsActive, x.IsAvailable });  // Query menu
+        builder.HasIndex(x => new { x.RestaurantId, x.CategoryId, x.SortOrder });  // Query by category
+        builder.HasIndex(x => new { x.RestaurantId, x.DishTypeId });  // Query by type
 
         // FK -> Restaurant
         builder.HasOne(x => x.Restaurant)

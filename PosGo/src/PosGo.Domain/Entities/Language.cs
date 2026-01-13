@@ -18,4 +18,27 @@ public class Language : AuditableEntity<int>
     public virtual ICollection<DishTranslation> DishTranslations { get; private set; }
     public virtual ICollection<DishVariantTranslation> DishVariantTranslations { get; private set; }
     public virtual ICollection<DishVariantOptionTranslation> DishVariantOptionTranslations { get; private set; }
+
+    // Private constructor
+    public Language(string code, string name, bool isActive = true)
+    {
+        Code = code.Trim().ToLowerInvariant();
+        Name = name.Trim();
+        IsActive = isActive;
+    }
+
+    // Factory method
+    public static Language Create(string code, string name, bool isActive = true)
+        => new Language(code, name, isActive);
+
+    // Business methods
+    public void Update(string code, string name, bool isActive)
+    {
+        Code = code.Trim().ToLowerInvariant();
+        Name = name.Trim();
+        IsActive = isActive;
+    }
+
+    public void Activate() => IsActive = true;
+    public void Deactivate() => IsActive = false;
 }
