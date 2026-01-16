@@ -35,7 +35,7 @@ public sealed class CreateTableAreaCommandHandler : ICommandHandler<Command.Crea
         // Kiểm tra trùng tên trong cùng nhà hàng
         var existingArea = await _tableAreaRepository.FindSingleAsync(
             x => x.RestaurantId == restaurantId.Value &&
-                 x.Name.ToLower() == request.Name.ToLower());
+                 x.Name.Trim().ToLower() == request.Name.Trim().ToLower());
 
         if (existingArea != null)
         {

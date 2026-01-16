@@ -13,11 +13,11 @@ internal sealed class UnitConfiguration : IEntityTypeConfiguration<Unit>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
+        builder.Property(x => x.Name)
                .HasMaxLength(50)
                .IsRequired();
 
-        builder.HasIndex(x => new { x.RestaurantId, x.Code })
+        builder.HasIndex(x => new { x.RestaurantId, x.Name })
                .IsUnique();
 
         builder.Property(x => x.SortOrder)

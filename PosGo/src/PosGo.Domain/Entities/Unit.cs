@@ -8,7 +8,7 @@ namespace PosGo.Domain.Entities;
 public class Unit : SoftDeletableEntity<int>
 {
     public Guid? RestaurantId { get; private set; }   // null = global unit
-    public string Code { get; private set; } = null!; // GLASS...
+    public string Name { get; private set; }
     public int SortOrder { get; private set; }
     public bool IsActive { get; private set; }
     public virtual Restaurant? Restaurant { get; private set; }

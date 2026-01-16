@@ -27,7 +27,7 @@ internal sealed class DishCategoryTranslationConfiguration
         builder.HasOne(x => x.Category)
                .WithMany(c => c.Translations)
                .HasForeignKey(x => x.CategoryId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Language)
                .WithMany(l => l.DishCategoryTranslations)

@@ -14,12 +14,16 @@ internal sealed class DishCategoryConfiguration
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
-               .HasMaxLength(50);
-
         builder.Property(x => x.SortOrder)
                .IsRequired()
                .HasDefaultValue(0);
+
+        builder.Property(x => x.Name)
+            .HasMaxLength(50)
+            .IsRequired(true);
+
+        builder.Property(x => x.Description)
+            .HasMaxLength(500);
 
         builder.Property(x => x.IsActive)
                .IsRequired()

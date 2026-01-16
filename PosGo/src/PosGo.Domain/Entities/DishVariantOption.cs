@@ -19,4 +19,35 @@ public class DishVariantOption : SoftDeletableEntity<int>, ITenantEntity
     public virtual DishVariant Variant { get; private set; } = null!;
     public virtual ICollection<DishVariantOptionTranslation> Translations { get; private set; }
     public virtual ICollection<DishSkuVariantOption> DishSkuVariantOptions { get; private set; }
+
+    // Private constructor
+    private DishVariantOption(Guid restaurantId, int variantId, string code, int sortOrder, bool isDefault, decimal priceAdjustment, bool isActive)
+    {
+        RestaurantId = restaurantId;
+        VariantId = variantId;
+        Code = code.Trim();
+        SortOrder = sortOrder;
+        IsDefault = isDefault;
+        PriceAdjustment = priceAdjustment;
+        IsActive = isActive;
+    }
+
+    // Factory method
+    public static DishVariantOption Create(Guid restaurantId, int variantId, string code, int sortOrder = 0, bool isDefault = false, decimal priceAdjustment = 0, bool isActive = true)
+        => new DishVariantOption(restaurantId, variantId, code, sortOrder, isDefault, priceAdjustment, isActive);
+
+    // Business methods
+    public void Update(string code, int sortOrder, bool isDefault, decimal priceAdjustment, bool isActive)
+    {
+        Code = code.Trim();
+        SortOrder = sortOrder;
+        IsDefault = isDefault;
+        PriceAdjustment = priceAdjustment;
+        IsActive = isActive;
+    }
+
+    public void SetAsDefault() => IsDefault = true;
+    public void UnsetDefault() => IsDefault = false;
+    public void Activate() => IsActive = true;
+    public void Deactivate() => IsActive = false;
 }

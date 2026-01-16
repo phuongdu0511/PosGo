@@ -13,18 +13,16 @@ internal sealed class DishConfiguration : IEntityTypeConfiguration<Dish>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
-               .HasMaxLength(50);
-
-        builder.Property(x => x.ImageUrl)
-               .HasMaxLength(500);
-
-        builder.HasIndex(x => new { x.RestaurantId, x.Code })
-               .IsUnique();
-
         builder.Property(x => x.SortOrder)
                .IsRequired()
                .HasDefaultValue(0);
+
+        builder.Property(x => x.Name)
+            .HasMaxLength(50)
+            .IsRequired(true);
+
+        builder.Property(x => x.Description)
+            .HasMaxLength(500);
 
         builder.Property(x => x.IsActive)
                .IsRequired()
