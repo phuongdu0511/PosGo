@@ -6,8 +6,9 @@ public interface IS3Service
     /// Tạo pre-signed PUT URL để upload file lên S3
     /// </summary>
     Task<string> GeneratePresignedPutUrlAsync(
-        string objectKey,
+        string fileName,
         string contentType,
+        string objectKey,
         CancellationToken cancellationToken = default);
 
     /// <summary>

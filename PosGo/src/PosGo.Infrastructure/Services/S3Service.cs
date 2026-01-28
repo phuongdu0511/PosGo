@@ -17,8 +17,9 @@ public class S3Service : IS3Service
     }
 
     public async Task<string> GeneratePresignedPutUrlAsync(
-        string objectKey,
+        string fileName,
         string contentType,
+        string objectKey,
         CancellationToken cancellationToken = default)
     {
         var request = new GetPreSignedUrlRequest
@@ -27,7 +28,11 @@ public class S3Service : IS3Service
             Key = objectKey,
             Verb = HttpVerb.PUT,
             ContentType = contentType,
-            Expires = DateTime.UtcNow.AddMinutes(s3Option.ExpireMin)
+            Expires = DateTime.UtcNow.AddMinutes(s3Option.ExpireMin),
+            Metadata =
+            {
+                ["file-name"] = fileName,
+            }
         };
 
         return await Task.FromResult(_s3Client.GetPreSignedURL(request));
