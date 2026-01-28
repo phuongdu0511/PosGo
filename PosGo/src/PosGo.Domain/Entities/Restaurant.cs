@@ -36,6 +36,7 @@ public class Restaurant : SoftDeletableAggregateRoot<Guid>
     public virtual ICollection<OrderItem> OrderItems { get; private set; }
     public virtual ICollection<RestaurantOpeningHour> OpeningHours { get; private set; }
     public virtual ICollection<RestaurantPlan> RestaurantPlans { get; set; }
+    public virtual ICollection<Media> Media { get; set; }
     public virtual User? OwnerUser { get; private set; }
 
     public Restaurant(

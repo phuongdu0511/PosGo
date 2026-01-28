@@ -41,7 +41,6 @@ public sealed class GetDishByIdQueryHandler : IQueryHandler<Query.GetDishByIdQue
             .ThenInclude(o => o.Translations)
             .ThenInclude(t => t.Language)
             .Include(d => d.Skus.Where(s => !s.IsDeleted))
-            .Include(d => d.Images)
             .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
 
         if (dish == null)

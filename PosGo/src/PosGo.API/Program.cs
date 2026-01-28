@@ -45,6 +45,7 @@ builder.Services.AddJwtAuthenticationAPI(builder.Configuration);
 
 builder.Services.AddServicesInfrastructure();
 builder.Services.AddRedisInfrastructure(builder.Configuration);
+builder.Services.AddAmazonS3Infrastructure(builder.Configuration);
 
 builder.Services.AddMediatRApplication();
 builder.Services.AddAutoMapperApplication();

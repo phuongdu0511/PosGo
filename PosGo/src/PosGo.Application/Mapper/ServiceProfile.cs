@@ -74,8 +74,6 @@ public class ServiceProfile : Profile
 
         CreateMap<DishSku, Contract.Services.V1.Dish.Response.DishSkuResponse>();
 
-        CreateMap<DishImage, Contract.Services.V1.Dish.Response.DishImageResponse>();
-
         // DishCategory mappings
         CreateMap<DishCategory, Contract.Services.V1.DishCategory.Response.DishCategoryResponse>()
             .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
@@ -110,8 +108,5 @@ public class ServiceProfile : Profile
 
         // DishCombo mappings
         CreateMap<DishComboItem, Contract.Services.V1.DishCombo.Response.ComboItemResponse>();
-
-        // DishImage mappings
-        CreateMap<DishImage, Contract.Services.V1.DishImage.Response.DishImageResponse>();
     }
 }

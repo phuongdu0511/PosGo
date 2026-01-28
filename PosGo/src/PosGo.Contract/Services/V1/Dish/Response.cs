@@ -40,7 +40,6 @@ public static class Response
         List<DishTranslationResponse> Translations,
         List<DishVariantResponse> Variants,
         List<DishSkuResponse> Skus,
-        List<DishImageResponse> Images,
         DateTimeOffset CreatedAt,
         DateTimeOffset? UpdatedAt
     );
@@ -80,13 +79,5 @@ public static class Response
         bool IsActive,
         decimal? CostPrice,
         List<DishVariantOptionResponse> VariantOptions
-    );
-
-    public record DishImageResponse(
-        int Id,
-        string ImageUrl,
-        int DisplayOrder,
-        bool IsPrimary,
-        string? AltText
     );
 }

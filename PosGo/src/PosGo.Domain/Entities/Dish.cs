@@ -19,6 +19,7 @@ public class Dish : AuditableEntity<int>, ITenantEntity
     public bool IsAvailable { get; private set; }
     public bool ShowOnMenu { get; private set; }
     public decimal? TaxRate { get; private set; }
+    public string[] Images { get; set; }
     public virtual Restaurant Restaurant { get; private set; } = null!;
     public virtual DishCategory? Category { get; private set; }
     public virtual Unit? Unit { get; private set; }
@@ -29,7 +30,6 @@ public class Dish : AuditableEntity<int>, ITenantEntity
     public virtual ICollection<OrderItem> OrderItems { get; private set; }
     public virtual ICollection<DishComboItem> ComboItems { get; private set; } // Món này là combo
     public virtual ICollection<DishComboItem> UsedInCombos { get; private set; } // Món này được dùng trong combo
-    public virtual ICollection<DishImage> Images { get; private set; }
 
     // Private constructor
     public Dish(Guid restaurantId, string name, string? description, int? categoryId, int? unitId, int? dishTypeId, 

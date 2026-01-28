@@ -83,6 +83,19 @@ public sealed class CreateDishCommandHandler : ICommandHandler<Command.CreateDis
         // Validate Languages (if translations provided)
         if (request.Translations != null && request.Translations.Any())
         {
+            // Check duplicate LanguageId in request
+            var duplicateLanguages = request.Translations
+                .GroupBy(t => t.LanguageId)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            if (duplicateLanguages.Any())
+            {
+                return Result.Failure(new Error("DUPLICATE_LANGUAGE",
+                    $"Ngôn ngữ bị trùng lặp: {string.Join(", ", duplicateLanguages)}"));
+            }
+
             var languageIds = request.Translations.Select(t => t.LanguageId).Distinct().ToList();
             var existingLanguageIds = await _languageRepository.FindAll(l => languageIds.Contains(l.Id))
                 .Select(l => l.Id)
@@ -93,21 +106,6 @@ public sealed class CreateDishCommandHandler : ICommandHandler<Command.CreateDis
             {
                 return Result.Failure(new Error("LANGUAGE_NOT_FOUND",
                     $"Không tìm thấy ngôn ngữ với ID: {string.Join(", ", missingLanguageIds)}"));
-            }
-
-            // Check duplicate Name in Translation table for each language
-            foreach (var translation in request.Translations)
-            {
-                var duplicateName = await _translationRepository.FindSingleAsync(
-                    t => t.LanguageId == translation.LanguageId &&
-                         t.Name.Trim().ToLower() == translation.Name.Trim().ToLower(),
-                    cancellationToken);
-
-                if (duplicateName != null)
-                {
-                    return Result.Failure(new Error("DISH_NAME_EXISTS",
-                        $"Tên món ăn '{translation.Name}' đã tồn tại cho ngôn ngữ này."));
-                }
             }
         }
 

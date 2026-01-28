@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PosGo.Infrastructure.DependencyInjection.Options;
+﻿namespace PosGo.Infrastructure.DependencyInjection.Options;
 
 public class JwtOption
 {
