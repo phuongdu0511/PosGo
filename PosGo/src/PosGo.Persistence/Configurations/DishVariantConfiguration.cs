@@ -14,7 +14,7 @@ internal sealed class DishVariantConfiguration
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
+        builder.Property(x => x.Name)
                .HasMaxLength(50)
                .IsRequired();
 
@@ -22,7 +22,7 @@ internal sealed class DishVariantConfiguration
                .IsRequired()
                .HasDefaultValue(0);
 
-        builder.HasIndex(x => new { x.DishId, x.Code })
+        builder.HasIndex(x => new { x.DishId, x.Name })
                .IsUnique();
 
         builder.Property(x => x.IsActive)

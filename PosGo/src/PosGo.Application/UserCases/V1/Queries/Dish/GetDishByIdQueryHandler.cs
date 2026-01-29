@@ -33,14 +33,14 @@ public sealed class GetDishByIdQueryHandler : IQueryHandler<Query.GetDishByIdQue
             .Include(d => d.DishType)
             .Include(d => d.Translations)
             .ThenInclude(t => t.Language)
-            .Include(d => d.Variants.Where(v => !v.IsDeleted))
+            .Include(d => d.Variants)
             .ThenInclude(v => v.Translations)
             .ThenInclude(t => t.Language)
             .Include(d => d.Variants)
-            .ThenInclude(v => v.Options.Where(o => !o.IsDeleted))
+            .ThenInclude(v => v.Options)
             .ThenInclude(o => o.Translations)
             .ThenInclude(t => t.Language)
-            .Include(d => d.Skus.Where(s => !s.IsDeleted))
+            .Include(d => d.Skus)
             .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
 
         if (dish == null)

@@ -20,28 +20,7 @@ public class DishSkuController : ApiController
     {
     }
 
-    /// <summary>
-    /// Create Dish SKU
-    /// </summary>
-    [HttpPost("dish/{dishId}/skus")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [BinaryAuthorize(PermissionConstants.ManageDishes, ActionType.Add)]
-    public async Task<IActionResult> CreateDishSku(int dishId, [FromBody] Command.CreateDishSkuCommand request)
-    {
-        // Ensure dishId matches
-        if (dishId != request.DishId)
-        {
-            return BadRequest("DishId in URL does not match request body.");
-        }
-
-        var result = await Sender.Send(request);
-
-        if (result.IsFailure)
-            return HandlerFailure(result);
-
-        return Ok(result);
-    }
+    // CREATE endpoints removed - SKUs are now created together with Dish
 
     /// <summary>
     /// Update Dish SKU

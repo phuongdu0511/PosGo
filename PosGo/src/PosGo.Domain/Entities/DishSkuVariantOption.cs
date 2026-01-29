@@ -12,4 +12,16 @@ public class DishSkuVariantOption
 
     public virtual DishSku DishSku { get; private set; } = null!;
     public virtual DishVariantOption VariantOption { get; private set; } = null!;
+
+    public DishSkuVariantOption() { }
+    public static DishSkuVariantOption Create(DishSku sku, DishVariantOption option)
+    {
+        return new DishSkuVariantOption
+        {
+            DishSku = sku,
+            VariantOption = option,
+            DishSkuId = sku.Id,
+            VariantOptionId = option.Id
+        };
+    }
 }

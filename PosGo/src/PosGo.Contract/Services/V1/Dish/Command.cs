@@ -15,6 +15,10 @@ public static class Command
         bool IsAvailable,
         bool ShowOnMenu,
         decimal? TaxRate,
+        List<string>? ImageKeys,
+        decimal BasePrice,
+        List<DishVariantDto>? Variants,
+        bool GenerateSkus,
         List<DishTranslationDto>? Translations
     ) : ICommand;
 
@@ -51,4 +55,18 @@ public record DishTranslationDto(
     int LanguageId,
     string Name,
     string? Description
+);
+
+public record DishVariantDto(
+    string Code,
+    int SortOrder,
+    bool IsActive,
+    List<DishVariantOptionDto> Options
+);
+
+public record DishVariantOptionDto(
+    string Code,
+    int SortOrder,
+    decimal PriceAdjustment,
+    bool IsActive
 );

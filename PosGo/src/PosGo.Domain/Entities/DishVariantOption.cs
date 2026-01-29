@@ -5,12 +5,11 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  VARIANTS + SKU
 // =====================================
-public class DishVariantOption : SoftDeletableEntity<int>, ITenantEntity
+public class DishVariantOption : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public int VariantId { get; private set; }
-
-    public string Code { get; private set; } = null!;
+    public string Value { get; private set; } = null!;
     public int SortOrder { get; private set; }
     public bool IsDefault { get; private set; }
     public bool IsActive { get; private set; } = true;
@@ -21,33 +20,29 @@ public class DishVariantOption : SoftDeletableEntity<int>, ITenantEntity
     public virtual ICollection<DishSkuVariantOption> DishSkuVariantOptions { get; private set; }
 
     // Private constructor
-    private DishVariantOption(Guid restaurantId, int variantId, string code, int sortOrder, bool isDefault, decimal priceAdjustment, bool isActive)
+    public DishVariantOption(Guid restaurantId, int variantId, string value, int sortOrder, decimal priceAdjustment, bool isActive)
     {
         RestaurantId = restaurantId;
         VariantId = variantId;
-        Code = code.Trim();
+        Value = value;
         SortOrder = sortOrder;
-        IsDefault = isDefault;
         PriceAdjustment = priceAdjustment;
         IsActive = isActive;
     }
 
     // Factory method
-    public static DishVariantOption Create(Guid restaurantId, int variantId, string code, int sortOrder = 0, bool isDefault = false, decimal priceAdjustment = 0, bool isActive = true)
-        => new DishVariantOption(restaurantId, variantId, code, sortOrder, isDefault, priceAdjustment, isActive);
+    public static DishVariantOption Create(Guid restaurantId, int variantId, string value, int sortOrder = 0, decimal priceAdjustment = 0, bool isActive = true)
+        => new DishVariantOption(restaurantId, variantId, value, sortOrder, priceAdjustment, isActive);
 
     // Business methods
-    public void Update(string code, int sortOrder, bool isDefault, decimal priceAdjustment, bool isActive)
+    public void Update(string value, int sortOrder, bool isDefault, decimal priceAdjustment, bool isActive)
     {
-        Code = code.Trim();
+        Value = value;
         SortOrder = sortOrder;
         IsDefault = isDefault;
         PriceAdjustment = priceAdjustment;
         IsActive = isActive;
     }
-
-    public void SetAsDefault() => IsDefault = true;
-    public void UnsetDefault() => IsDefault = false;
     public void Activate() => IsActive = true;
     public void Deactivate() => IsActive = false;
 }

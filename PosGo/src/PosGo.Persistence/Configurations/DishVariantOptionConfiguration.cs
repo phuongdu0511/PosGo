@@ -14,11 +14,11 @@ internal sealed class DishVariantOptionConfiguration
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
+        builder.Property(x => x.Value)
                .HasMaxLength(50)
                .IsRequired();
 
-        builder.HasIndex(x => new { x.VariantId, x.Code })
+        builder.HasIndex(x => new { x.VariantId, x.Value })
                .IsUnique();
 
         builder.Property(x => x.SortOrder)

@@ -20,28 +20,7 @@ public class DishVariantController : ApiController
     {
     }
 
-    /// <summary>
-    /// Create Dish Variant
-    /// </summary>
-    [HttpPost("dish/{dishId}/variants")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [BinaryAuthorize(PermissionConstants.ManageDishes, ActionType.Add)]
-    public async Task<IActionResult> CreateDishVariant(int dishId, [FromBody] Command.CreateDishVariantCommand request)
-    {
-        // Ensure dishId matches
-        if (dishId != request.DishId)
-        {
-            return BadRequest("DishId in URL does not match request body.");
-        }
-
-        var result = await Sender.Send(request);
-
-        if (result.IsFailure)
-            return HandlerFailure(result);
-
-        return Ok(result);
-    }
+    // CREATE endpoints removed - Variants are now created together with Dish
 
     /// <summary>
     /// Update Dish Variant
@@ -77,28 +56,7 @@ public class DishVariantController : ApiController
         return Ok(result);
     }
 
-    /// <summary>
-    /// Create Variant Option
-    /// </summary>
-    [HttpPost("variant/{variantId}/options")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [BinaryAuthorize(PermissionConstants.ManageDishes, ActionType.Add)]
-    public async Task<IActionResult> CreateVariantOption(int variantId, [FromBody] Command.CreateVariantOptionCommand request)
-    {
-        // Ensure variantId matches
-        if (variantId != request.VariantId)
-        {
-            return BadRequest("VariantId in URL does not match request body.");
-        }
-
-        var result = await Sender.Send(request);
-
-        if (result.IsFailure)
-            return HandlerFailure(result);
-
-        return Ok(result);
-    }
+    // CREATE endpoints removed - Variant Options are now created together with Dish
 
     /// <summary>
     /// Update Variant Option

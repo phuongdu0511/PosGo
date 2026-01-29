@@ -42,7 +42,7 @@ public sealed class GetDishVariantTreeQueryHandler : IQueryHandler<Query.GetDish
         var variants = await _variantRepository.FindAll(v => v.DishId == request.DishId)
             .Include(v => v.Translations.Where(t => t.Language.Code == language))
             .ThenInclude(t => t.Language)
-            .Include(v => v.Options.Where(o => !o.IsDeleted))
+            .Include(v => v.Options)
             .ThenInclude(o => o.Translations.Where(t => t.Language.Code == language))
             .ThenInclude(t => t.Language)
             .OrderBy(v => v.SortOrder)

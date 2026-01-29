@@ -66,11 +66,11 @@ public class ServiceProfile : Profile
 
         CreateMap<DishVariant, Contract.Services.V1.Dish.Response.DishVariantResponse>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => 
-                src.Translations.Any() ? src.Translations.First().Name : src.Code));
+                src.Translations.Any() ? src.Translations.First().Name : src.Name));
 
         CreateMap<DishVariantOption, Contract.Services.V1.Dish.Response.DishVariantOptionResponse>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => 
-                src.Translations.Any() ? src.Translations.First().Name : src.Code));
+                src.Translations.Any() ? src.Translations.First().Name : src.Value));
 
         CreateMap<DishSku, Contract.Services.V1.Dish.Response.DishSkuResponse>();
 
@@ -87,11 +87,11 @@ public class ServiceProfile : Profile
         // DishVariant mappings
         CreateMap<DishVariant, Contract.Services.V1.DishVariant.Response.DishVariantResponse>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => 
-                src.Translations.Any() ? src.Translations.First().Name : src.Code));
+                src.Translations.Any() ? src.Translations.First().Name : src.Name));
 
         CreateMap<DishVariantOption, Contract.Services.V1.DishVariant.Response.VariantOptionResponse>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => 
-                src.Translations.Any() ? src.Translations.First().Name : src.Code));
+                src.Translations.Any() ? src.Translations.First().Name : src.Value));
 
         CreateMap<DishVariantTranslation, Contract.Services.V1.DishVariant.Response.DishVariantTranslationResponse>()
             .ForMember(dest => dest.LanguageCode, opt => opt.MapFrom(src => src.Language.Code))

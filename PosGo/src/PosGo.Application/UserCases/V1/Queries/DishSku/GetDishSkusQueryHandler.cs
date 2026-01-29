@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using PosGo.Contract.Abstractions.Shared;
 using PosGo.Contract.Services.V1.DishSku;
 using PosGo.Domain.Abstractions.Repositories;
-using PosGo.Domain.Entities;
 
 namespace PosGo.Application.UserCases.V1.Queries.DishSku;
 
@@ -32,8 +31,6 @@ public sealed class GetDishSkusQueryHandler : IQueryHandler<Query.GetDishSkusQue
             .Include(s => s.VariantOptions)
             .ThenInclude(vo => vo.VariantOption)
             .ThenInclude(vo => vo.Translations)
-            .OrderBy(s => s.IsDefault ? 0 : 1)
-            .ThenBy(s => s.Code)
             .ToListAsync(cancellationToken);
 
         var result = _mapper.Map<List<Response.DishSkuResponse>>(skus);

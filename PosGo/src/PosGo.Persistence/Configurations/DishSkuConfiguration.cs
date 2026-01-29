@@ -13,7 +13,7 @@ internal sealed class DishSkuConfiguration : IEntityTypeConfiguration<DishSku>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
+        builder.Property(x => x.Sku)
                .HasMaxLength(50)
                .IsRequired();
 
@@ -30,11 +30,9 @@ internal sealed class DishSkuConfiguration : IEntityTypeConfiguration<DishSku>
 
         builder.HasIndex(x => new { x.RestaurantId, x.IsActive, x.StockQuantity });
 
-        // Indexes theo DBML: (DishId, Code) unique; (DishId, IsDefault)
-        builder.HasIndex(x => new { x.DishId, x.Code })
+        // Indexes theo DBML: (DishId, Code) unique;
+        builder.HasIndex(x => new { x.DishId, x.Sku })
                .IsUnique();
-
-        builder.HasIndex(x => new { x.DishId, x.IsDefault });
 
         // FK -> Restaurant
         builder.HasOne(x => x.Restaurant)

@@ -10,8 +10,8 @@ public class Dish : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public int? CategoryId { get; private set; }
-    public string Name { get; set; }
-    public string? Description { get; set; }
+    public string Name { get; private set; }
+    public string? Description { get; private set; }
     public int? UnitId { get; private set; }
     public int? DishTypeId { get; private set; }   // CodeSet=DishType
     public int SortOrder { get; private set; }
@@ -19,7 +19,7 @@ public class Dish : AuditableEntity<int>, ITenantEntity
     public bool IsAvailable { get; private set; }
     public bool ShowOnMenu { get; private set; }
     public decimal? TaxRate { get; private set; }
-    public string[] Images { get; set; }
+    public string[] Images { get; private set; }
     public virtual Restaurant Restaurant { get; private set; } = null!;
     public virtual DishCategory? Category { get; private set; }
     public virtual Unit? Unit { get; private set; }
@@ -33,7 +33,7 @@ public class Dish : AuditableEntity<int>, ITenantEntity
 
     // Private constructor
     public Dish(Guid restaurantId, string name, string? description, int? categoryId, int? unitId, int? dishTypeId, 
-        int sortOrder, bool isActive, bool isAvailable, bool showOnMenu, decimal? taxRate)
+        int sortOrder, bool isActive, bool isAvailable, bool showOnMenu, decimal? taxRate, string[]? images = null)
     {
         RestaurantId = restaurantId;
         Name = name;
@@ -46,14 +46,15 @@ public class Dish : AuditableEntity<int>, ITenantEntity
         IsAvailable = isAvailable;
         ShowOnMenu = showOnMenu;
         TaxRate = taxRate;
+        Images = images ?? Array.Empty<string>();
     }
 
     // Factory method
     public static Dish Create(Guid restaurantId, string name, string? description = null, int? categoryId = null, int? unitId = null,
         int? dishTypeId = null, int sortOrder = 0, bool isActive = true, 
-        bool isAvailable = true, bool showOnMenu = true, decimal? taxRate = null)
+        bool isAvailable = true, bool showOnMenu = true, decimal? taxRate = null, string[]? images = null)
         => new Dish(restaurantId, name, description, categoryId, unitId, dishTypeId, sortOrder, 
-            isActive, isAvailable, showOnMenu, taxRate);
+            isActive, isAvailable, showOnMenu, taxRate, images);
 
     // Business methods
     public void Update(string name, string? description, int? categoryId, int? unitId, int? dishTypeId, 

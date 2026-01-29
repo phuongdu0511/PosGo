@@ -16,7 +16,7 @@ public class DishVariantOptionTranslation : Entity<int>
     public virtual Language Language { get; private set; } = null!;
 
     // Private constructor
-    private DishVariantOptionTranslation(int variantOptionId, int languageId, string name, string? description)
+    public DishVariantOptionTranslation(int variantOptionId, int languageId, string name, string? description)
     {
         VariantOptionId = variantOptionId;
         LanguageId = languageId;

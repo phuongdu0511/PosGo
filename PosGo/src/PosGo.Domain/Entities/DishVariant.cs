@@ -5,37 +5,40 @@ namespace PosGo.Domain.Entities;
 // =====================================
 //  VARIANTS + SKU
 // =====================================
-public class DishVariant : SoftDeletableEntity<int>, ITenantEntity
+public class DishVariant : AuditableEntity<int>, ITenantEntity
 {
     public Guid RestaurantId { get; private set; }
     public int DishId { get; private set; }
-
-    public string Code { get; private set; } = null!;  // SIZE...
+    public string Name { get; private set; }
     public int SortOrder { get; private set; }
     public bool IsActive { get; private set; }
     public virtual Restaurant Restaurant { get; private set; } = null!;
     public virtual Dish Dish { get; private set; } = null!;
-    public virtual ICollection<DishVariantTranslation> Translations { get; private set; }
-    public virtual ICollection<DishVariantOption> Options { get; private set; }
+    public virtual ICollection<DishVariantTranslation> Translations { get; private set; } = new List<DishVariantTranslation>();
+    public virtual ICollection<DishVariantOption> Options { get; private set; } = new List<DishVariantOption>();
 
     // Private constructor
-    private DishVariant(Guid restaurantId, int dishId, string code, int sortOrder, bool isActive)
+    public DishVariant(Guid restaurantId, int dishId, string name, int sortOrder, bool isActive)
     {
         RestaurantId = restaurantId;
         DishId = dishId;
-        Code = code.Trim();
+        Name = name;
         SortOrder = sortOrder;
         IsActive = isActive;
     }
 
     // Factory method
-    public static DishVariant Create(Guid restaurantId, int dishId, string code, int sortOrder = 0, bool isActive = true)
-        => new DishVariant(restaurantId, dishId, code, sortOrder, isActive);
+    public static DishVariant Create(Guid restaurantId, Dish dish, string name, int sortOrder = 0, bool isActive = true)
+    {
+        var variant = new DishVariant(restaurantId, dish.Id, name, sortOrder, isActive);
+        variant.Dish = dish;
+        return variant;
+    }
 
     // Business methods
-    public void Update(string code, int sortOrder, bool isActive)
+    public void Update(string name, int sortOrder, bool isActive)
     {
-        Code = code.Trim();
+        Name = name;
         SortOrder = sortOrder;
         IsActive = isActive;
     }

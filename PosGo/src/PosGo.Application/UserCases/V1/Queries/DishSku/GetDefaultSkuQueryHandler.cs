@@ -22,7 +22,7 @@ public sealed class GetDefaultSkuQueryHandler : IQueryHandler<Query.GetDefaultSk
 
     public async Task<Result<Response.DishSkuResponse>> Handle(Query.GetDefaultSkuQuery request, CancellationToken cancellationToken)
     {
-        var sku = await _skuRepository.FindAll(s => s.DishId == request.DishId && s.IsDefault && s.IsActive)
+        var sku = await _skuRepository.FindAll(s => s.DishId == request.DishId && s.IsActive)
             .Include(s => s.Dish)
             .ThenInclude(d => d.Translations)
             .Include(s => s.VariantOptions)
