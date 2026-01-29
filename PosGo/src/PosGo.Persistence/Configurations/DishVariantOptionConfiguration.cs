@@ -25,10 +25,6 @@ internal sealed class DishVariantOptionConfiguration
                .IsRequired()
                .HasDefaultValue(0);
 
-        builder.Property(x => x.IsDefault)
-               .IsRequired()
-               .HasDefaultValue(false);
-
         builder.Property(x => x.IsActive)
                .IsRequired()
                .HasDefaultValue(true);

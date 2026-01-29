@@ -11,9 +11,8 @@ public class DishVariantOption : AuditableEntity<int>, ITenantEntity
     public int VariantId { get; private set; }
     public string Value { get; private set; } = null!;
     public int SortOrder { get; private set; }
-    public bool IsDefault { get; private set; }
-    public bool IsActive { get; private set; } = true;
-    public decimal PriceAdjustment { get; private set; } = 0;
+    public bool IsActive { get; private set; }
+    public decimal PriceAdjustment { get; private set; }
     public virtual Restaurant Restaurant { get; private set; } = null!;
     public virtual DishVariant Variant { get; private set; } = null!;
     public virtual ICollection<DishVariantOptionTranslation> Translations { get; private set; }
@@ -35,11 +34,10 @@ public class DishVariantOption : AuditableEntity<int>, ITenantEntity
         => new DishVariantOption(restaurantId, variantId, value, sortOrder, priceAdjustment, isActive);
 
     // Business methods
-    public void Update(string value, int sortOrder, bool isDefault, decimal priceAdjustment, bool isActive)
+    public void Update(string value, int sortOrder, decimal priceAdjustment, bool isActive)
     {
         Value = value;
         SortOrder = sortOrder;
-        IsDefault = isDefault;
         PriceAdjustment = priceAdjustment;
         IsActive = isActive;
     }

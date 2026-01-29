@@ -29,10 +29,11 @@ public sealed class GetActiveDishCategoriesQueryHandler : IQueryHandler<Query.Ge
 
         // Load all translations - frontend will handle language selection
         var categories = await _categoryRepository
-            .FindAll(c => c.IsActive && 
-                         c.ShowOnMenu)
+            .FindAll(c => c.IsActive && c.ShowOnMenu)
+            .Include(c => c.Dishes)
             .Include(c => c.Translations)
             .ThenInclude(t => t.Language)
+            .AsSplitQuery()
             .OrderBy(c => c.SortOrder)
             .ToListAsync(cancellationToken);
 
